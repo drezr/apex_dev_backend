@@ -14,7 +14,7 @@ class Profile(models.Model):
         User,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='%(app_label)s_%(class)s_profile',
+        related_name='profile',
     )
 
     def __str__(self):
@@ -26,7 +26,7 @@ class Circle(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.name)
+        return '[#{0}] {1}'.format(self.id, self.name)
 
 
 class Team(models.Model):
@@ -42,8 +42,8 @@ class Team(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1} ({2})'.format(
-            self.id, self.name, self.app
+        return '[#{0}] {1}'.format(
+            self.id, self.name
         )
 
 
@@ -55,7 +55,7 @@ class App(models.Model):
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}] {1} ({2})'.format(self.id, self.app, self.name)
+        return '[#{0}] {1} ({2})'.format(self.id, self.app, self.team.name)
 
 
 class Day(models.Model):
@@ -84,7 +84,7 @@ class Day(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1} ({2})'.format(
+        return '[#{0}] {1} ({2})'.format(
             self.id, self.date, self.circle.name)
 
 
@@ -125,7 +125,7 @@ class Cell(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1} ({2})'.format(
+        return '[#{0}] {1} ({2})'.format(
             self.id, self.date, self.profile.name)
 
 
@@ -168,7 +168,7 @@ class Work(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.description[:10])
+        return '[#{0}] {1}'.format(self.id, self.description[:10])
 
 
 class Limit(models.Model):
@@ -188,7 +188,7 @@ class Limit(models.Model):
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}]'.format(self.id)
+        return '[#{0}]'.format(self.id)
 
 
 class S460(models.Model):
@@ -201,7 +201,7 @@ class S460(models.Model):
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}]'.format(self.id)
+        return '[#{0}]'.format(self.id)
 
 
 class Shift(models.Model):
@@ -212,7 +212,7 @@ class Shift(models.Model):
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}] {1} | {2}'.format(self.id, self.date, self.shift)
+        return '[#{0}] {1} | {2}'.format(self.id, self.date, self.shift)
 
 
 class Part(models.Model):
@@ -232,7 +232,7 @@ class Part(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1} [{2}] [{3}]'.format(
+        return '[#{0}] {1} [{2}] [{3}]'.format(
             self.id, self.date, self.name, self.work.name)
 
 
@@ -252,7 +252,7 @@ class Project(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.name)
+        return '[#{0}] {1}'.format(self.id, self.name)
 
 
 class Model(models.Model):
@@ -268,7 +268,7 @@ class Model(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.name)
+        return '[#{0}] {1}'.format(self.id, self.name)
 
 
 class Task(models.Model):
@@ -302,7 +302,7 @@ class Task(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.name)
+        return '[#{0}] {1}'.format(self.id, self.name)
 
 
 class Subtask(models.Model):
@@ -311,7 +311,7 @@ class Subtask(models.Model):
     status = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.name)
+        return '[#{0}] {1}'.format(self.id, self.name)
 
 
 class Note(models.Model):
@@ -322,7 +322,7 @@ class Note(models.Model):
     profile = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.value)
+        return '[#{0}] {1}'.format(self.id, self.value)
 
 
 class File(models.Model):
@@ -332,7 +332,7 @@ class File(models.Model):
     uid = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return '[{0}] {1}.{2}'.format(self.id, self.name, self.extension)
+        return '[#{0}] {1}.{2}'.format(self.id, self.name, self.extension)
 
 
 class Field(models.Model):
@@ -342,7 +342,7 @@ class Field(models.Model):
     heading = models.BooleanField(default=False)
 
     def __str__(self):
-        return '[{0}] {1} : {2}'.format(self.id, self.name, self.value)
+        return '[#{0}] {1} : {2}'.format(self.id, self.name, self.value)
 
 
 class Call(models.Model):
@@ -354,7 +354,7 @@ class Call(models.Model):
     end = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return '[{0}] {1}'.format(self.id, self.name)
+        return '[#{0}] {1}'.format(self.id, self.name)
 
 
 class Leave(models.Model):
@@ -410,7 +410,7 @@ class TeamProfileLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(
-            self.profile.name, self.circle
+            self.profile.name, self.team.name
         )
 
 

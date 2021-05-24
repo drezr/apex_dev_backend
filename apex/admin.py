@@ -3,6 +3,10 @@ from django.contrib import admin
 from .models import *
 
 
+class ProfileAdmin(admin.ModelAdmin):
+    raw_id_fields = ('user', )
+
+
 class TeamAdmin(admin.ModelAdmin):
     raw_id_fields = ('circle', )
 
@@ -47,7 +51,7 @@ class NoteAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
 
 
-admin.site.register(Profile)
+admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Circle)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(App, AppAdmin)
