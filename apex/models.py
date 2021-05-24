@@ -26,7 +26,7 @@ class Circle(models.Model):
     name = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return '[{0}] Circle {1}'.format(self.id, self.name)
+        return '[{0}] {1}'.format(self.id, self.name)
 
 
 class Team(models.Model):
@@ -42,7 +42,7 @@ class Team(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Circle {1} ({2})'.format(
+        return '[{0}] {1} ({2})'.format(
             self.id, self.name, self.app
         )
 
@@ -55,7 +55,7 @@ class App(models.Model):
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}] App {1} ({2})'.format(self.id, self.app, self.name)
+        return '[{0}] {1} ({2})'.format(self.id, self.app, self.name)
 
 
 class Day(models.Model):
@@ -84,7 +84,7 @@ class Day(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Day {1} ({2})'.format(
+        return '[{0}] {1} ({2})'.format(
             self.id, self.date, self.circle.name)
 
 
@@ -125,7 +125,7 @@ class Cell(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Cell {1} ({2})'.format(
+        return '[{0}] {1} ({2})'.format(
             self.id, self.date, self.profile.name)
 
 
@@ -168,7 +168,7 @@ class Work(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Work {1}'.format(self.id, self.description[:10])
+        return '[{0}] {1}'.format(self.id, self.description[:10])
 
 
 class Limit(models.Model):
@@ -188,7 +188,7 @@ class Limit(models.Model):
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}] Limit'.format(self.id)
+        return '[{0}]'.format(self.id)
 
 
 class S460(models.Model):
@@ -201,7 +201,7 @@ class S460(models.Model):
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}] S460'.format(self.id)
+        return '[{0}]'.format(self.id)
 
 
 class Shift(models.Model):
@@ -212,7 +212,7 @@ class Shift(models.Model):
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[{0}] Shift {1} | {2}'.format(self.id, self.date, self.shift)
+        return '[{0}] {1} | {2}'.format(self.id, self.date, self.shift)
 
 
 class Part(models.Model):
@@ -232,7 +232,7 @@ class Part(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Part {1} [{2}] [{3}]'.format(
+        return '[{0}] {1} [{2}] [{3}]'.format(
             self.id, self.date, self.name, self.work.name)
 
 
@@ -252,7 +252,7 @@ class Project(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Project {1}'.format(self.id, self.name)
+        return '[{0}] {1}'.format(self.id, self.name)
 
 
 class Model(models.Model):
@@ -268,7 +268,7 @@ class Model(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Model {1}'.format(self.id, self.name)
+        return '[{0}] {1}'.format(self.id, self.name)
 
 
 class Task(models.Model):
@@ -302,7 +302,7 @@ class Task(models.Model):
     )
 
     def __str__(self):
-        return '[{0}] Task {1}'.format(self.id, self.name)
+        return '[{0}] {1}'.format(self.id, self.name)
 
 
 class Subtask(models.Model):
@@ -311,7 +311,7 @@ class Subtask(models.Model):
     status = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return '[{0}] Subtask {1}'.format(self.id, self.name)
+        return '[{0}] {1}'.format(self.id, self.name)
 
 
 class Note(models.Model):
@@ -322,7 +322,7 @@ class Note(models.Model):
     profile = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return '[{0}] Note {1}'.format(self.id, self.value)
+        return '[{0}] {1}'.format(self.id, self.value)
 
 
 class File(models.Model):
@@ -332,7 +332,7 @@ class File(models.Model):
     uid = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return '[{0}] File {1}.{2}'.format(self.id, self.name, self.extension)
+        return '[{0}] {1}.{2}'.format(self.id, self.name, self.extension)
 
 
 class Field(models.Model):
@@ -342,7 +342,7 @@ class Field(models.Model):
     heading = models.BooleanField(default=False)
 
     def __str__(self):
-        return '[{0}] Field {1} : {2}'.format(self.id, self.name, self.value)
+        return '[{0}] {1} : {2}'.format(self.id, self.name, self.value)
 
 
 class Call(models.Model):
@@ -354,7 +354,7 @@ class Call(models.Model):
     end = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return '[{0}] Call {1}'.format(self.id, self.name)
+        return '[{0}] {1}'.format(self.id, self.name)
 
 
 class Leave(models.Model):
@@ -371,7 +371,7 @@ class Leave(models.Model):
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
 
     def __str__(self):
-        return 'Leave {0} - {1}'.format(self.profile, self.year)
+        return '{0} - {1}'.format(self.profile, self.year)
 
 
 class RR(models.Model):
@@ -379,7 +379,7 @@ class RR(models.Model):
     date = models.DateField()
 
     def __str__(self):
-        return 'RR {0}'.format(self.date)
+        return '{0}'.format(self.date)
 
 
 #######################################################
@@ -409,7 +409,7 @@ class TeamProfileLink(models.Model):
     color = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return 'CircleProfileLink {0} : {1}'.format(
+        return '{0} : {1}'.format(
             self.profile.name, self.circle
         )
 
@@ -427,7 +427,7 @@ class AppWorkLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'AppWorkLink {0} : {1}'.format(self.circle, self.work)
+        return '{0} : {1}'.format(self.circle, self.work)
 
 
 class DayTaskLink(models.Model):
@@ -443,7 +443,7 @@ class DayTaskLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'DayTaskLink {0} : {1}'.format(self.day, self.task)
+        return '{0} : {1}'.format(self.day, self.task)
 
 
 class DayNoteLink(models.Model):
@@ -459,7 +459,7 @@ class DayNoteLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'DayNoteLink {0} : {1}'.format(self.day, self.note)
+        return '{0} : {1}'.format(self.day, self.note)
 
 
 class DayFileLink(models.Model):
@@ -475,7 +475,7 @@ class DayFileLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'DayFileLink {0} : {1}'.format(self.day, self.file)
+        return '{0} : {1}'.format(self.day, self.file)
 
 
 class CellTaskLink(models.Model):
@@ -491,7 +491,7 @@ class CellTaskLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'CellTaskLink {0} : {1}'.format(self.cell, self.task)
+        return '{0} : {1}'.format(self.cell, self.task)
 
 
 class CellNoteLink(models.Model):
@@ -507,7 +507,7 @@ class CellNoteLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'CellNoteLink {0} : {1}'.format(self.cell, self.note)
+        return '{0} : {1}'.format(self.cell, self.note)
 
 
 class CellFileLink(models.Model):
@@ -523,7 +523,7 @@ class CellFileLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'CellFileLink {0} : {1}'.format(self.cell, self.file)
+        return '{0} : {1}'.format(self.cell, self.file)
 
 
 class CellCallLink(models.Model):
@@ -539,7 +539,7 @@ class CellCallLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'CellCallLink {0} : {1}'.format(self.cell, self.call)
+        return '{0} : {1}'.format(self.cell, self.call)
 
 
 class WorkFileLink(models.Model):
@@ -555,7 +555,7 @@ class WorkFileLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'WorkFileLink {0} : {1}'.format(self.work, self.file)
+        return '{0} : {1}'.format(self.work, self.file)
 
 
 class PartProfileLink(models.Model):
@@ -572,7 +572,7 @@ class PartProfileLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return 'PartProfileLink {0} : {1}'.format(
+        return '{0} : {1}'.format(
             self.profile.name, self.part
         )
 
@@ -590,7 +590,7 @@ class ProjectTaskLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'ProjectTaskLink {0} : {1}'.format(self.project, self.task)
+        return '{0} : {1}'.format(self.project, self.task)
 
 
 class ModelFieldLink(models.Model):
@@ -606,7 +606,7 @@ class ModelFieldLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'ModelFieldLink {0} : {1}'.format(self.model, self.field)
+        return '{0} : {1}'.format(self.model, self.field)
 
 
 class TaskSubtaskLink(models.Model):
@@ -622,7 +622,7 @@ class TaskSubtaskLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'TaskSubtaskLink {0} : {1}'.format(self.task, self.subtask)
+        return '{0} : {1}'.format(self.task, self.subtask)
 
 
 class TaskNoteLink(models.Model):
@@ -638,7 +638,7 @@ class TaskNoteLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'TaskNoteLink {0} : {1}'.format(self.task, self.note)
+        return '{0} : {1}'.format(self.task, self.note)
 
 
 class TaskFileLink(models.Model):
@@ -654,7 +654,7 @@ class TaskFileLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'TaskFileLink {0} : {1}'.format(self.task, self.file)
+        return '{0} : {1}'.format(self.task, self.file)
 
 
 class TaskFieldLink(models.Model):
@@ -670,4 +670,4 @@ class TaskFieldLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return 'TaskFieldLink {0} : {1}'.format(self.task, self.field)
+        return '{0} : {1}'.format(self.task, self.field)

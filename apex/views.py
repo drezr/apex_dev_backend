@@ -1,3 +1,14 @@
-from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
 
-# Create your views here.
+from .models import *
+from .serializers import *
+
+
+def home(request):
+    if request.method == 'GET':
+        circles = Circle.objects.all()
+        serializer = CircleSerializer(circles, many=True)
+
+        return JsonResponse(serializer.data, safe=False)
+
+    return HttpResponse(status=403)
