@@ -6,32 +6,42 @@ from .models import *
 class TeamAdmin(admin.ModelAdmin):
     raw_id_fields = ('circle', )
 
+
 class AppAdmin(admin.ModelAdmin):
     raw_id_fields = ('team', )
+
 
 class DayAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', )
 
+
 class CellAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
+
 
 class LimitAdmin(admin.ModelAdmin):
     raw_id_fields = ('work', )
 
+
 class S460Admin(admin.ModelAdmin):
     raw_id_fields = ('work', )
+
 
 class ShiftAdmin(admin.ModelAdmin):
     raw_id_fields = ('work', )
 
+
 class PartAdmin(admin.ModelAdmin):
     raw_id_fields = ('shift', 'project', 'team', 'work', )
+
 
 class ProjectAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', )
 
+
 class ModelAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', )
+
 
 class NoteAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
@@ -62,50 +72,66 @@ admin.site.register(RR)
 class TeamProfileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', 'team', )
 
+
 class AppWorkLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', 'work', )
+
 
 class DayTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('day', 'task', )
 
+
 class DayNoteLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('day', 'note', )
+
 
 class DayFileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('day', 'file', )
 
+
 class CellTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('cell', 'task', )
+
 
 class CellNoteLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('cell', 'note', )
 
+
 class CellFileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('cell', 'file', )
+
 
 class CellCallLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('cell', 'call', )
 
+
 class WorkFileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('work', 'file', )
+
 
 class PartProfileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('part', 'profile', )
 
+
 class ProjectTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('project', 'task', )
+
 
 class ModelFieldLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('model', 'field', )
 
+
 class TaskSubtaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'subtask', )
+
 
 class TaskNoteLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'note', )
 
+
 class TaskFileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'file', )
+
 
 class TaskFieldLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'field', )
