@@ -243,7 +243,12 @@ class Project(models.Model):
     archived = models.BooleanField(default=False)
     date = models.DateField()
 
-    app = models.ForeignKey('app', on_delete=models.CASCADE)
+    apps = models.ManyToManyField(
+        'App',
+        blank=True,
+        related_name='%(app_label)s_%(class)s_projects',
+        through='AppProjectLink',
+    )
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
@@ -427,7 +432,23 @@ class AppWorkLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return '{0} : {1}'.format(self.circle, self.work)
+        return '{0} : {1}'.format(self.app, self.work)
+
+
+class AppProjectLink(models.Model):
+
+    app = models.ForeignKey(
+        'App', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_apps'
+    )
+    project = models.ForeignKey(
+        'Project', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_projects'
+    )
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.app, self.project)
 
 
 class DayTaskLink(models.Model):

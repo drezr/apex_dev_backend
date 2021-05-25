@@ -29,8 +29,7 @@ class CircleSerializer(serializers.ModelSerializer):
     def get_teams(self, circle):
         if check_context(self.context, 'teams', 'detail'):
             return TeamSerializer(
-                circle.team_set.all(), many=True, context=self.context
-            ).data
+                circle.team_set.all(), many=True, context=self.context).data
 
         elif check_context(self.context, 'teams', 'id'):
             return [team.id for team in circle.team_set.all()]
@@ -47,8 +46,7 @@ class TeamSerializer(serializers.ModelSerializer):
     def get_profiles(self, team):
         if check_context(self.context, 'profiles', 'detail'):
             return ProfileSerializer(
-                team.profiles.all(), many=True, context=self.context
-            ).data
+                team.profiles.all(), many=True, context=self.context).data
 
         return [team.id for team in team.profiles.all()]
 
@@ -57,4 +55,28 @@ class AppSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = App
+        fields = '__all__'
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+
+    tasks = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Project
+        fields = '__all__'
+
+    def get_tasks(self, project):
+        if check_context(self.context, 'tasks', 'detail'):
+            return TaskSerializer(
+                project.tasks.all(), many=True, context=self.context).data
+
+        elif check_context(self.context, 'tasks', 'id'):
+            return [task.id for task in project.tasks.all()]
+
+
+class TaskSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Task
         fields = '__all__'

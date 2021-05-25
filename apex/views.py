@@ -30,8 +30,33 @@ class Home(APIView):
 
 class Hub(APIView):
 
-    def get(self, request):
-        apps = App.objects.filter(team=request.query_params['team'])
+    def get(self, request, team_id):
+        apps = App.objects.filter(team=team_id)
         result = AppSerializer(apps, many=True).data
 
         return JsonResponse(result, safe=False)
+
+
+class Draft(APIView):
+
+    def get(self, request, app_id):
+        projects = Project.objects.filter(apps__in=[app_id])
+        projects = ProjectSerializer(projects, many=True).data
+
+        return JsonResponse(projects, safe=False)
+
+
+
+class ProjectView(APIView):
+
+    def get(self, request, project_id):
+        project = Project.objects.get(pk=project_id)
+        project = ProjectSerializer(project, context={
+            'tasks': 'detail',
+            'subtasks': 'detail',
+            'notes': 'detail',
+            'files': 'detail',
+            'fields': 'detail',
+        }).data
+
+        return JsonResponse(project, safe=False)

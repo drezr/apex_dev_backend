@@ -11,5 +11,7 @@ urlpatterns = [
     path(r'api/', include('rest_framework.urls')),
 
     path('home/', Home.as_view()),
-    path('hub/', Hub.as_view()),
+    path('hub/<int:team_id>/', Hub.as_view()),
+    path('draft/<int:app_id>/', Draft.as_view()),
+    path('project/<int:project_id>/', ProjectView.as_view()),
 ]

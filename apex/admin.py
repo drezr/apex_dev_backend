@@ -39,10 +39,6 @@ class PartAdmin(admin.ModelAdmin):
     raw_id_fields = ('shift', 'project', 'team', 'work', )
 
 
-class ProjectAdmin(admin.ModelAdmin):
-    raw_id_fields = ('app', )
-
-
 class ModelAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', )
 
@@ -62,7 +58,7 @@ admin.site.register(Limit, LimitAdmin)
 admin.site.register(S460, S460Admin)
 admin.site.register(Shift, ShiftAdmin)
 admin.site.register(Part, PartAdmin)
-admin.site.register(Project, ProjectAdmin)
+admin.site.register(Project)
 admin.site.register(Model, ModelAdmin)
 admin.site.register(Task)
 admin.site.register(Subtask)
@@ -79,6 +75,10 @@ class TeamProfileLinkAdmin(admin.ModelAdmin):
 
 class AppWorkLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', 'work', )
+
+
+class AppProjectLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('app', 'project', )
 
 
 class DayTaskLinkAdmin(admin.ModelAdmin):
@@ -143,6 +143,7 @@ class TaskFieldLinkAdmin(admin.ModelAdmin):
 
 admin.site.register(TeamProfileLink, TeamProfileLinkAdmin)
 admin.site.register(AppWorkLink, AppWorkLinkAdmin)
+admin.site.register(AppProjectLink, AppProjectLinkAdmin)
 admin.site.register(DayTaskLink, DayTaskLinkAdmin)
 admin.site.register(DayNoteLink, DayNoteLinkAdmin)
 admin.site.register(DayFileLink, DayFileLinkAdmin)
