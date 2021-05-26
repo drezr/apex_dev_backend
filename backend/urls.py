@@ -16,4 +16,7 @@ urlpatterns = [
     path('team/<int:team_id>/draft/<int:app_id>/templates/', TemplateView.as_view()),
     path('team/<int:team_id>/draft/<int:app_id>/project/<int:project_id>/', ProjectView.as_view()),
     path('team/<int:team_id>/watcher/<int:app_id>/calendar/<int:month>/<int:year>/', CalendarView.as_view()),
+    path('team/<int:team_id>/radium/<int:app_id>/works/<int:month>/<int:year>/', WorksView.as_view()),
+    
+    path('shift/<int:shift_id>/', ShiftView.as_view()),
 ]

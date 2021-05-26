@@ -142,6 +142,7 @@ class Work(models.Model):
     extra = models.TextField(null=True, blank=True)
     scst = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=20, blank=True, null=True)
+    date = models.DateField()
 
     apps = models.ManyToManyField(
         'App',
@@ -220,7 +221,7 @@ class Part(models.Model):
 
     def __str__(self):
         return '[#{0}] {1} [{2}] [{3}]'.format(
-            self.id, self.date, self.name, self.work.name)
+            self.id, self.date, self.team.name, self.work.description)
 
 
 class Project(models.Model):
@@ -316,6 +317,7 @@ class Note(models.Model):
 
 class File(models.Model):
 
+    type = models.CharField(max_length=100, blank=True, null=True)
     name = models.TextField(null=True, blank=True)
     extension = models.CharField(max_length=100, blank=True, null=True)
     uid = models.CharField(max_length=100, blank=True, null=True)
@@ -525,7 +527,6 @@ class PartProfileLink(models.Model):
 
     is_participant = models.BooleanField(default=False)
     is_available = models.BooleanField(default=False)
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.profile.name, self.part)

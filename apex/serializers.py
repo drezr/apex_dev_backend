@@ -57,7 +57,7 @@ def get_link(parent, ctx, child_type):
             return serializer_model(link).data
 
 
-def get_child(parent, ctx, parent_type, child_type):
+def get_children(parent, ctx, parent_type, child_type):
     '''
     Generic way to retrieve a parent's children
     '''
@@ -90,6 +90,17 @@ def get_child(parent, ctx, parent_type, child_type):
         return [c.id for c in child_set.all()]
 
 
+def get_child(parent, ctx, child_type):
+    '''
+    Generic way to retrieve a parent's child
+    '''
+
+    serializer = globals()[child_type.capitalize() + 'Serializer']
+    child_set = getattr(parent, child_type)
+
+    return serializer(child_set, context=ctx).data
+
+
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #
 # @@@@@@@@@@@@@@@@ Models Serializers @@@@@@@@@@@@@@@ #
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #
@@ -116,7 +127,7 @@ class CircleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_teams(self, circle):
-        return get_child(circle, self.context, 'circle', 'team')
+        return get_children(circle, self.context, 'circle', 'team')
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -129,10 +140,10 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_profiles(self, team):
-        return get_child(team, self.context, 'team', 'profile')
+        return get_children(team, self.context, 'team', 'profile')
 
     def get_apps(self, team):
-        return get_child(team, self.context, 'team', 'app')
+        return get_children(team, self.context, 'team', 'app')
 
 
 class AppSerializer(serializers.ModelSerializer):
@@ -145,10 +156,10 @@ class AppSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_projects(self, app):
-        return get_child(app, self.context, 'app', 'project')
+        return get_children(app, self.context, 'app', 'project')
 
     def get_templates(self, app):
-        return get_child(app, self.context, 'app', 'template')
+        return get_children(app, self.context, 'app', 'template')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -161,7 +172,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_tasks(self, project):
-        return get_child(project, self.context, 'project', 'task')
+        return get_children(project, self.context, 'project', 'task')
 
     def get_link(self, project):
         return get_link(project, self.context, 'project')
@@ -177,7 +188,7 @@ class TemplateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_inputs(self, template):
-        return get_child(template, self.context, 'template', 'input')
+        return get_children(template, self.context, 'template', 'input')
 
     def get_link(self, template):
         return get_link(template, self.context, 'template')
@@ -196,16 +207,16 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_subtasks(self, task):
-        return get_child(task, self.context, 'task', 'subtask')
+        return get_children(task, self.context, 'task', 'subtask')
 
     def get_notes(self, task):
-        return get_child(task, self.context, 'task', 'note')
+        return get_children(task, self.context, 'task', 'note')
 
     def get_inputs(self, task):
-        return get_child(task, self.context, 'task', 'input')
+        return get_children(task, self.context, 'task', 'input')
 
     def get_files(self, task):
-        return get_child(task, self.context, 'task', 'file')
+        return get_children(task, self.context, 'task', 'file')
 
     def get_link(self, task):
         return get_link(task, self.context, 'task')
@@ -270,13 +281,13 @@ class DaySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_tasks(self, day):
-        return get_child(day, self.context, 'day', 'task')
+        return get_children(day, self.context, 'day', 'task')
 
     def get_notes(self, day):
-        return get_child(day, self.context, 'day', 'note')
+        return get_children(day, self.context, 'day', 'note')
 
     def get_files(self, day):
-        return get_child(day, self.context, 'day', 'file')
+        return get_children(day, self.context, 'day', 'file')
 
 
 class CellSerializer(serializers.ModelSerializer):
@@ -291,16 +302,111 @@ class CellSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_tasks(self, cell):
-        return get_child(cell, self.context, 'cell', 'task')
+        return get_children(cell, self.context, 'cell', 'task')
 
     def get_notes(self, cell):
-        return get_child(cell, self.context, 'cell', 'note')
+        return get_children(cell, self.context, 'cell', 'note')
 
     def get_files(self, cell):
-        return get_child(cell, self.context, 'cell', 'file')
+        return get_children(cell, self.context, 'cell', 'file')
 
     def get_calls(self, cell):
-        return get_child(cell, self.context, 'cell', 'call')
+        return get_children(cell, self.context, 'cell', 'call')
+
+
+class WorkSerializer(serializers.ModelSerializer):
+
+    link = serializers.SerializerMethodField()
+    s460s = serializers.SerializerMethodField()
+    limits = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+    shifts = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Work
+        fields = '__all__'
+
+    def get_s460s(self, work):
+        return get_children(work, self.context, 'work', 's460')
+
+    def get_limits(self, work):
+        return get_children(work, self.context, 'work', 'limit')
+
+    def get_files(self, work):
+        return get_children(work, self.context, 'work', 'file')
+
+    def get_shifts(self, work):
+        return get_children(work, self.context, 'work', 'shift')
+
+    def get_link(self, work):
+        return get_link(work, self.context, 'work')
+
+
+class LimitSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Limit
+        fields = '__all__'
+
+
+class S460Serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = S460
+        fields = '__all__'
+
+
+class FileSerializer(serializers.ModelSerializer):
+
+    link = serializers.SerializerMethodField()
+
+    class Meta:
+        model = File
+        fields = '__all__'
+
+    def get_link(self, work):
+        return get_link(work, self.context, 'file')
+
+
+class ShiftSerializer(serializers.ModelSerializer):
+
+    parts = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Shift
+        fields = '__all__'
+
+    def get_parts(self, work):
+        return get_children(work, self.context, 'shift', 'part')
+
+
+class PartSerializer(serializers.ModelSerializer):
+
+    profiles = serializers.SerializerMethodField()
+    team = serializers.SerializerMethodField()
+    work = serializers.SerializerMethodField()
+    shift = serializers.SerializerMethodField()
+    project = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Part
+        fields = '__all__'
+
+    def get_profiles(self, part):
+        return get_children(part, self.context, 'part', 'profile')
+
+    def get_team(self, part):
+        ctx = {'link': 'detail', 'profiles': 'detail'}
+        return get_child(part, ctx, 'team')
+
+    def get_work(self, part):
+        return get_child(part, None, 'work')
+
+    def get_shift(self, part):
+        return get_child(part, None, 'shift')
+
+    def get_project(self, part):
+        return get_child(part, None, 'project')
 
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #

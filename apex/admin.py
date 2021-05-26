@@ -43,6 +43,10 @@ class NoteAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
 
 
+class LeaveAdmin(admin.ModelAdmin):
+    raw_id_fields = ('profile', )
+
+
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Circle)
 admin.site.register(Team, TeamAdmin)
@@ -62,7 +66,7 @@ admin.site.register(Note, NoteAdmin)
 admin.site.register(File)
 admin.site.register(Input)
 admin.site.register(Call)
-admin.site.register(Leave)
+admin.site.register(Leave, LeaveAdmin)
 admin.site.register(RR)
 
 

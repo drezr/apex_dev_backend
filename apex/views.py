@@ -124,3 +124,44 @@ class CalendarView(APIView):
 
 
         return Response(result)
+
+
+class WorksView(APIView):
+
+    def get(self, request, team_id, app_id, month, year):
+        team = Team.objects.get(pk=team_id)
+        app = App.objects.get(pk=app_id)
+        
+        works = Work.objects.filter(
+            date__month=month, date__year=year, apps__in=[app.id])
+
+        result = {
+            'team': TeamSerializer(team).data,
+            'app': AppSerializer(app).data,
+            'works': WorkSerializer(works, many=True, context={
+                'link': 'detail',
+                'parent_id': app.id,
+                'parent_type': 'app',
+                'limits': 'detail',
+                's460s': 'detail',
+                'files': 'detail',
+                'shifts': 'detail',
+            }).data,
+        }
+
+        return Response(result)
+
+
+class ShiftView(APIView):
+
+    def get(self, request, shift_id):
+        shift = Shift.objects.get(pk=shift_id)
+
+        result = {
+            'shifts': ShiftSerializer(shift, context={
+                'link': 'detail',
+                'parts': 'detail',
+                'profiles': 'detail',
+            }).data,
+        }
+        return Response(result)
