@@ -5,7 +5,7 @@ from .models import *
 from .serializers import *
 
 
-class Home(APIView):
+class HomeView(APIView):
 
     def get(self, request):
         circles = Circle.objects.all()
@@ -28,51 +28,83 @@ class Home(APIView):
         return Response(result)
 
 
-class Hub(APIView):
+class TeamView(APIView):
 
     def get(self, request, team_id):
-        team = Team.objects.get(pk=team_id)
-        result = TeamSerializer(team, context={'apps': 'detail'}).data
+        result = {
+            'team': TeamSerializer(Team.objects.get(pk=team_id), context={
+                'apps': 'detail'
+            }).data,
+        }
 
         return Response(result)
 
 
-class Draft(APIView):
+class DraftView(APIView):
 
-    def get(self, request, app_id):
-        app = App.objects.get(pk=app_id)
-        app = AppSerializer(app, context={
-            'link': 'detail',
-            'projects': 'detail',
-        }).data
+    def get(self, request, team_id, app_id):
+        result = {
+            'team': TeamSerializer(Team.objects.get(pk=team_id), context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data,
+            'app': AppSerializer(App.objects.get(pk=app_id), context={
+                'link': 'detail',
+                'projects': 'detail',
+            }).data,
+        }
 
-        return Response(app)
-
-
-class ProjectView(APIView):
-
-    def get(self, request, project_id):
-        project = Project.objects.get(pk=project_id)
-        project = ProjectSerializer(project, context={
-            'link': 'detail',
-            'tasks': 'detail',
-            'subtasks': 'detail',
-            'notes': 'detail',
-            'files': 'detail',
-            'inputs': 'detail',
-        }).data
-
-        return Response(project)
+        return Response(result)
 
 
 class TemplateView(APIView):
 
-    def get(self, request, app_id):
+    def get(self, request, team_id, app_id):
+        result = {
+            'team': TeamSerializer(Team.objects.get(pk=team_id), context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data,
+            'app': AppSerializer(App.objects.get(pk=app_id), context={
+                'link': 'detail',
+                'templates': 'detail',
+                'inputs': 'detail',
+            }).data,
+        }
+
+        return Response(result)
+
+
+class ProjectView(APIView):
+
+    def get(self, request, team_id, app_id, project_id):
+        team = Team.objects.get(pk=team_id)
+        app = App.objects.get(pk=app_id)
+        project = Project.objects.get(pk=project_id)
+
+        result = {
+            'team': TeamSerializer(team).data,
+            'app': AppSerializer(app).data,
+            'project': ProjectSerializer(project, context={
+                'link': 'detail',
+                'tasks': 'detail',
+                'subtasks': 'detail',
+                'notes': 'detail',
+                'files': 'detail',
+                'inputs': 'detail',
+            }).data,
+        }
+
+        return Response(result)
+
+
+class CalendarView(APIView):
+
+    def get(self, request, team_id, app_id):
         app = App.objects.get(pk=app_id)
         app = AppSerializer(app, context={
             'link': 'detail',
-            'templates': 'detail',
-            'inputs': 'detail',
+            'profiles': 'detail',
         }).data
 
         return Response(app)
