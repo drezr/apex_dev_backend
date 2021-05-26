@@ -79,7 +79,7 @@ class Day(models.Model):
 
     def __str__(self):
         return '[#{0}] {1} ({2})'.format(
-            self.id, self.date, self.circle.name)
+            self.id, self.date, self.app.team.name)
 
 
 class Cell(models.Model):

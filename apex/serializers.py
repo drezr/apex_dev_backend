@@ -97,9 +97,14 @@ def get_child(parent, ctx, parent_type, child_type):
 
 class ProfileSerializer(serializers.ModelSerializer):
 
+    link = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = '__all__'
+
+    def get_link(self, profile):
+        return get_link(profile, self.context, 'profile')
 
 
 class CircleSerializer(serializers.ModelSerializer):
@@ -252,6 +257,50 @@ class FileSerializer(serializers.ModelSerializer):
 
     def get_link(self, file):
         return get_link(file, self.context, 'file')
+
+
+class DaySerializer(serializers.ModelSerializer):
+
+    tasks = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Day
+        fields = '__all__'
+
+    def get_tasks(self, day):
+        return get_child(day, self.context, 'day', 'task')
+
+    def get_notes(self, day):
+        return get_child(day, self.context, 'day', 'note')
+
+    def get_files(self, day):
+        return get_child(day, self.context, 'day', 'file')
+
+
+class CellSerializer(serializers.ModelSerializer):
+
+    tasks = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+    calls = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Cell
+        fields = '__all__'
+
+    def get_tasks(self, cell):
+        return get_child(cell, self.context, 'cell', 'task')
+
+    def get_notes(self, cell):
+        return get_child(cell, self.context, 'cell', 'note')
+
+    def get_files(self, cell):
+        return get_child(cell, self.context, 'cell', 'file')
+
+    def get_calls(self, cell):
+        return get_child(cell, self.context, 'cell', 'call')
 
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #

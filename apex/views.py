@@ -100,11 +100,27 @@ class ProjectView(APIView):
 
 class CalendarView(APIView):
 
-    def get(self, request, team_id, app_id):
+    def get(self, request, team_id, app_id, month, year):
+        team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
-        app = AppSerializer(app, context={
-            'link': 'detail',
-            'profiles': 'detail',
-        }).data
 
-        return Response(app)
+        profiles_id = [profile.id for profile in team.profiles.all()]
+        
+        days = Day.objects.filter(
+            date__month=month, date__year=year, app=app.id)
+        cells = Cell.objects.filter(
+            date__month=month, date__year=year, profile__in=profiles_id)
+
+        result = {
+            'team': TeamSerializer(team, context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data,
+            'app': AppSerializer(app).data,
+            'days': DaySerializer(days, many=True).data,
+            'cells': CellSerializer(cells, many=True).data,
+        }
+        
+
+
+        return Response(result)
