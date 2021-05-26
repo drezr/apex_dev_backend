@@ -37,14 +37,11 @@ class Team(models.Model):
     profiles = models.ManyToManyField(
         'Profile',
         blank=True,
-        related_name='%(app_label)s_%(class)s_circles',
         through='TeamProfileLink',
     )
 
     def __str__(self):
-        return '[#{0}] {1}'.format(
-            self.id, self.name
-        )
+        return '[#{0}] {1}'.format(self.id, self.name)
 
 
 class App(models.Model):
@@ -67,19 +64,16 @@ class Day(models.Model):
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
-        related_name='%(app_label)s_%(class)s_days',
         through='DayTaskLink',
     )
     notes = models.ManyToManyField(
         'Note',
         blank=True,
-        related_name='%(app_label)s_%(class)s_days',
         through='DayNoteLink',
     )
     files = models.ManyToManyField(
         'File',
         blank=True,
-        related_name='%(app_label)s_%(class)s_days',
         through='DayFileLink',
     )
 
@@ -102,25 +96,21 @@ class Cell(models.Model):
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
-        related_name='%(app_label)s_%(class)s_cells',
         through='CellTaskLink',
     )
     notes = models.ManyToManyField(
         'Note',
         blank=True,
-        related_name='%(app_label)s_%(class)s_cells',
         through='CellNoteLink',
     )
     files = models.ManyToManyField(
         'File',
         blank=True,
-        related_name='%(app_label)s_%(class)s_cells',
         through='CellFileLink',
     )
     calls = models.ManyToManyField(
         'Call',
         blank=True,
-        related_name='%(app_label)s_%(class)s_cells',
         through='CellCallLink',
     )
 
@@ -156,14 +146,12 @@ class Work(models.Model):
     apps = models.ManyToManyField(
         'App',
         blank=True,
-        related_name='%(app_label)s_%(class)s_works',
         through='AppWorkLink',
     )
 
     files = models.ManyToManyField(
         'File',
         blank=True,
-        related_name='%(app_label)s_%(class)s_works',
         through='WorkFileLink',
     )
 
@@ -227,7 +215,6 @@ class Part(models.Model):
     profiles = models.ManyToManyField(
         'Profile',
         blank=True,
-        related_name='%(app_label)s_%(class)s_parts',
         through='PartProfileLink',
     )
 
@@ -246,13 +233,11 @@ class Project(models.Model):
     apps = models.ManyToManyField(
         'App',
         blank=True,
-        related_name='%(app_label)s_%(class)s_projects',
         through='AppProjectLink',
     )
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
-        related_name='%(app_label)s_%(class)s_projects',
         through='ProjectTaskLink',
     )
 
@@ -260,16 +245,19 @@ class Project(models.Model):
         return '[#{0}] {1}'.format(self.id, self.name)
 
 
-class Model(models.Model):
+class Template(models.Model):
 
     name = models.TextField(null=True, blank=True)
 
-    app = models.ForeignKey('app', on_delete=models.CASCADE)
-    fields = models.ManyToManyField(
-        'Field',
+    apps = models.ManyToManyField(
+        'App',
         blank=True,
-        related_name='%(app_label)s_%(class)s_models',
-        through='ModelFieldLink',
+        through='AppTemplateLink',
+    )
+    inputs = models.ManyToManyField(
+        'Input',
+        blank=True,
+        through='TemplateInputLink',
     )
 
     def __str__(self):
@@ -284,26 +272,22 @@ class Task(models.Model):
     subtasks = models.ManyToManyField(
         'Subtask',
         blank=True,
-        related_name='%(app_label)s_%(class)s_tasks',
         through='TaskSubtaskLink',
     )
     notes = models.ManyToManyField(
         'Note',
         blank=True,
-        related_name='%(app_label)s_%(class)s_tasks',
         through='TaskNoteLink',
     )
     files = models.ManyToManyField(
         'File',
         blank=True,
-        related_name='%(app_label)s_%(class)s_tasks',
         through='TaskFileLink',
     )
-    fields = models.ManyToManyField(
-        'Field',
+    inputs = models.ManyToManyField(
+        'Input',
         blank=True,
-        related_name='%(app_label)s_%(class)s_tasks',
-        through='TaskFieldLink',
+        through='TaskInputLink',
     )
 
     def __str__(self):
@@ -340,8 +324,9 @@ class File(models.Model):
         return '[#{0}] {1}.{2}'.format(self.id, self.name, self.extension)
 
 
-class Field(models.Model):
+class Input(models.Model):
 
+    type = models.CharField(max_length=100, blank=True, null=True)
     name = models.TextField(null=True, blank=True)
     value = models.TextField(null=True, blank=True)
     heading = models.BooleanField(default=False)
@@ -364,7 +349,7 @@ class Call(models.Model):
 
 class Leave(models.Model):
 
-    year = models.SmallIntegerField()
+    year = models.PositiveSmallIntegerField()
     cn = models.DecimalField(default=0, max_digits=6, decimal_places=2)
     jc = models.DecimalField(default=0, max_digits=6, decimal_places=2)
     cv = models.DecimalField(default=0, max_digits=6, decimal_places=2)
@@ -394,12 +379,8 @@ class RR(models.Model):
 
 class TeamProfileLink(models.Model):
 
-    profile = models.ForeignKey(
-        'Profile', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_profiles'
-    )
-    team = models.ForeignKey(
-        'Team', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_teams'
-    )
+    profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    team = models.ForeignKey('Team', on_delete=models.CASCADE)
 
     is_manager = models.BooleanField(default=False)
     is_editor = models.BooleanField(default=False)
@@ -414,19 +395,13 @@ class TeamProfileLink(models.Model):
     color = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return '{0} : {1}'.format(
-            self.profile.name, self.team.name
-        )
+        return '{0} : {1}'.format(self.profile.name, self.team.name)
 
 
 class AppWorkLink(models.Model):
 
-    app = models.ForeignKey(
-        'App', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_apps'
-    )
-    work = models.ForeignKey(
-        'Work', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_works'
-    )
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -437,12 +412,8 @@ class AppWorkLink(models.Model):
 
 class AppProjectLink(models.Model):
 
-    app = models.ForeignKey(
-        'App', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_apps'
-    )
-    project = models.ForeignKey(
-        'Project', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_projects'
-    )
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -453,12 +424,8 @@ class AppProjectLink(models.Model):
 
 class DayTaskLink(models.Model):
 
-    day = models.ForeignKey(
-        'Day', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_days'
-    )
-    task = models.ForeignKey(
-        'Task', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_tasks'
-    )
+    day = models.ForeignKey('Day', on_delete=models.CASCADE)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -469,12 +436,8 @@ class DayTaskLink(models.Model):
 
 class DayNoteLink(models.Model):
 
-    day = models.ForeignKey(
-        'Day', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_days'
-    )
-    note = models.ForeignKey(
-        'Note', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_notes'
-    )
+    day = models.ForeignKey('Day', on_delete=models.CASCADE)
+    note = models.ForeignKey('Note', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -485,12 +448,8 @@ class DayNoteLink(models.Model):
 
 class DayFileLink(models.Model):
 
-    day = models.ForeignKey(
-        'Day', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_days'
-    )
-    file = models.ForeignKey(
-        'File', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_files'
-    )
+    day = models.ForeignKey('Day', on_delete=models.CASCADE)
+    file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -501,12 +460,8 @@ class DayFileLink(models.Model):
 
 class CellTaskLink(models.Model):
 
-    cell = models.ForeignKey(
-        'Cell', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_cells'
-    )
-    task = models.ForeignKey(
-        'Task', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_tasks'
-    )
+    cell = models.ForeignKey('Cell', on_delete=models.CASCADE)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -517,12 +472,8 @@ class CellTaskLink(models.Model):
 
 class CellNoteLink(models.Model):
 
-    cell = models.ForeignKey(
-        'Cell', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_cells'
-    )
-    note = models.ForeignKey(
-        'Note', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_notes'
-    )
+    cell = models.ForeignKey('Cell', on_delete=models.CASCADE)
+    note = models.ForeignKey('Note', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -533,12 +484,8 @@ class CellNoteLink(models.Model):
 
 class CellFileLink(models.Model):
 
-    cell = models.ForeignKey(
-        'Cell', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_cells'
-    )
-    file = models.ForeignKey(
-        'File', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_files'
-    )
+    cell = models.ForeignKey('Cell', on_delete=models.CASCADE)
+    file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -549,12 +496,8 @@ class CellFileLink(models.Model):
 
 class CellCallLink(models.Model):
 
-    cell = models.ForeignKey(
-        'Cell', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_cells'
-    )
-    call = models.ForeignKey(
-        'Call', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_calls'
-    )
+    cell = models.ForeignKey('Cell', on_delete=models.CASCADE)
+    call = models.ForeignKey('Call', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -565,12 +508,8 @@ class CellCallLink(models.Model):
 
 class WorkFileLink(models.Model):
 
-    work = models.ForeignKey(
-        'Work', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_works'
-    )
-    file = models.ForeignKey(
-        'File', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_files'
-    )
+    work = models.ForeignKey('Work', on_delete=models.CASCADE)
+    file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -581,31 +520,21 @@ class WorkFileLink(models.Model):
 
 class PartProfileLink(models.Model):
 
-    profile = models.ForeignKey(
-        'Profile', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_profiles'
-    )
-    part = models.ForeignKey(
-        'Part', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_parts'
-    )
+    profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    part = models.ForeignKey('Part', on_delete=models.CASCADE)
 
     is_participant = models.BooleanField(default=False)
     is_available = models.BooleanField(default=False)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return '{0} : {1}'.format(
-            self.profile.name, self.part
-        )
+        return '{0} : {1}'.format(self.profile.name, self.part)
 
 
 class ProjectTaskLink(models.Model):
 
-    project = models.ForeignKey(
-        'Project', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_projects'
-    )
-    task = models.ForeignKey(
-        'Task', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_tasks'
-    )
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -614,30 +543,34 @@ class ProjectTaskLink(models.Model):
         return '{0} : {1}'.format(self.project, self.task)
 
 
-class ModelFieldLink(models.Model):
+class AppTemplateLink(models.Model):
 
-    model = models.ForeignKey(
-        'Model', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_models'
-    )
-    field = models.ForeignKey(
-        'Field', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_fields'
-    )
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    template = models.ForeignKey('Template', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return '{0} : {1}'.format(self.model, self.field)
+        return '{0} : {1}'.format(self.app, self.template)
+
+
+class TemplateInputLink(models.Model):
+
+    template = models.ForeignKey('Template', on_delete=models.CASCADE)
+    input = models.ForeignKey('Input', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.template, self.input)
 
 
 class TaskSubtaskLink(models.Model):
 
-    task = models.ForeignKey(
-        'Task', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_tasks'
-    )
-    subtask = models.ForeignKey(
-        'Subtask', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_subtasks'
-    )
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+    subtask = models.ForeignKey('Subtask', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -648,12 +581,8 @@ class TaskSubtaskLink(models.Model):
 
 class TaskNoteLink(models.Model):
 
-    task = models.ForeignKey(
-        'Task', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_tasks'
-    )
-    note = models.ForeignKey(
-        'Note', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_notes'
-    )
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+    note = models.ForeignKey('Note', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -664,12 +593,8 @@ class TaskNoteLink(models.Model):
 
 class TaskFileLink(models.Model):
 
-    task = models.ForeignKey(
-        'Task', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_tasks'
-    )
-    file = models.ForeignKey(
-        'File', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_files'
-    )
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+    file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
@@ -678,17 +603,13 @@ class TaskFileLink(models.Model):
         return '{0} : {1}'.format(self.task, self.file)
 
 
-class TaskFieldLink(models.Model):
+class TaskInputLink(models.Model):
 
-    task = models.ForeignKey(
-        'Task', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_tasks'
-    )
-    field = models.ForeignKey(
-        'Field', on_delete=models.CASCADE, related_name='%(app_label)s_%(class)s_fields'
-    )
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+    input = models.ForeignKey('Input', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
     def __str__(self):
-        return '{0} : {1}'.format(self.task, self.field)
+        return '{0} : {1}'.format(self.task, self.input)

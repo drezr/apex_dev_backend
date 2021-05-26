@@ -14,4 +14,5 @@ urlpatterns = [
     path('hub/<int:team_id>/', Hub.as_view()),
     path('draft/<int:app_id>/', Draft.as_view()),
     path('project/<int:project_id>/', ProjectView.as_view()),
+    path('draft/<int:app_id>/templates/', TemplateView.as_view()),
 ]

@@ -39,10 +39,6 @@ class PartAdmin(admin.ModelAdmin):
     raw_id_fields = ('shift', 'project', 'team', 'work', )
 
 
-class ModelAdmin(admin.ModelAdmin):
-    raw_id_fields = ('app', )
-
-
 class NoteAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
 
@@ -59,11 +55,12 @@ admin.site.register(S460, S460Admin)
 admin.site.register(Shift, ShiftAdmin)
 admin.site.register(Part, PartAdmin)
 admin.site.register(Project)
-admin.site.register(Model, ModelAdmin)
+admin.site.register(Template)
 admin.site.register(Task)
 admin.site.register(Subtask)
 admin.site.register(Note, NoteAdmin)
 admin.site.register(File)
+admin.site.register(Input)
 admin.site.register(Call)
 admin.site.register(Leave)
 admin.site.register(RR)
@@ -121,8 +118,12 @@ class ProjectTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('project', 'task', )
 
 
-class ModelFieldLinkAdmin(admin.ModelAdmin):
-    raw_id_fields = ('model', 'field', )
+class AppTemplateLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('app', 'template', )
+
+
+class TemplateInputLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('template', 'input', )
 
 
 class TaskSubtaskLinkAdmin(admin.ModelAdmin):
@@ -137,8 +138,8 @@ class TaskFileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'file', )
 
 
-class TaskFieldLinkAdmin(admin.ModelAdmin):
-    raw_id_fields = ('task', 'field', )
+class TaskInputLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('task', 'input', )
 
 
 admin.site.register(TeamProfileLink, TeamProfileLinkAdmin)
@@ -154,8 +155,9 @@ admin.site.register(CellCallLink, CellCallLinkAdmin)
 admin.site.register(WorkFileLink, WorkFileLinkAdmin)
 admin.site.register(PartProfileLink, PartProfileLinkAdmin)
 admin.site.register(ProjectTaskLink, ProjectTaskLinkAdmin)
-admin.site.register(ModelFieldLink, ModelFieldLinkAdmin)
+admin.site.register(AppTemplateLink, AppTemplateLinkAdmin)
+admin.site.register(TemplateInputLink, TemplateInputLinkAdmin)
 admin.site.register(TaskSubtaskLink, TaskSubtaskLinkAdmin)
 admin.site.register(TaskNoteLink, TaskNoteLinkAdmin)
 admin.site.register(TaskFileLink, TaskFileLinkAdmin)
-admin.site.register(TaskFieldLink, TaskFieldLinkAdmin)
+admin.site.register(TaskInputLink, TaskInputLinkAdmin)
