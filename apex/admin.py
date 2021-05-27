@@ -82,6 +82,10 @@ class AppProjectLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', 'project', )
 
 
+class AppTaskLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('app', 'task', )
+
+
 class DayTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('day', 'task', )
 
@@ -149,6 +153,7 @@ class TaskInputLinkAdmin(admin.ModelAdmin):
 admin.site.register(TeamProfileLink, TeamProfileLinkAdmin)
 admin.site.register(AppWorkLink, AppWorkLinkAdmin)
 admin.site.register(AppProjectLink, AppProjectLinkAdmin)
+admin.site.register(AppTaskLink, AppTaskLinkAdmin)
 admin.site.register(DayTaskLink, DayTaskLinkAdmin)
 admin.site.register(DayNoteLink, DayNoteLinkAdmin)
 admin.site.register(DayFileLink, DayFileLinkAdmin)

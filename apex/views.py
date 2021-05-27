@@ -124,6 +124,53 @@ class CalendarView(APIView):
         return Response(result)
 
 
+class PlannerView(APIView):
+
+    def get(self, request, team_id, app_id, month, year):
+        team = Team.objects.get(pk=team_id)
+        app = App.objects.get(pk=app_id)
+        
+        days = Day.objects.filter(
+            date__month=month, date__year=year, app=app.id)
+
+        days = DaySerializer(days, many=True, context={
+            'link': 'detail',
+            'tasks': 'detail',
+            'subtasks': 'detail',
+            'inputs': 'detail',
+            'notes': 'detail',
+            'files': 'detail',
+        }).data
+
+        for day in days:
+            day['parts'] = list()
+
+            parts = Part.objects.filter(team=team.id, date=day['date'])
+
+            day['parts'] = PartSerializer(parts, many=True, context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data
+
+        result = {
+            'team': TeamSerializer(team).data,
+            'app': AppSerializer(app).data,
+            'days': days,
+            'tasks': TaskSerializer(app.tasks.all(), many=True, context={
+                'link': 'detail',
+                'parent_id': app.id,
+                'parent_type': 'app',
+                'tasks': 'detail',
+                'subtasks': 'detail',
+                'inputs': 'detail',
+                'notes': 'detail',
+                'files': 'detail',
+            }).data,
+        }
+
+        return Response(result)
+
+
 class DayView(APIView):
 
     def get(self, request, team_id, app_id, date):

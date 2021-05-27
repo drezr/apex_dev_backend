@@ -447,6 +447,13 @@ class AppProjectLinkSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AppTaskLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AppTaskLink
+        fields = '__all__'
+
+
 class DayTaskLinkSerializer(serializers.ModelSerializer):
 
     class Meta:

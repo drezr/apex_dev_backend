@@ -50,6 +50,11 @@ class App(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
+    tasks = models.ManyToManyField(
+        'Task',
+        blank=True,
+        through='AppTaskLink',
+    )
 
     def __str__(self):
         return '[#{0}] {1} ({2})'.format(self.id, self.app, self.team.name)
@@ -422,6 +427,18 @@ class AppProjectLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.project)
+
+
+class AppTaskLink(models.Model):
+
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.app, self.task)
 
 
 class DayTaskLink(models.Model):
