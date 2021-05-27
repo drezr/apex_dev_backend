@@ -8,7 +8,7 @@ from .models import *
 
 def context_check(context, arg, value):
     '''
-    Generic way to check if a specific input is needed
+    Generic way to check if a specific field is needed
     '''
 
     if context and arg in context and context[arg] == value:
