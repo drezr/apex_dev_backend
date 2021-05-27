@@ -270,6 +270,18 @@ class FileSerializer(serializers.ModelSerializer):
         return get_link(file, self.context, 'file')
 
 
+class CallSerializer(serializers.ModelSerializer):
+
+    link = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Call
+        fields = '__all__'
+
+    def get_link(self, call):
+        return get_link(call, self.context, 'call')
+
+
 class DaySerializer(serializers.ModelSerializer):
 
     tasks = serializers.SerializerMethodField()

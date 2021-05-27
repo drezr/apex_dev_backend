@@ -120,10 +120,60 @@ class CalendarView(APIView):
             'days': DaySerializer(days, many=True).data,
             'cells': CellSerializer(cells, many=True).data,
         }
-        
-
 
         return Response(result)
+
+
+class DayView(APIView):
+
+    def get(self, request, team_id, app_id, date):
+        day = Day.objects.get(app=app_id, date=date)
+
+        day = DaySerializer(day, context={
+            'link': 'detail',
+            'tasks': 'detail',
+            'notes': 'detail',
+            'files': 'detail',
+        }).data
+
+        parts = Part.objects.filter(team=team_id, date=date)
+
+        day['parts'] = PartSerializer(parts, many=True, context={
+            'link': 'detail',
+            'profiles': 'detail',
+        }).data
+
+        return Response({'day': day})
+
+
+class CellView(APIView):
+
+    def get(self, request, profile_id, date):
+        cell = Cell.objects.get(profile=profile_id, date=date)
+
+        cell = CellSerializer(cell, context={
+            'link': 'detail',
+            'tasks': 'detail',
+            'notes': 'detail',
+            'files': 'detail',
+            'calls': 'detail',
+        }).data
+
+        parts = Part.objects.filter(profiles__in=[profile_id], date=date)
+        parts = PartSerializer(parts, many=True, context={
+            'link': 'detail',
+            'profiles': 'detail',
+        }).data
+
+        cell['parts'] = list()
+
+        for part in parts:
+            for profile in part['profiles']:
+                if profile['link']['is_participant']:
+                    if profile['id'] == profile_id:
+                        cell['parts'].append(part)
+
+        return Response({'cell': cell})
 
 
 class WorksView(APIView):
@@ -164,4 +214,5 @@ class ShiftView(APIView):
                 'profiles': 'detail',
             }).data,
         }
+
         return Response(result)

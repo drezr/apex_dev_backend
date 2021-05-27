@@ -19,4 +19,6 @@ urlpatterns = [
     path('team/<int:team_id>/radium/<int:app_id>/works/<int:month>/<int:year>/', WorksView.as_view()),
     
     path('shift/<int:shift_id>/', ShiftView.as_view()),
+    path('day/<int:team_id>/<int:app_id>/<str:date>/', DayView.as_view()),
+    path('cell/<int:profile_id>/<str:date>/', CellView.as_view()),
 ]
