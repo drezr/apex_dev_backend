@@ -148,6 +148,7 @@ class Work(models.Model):
     scst = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=20, blank=True, null=True)
     date = models.DateField()
+    colt_id = models.PositiveIntegerField(null=True, blank=True)
 
     apps = models.ManyToManyField(
         'App',
@@ -357,13 +358,13 @@ class Call(models.Model):
 class Leave(models.Model):
 
     year = models.PositiveSmallIntegerField()
-    cn = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    jc = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    cv = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    ch = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    rh = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    rr = models.DecimalField(default=0, max_digits=6, decimal_places=2)
-    hs = models.DecimalField(default=0, max_digits=6, decimal_places=2)
+    cn = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    jc = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    cv = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    ch = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    rh = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    rr = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    hs = models.DecimalField(default=0, max_digits=10, decimal_places=2)
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
 
@@ -389,14 +390,20 @@ class TeamProfileLink(models.Model):
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
 
-    is_manager = models.BooleanField(default=False)
-    is_editor = models.BooleanField(default=False)
-    is_user = models.BooleanField(default=False)
-    is_visible = models.BooleanField(default=True)
-    is_printable = models.BooleanField(default=True)
-    can_see_private = models.BooleanField(default=False)
-    can_see_cells = models.BooleanField(default=False)
-    can_see_quotas = models.BooleanField(default=False)
+    watcher_is_manager = models.BooleanField(default=False)
+    watcher_is_editor = models.BooleanField(default=False)
+    watcher_is_visible = models.BooleanField(default=False)
+    watcher_is_printable = models.BooleanField(default=False)
+    watcher_can_see_cells = models.BooleanField(default=False)
+    watcher_can_see_quotas = models.BooleanField(default=False)
+
+    draft_is_manager = models.BooleanField(default=False)
+    draft_is_editor = models.BooleanField(default=False)
+    draft_is_user = models.BooleanField(default=False)
+    draft_can_see_private = models.BooleanField(default=False)
+
+    radium_is_manager = models.BooleanField(default=False)
+    radium_is_editor = models.BooleanField(default=False)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     color = models.CharField(max_length=20, blank=True, null=True)

@@ -110,6 +110,7 @@ class CalendarView(APIView):
             date__month=month, date__year=year, app=app.id)
         cells = Cell.objects.filter(
             date__month=month, date__year=year, profile__in=profiles_id)
+        rrs = RR.objects.filter(date__month=month, date__year=year)
 
         result = {
             'team': TeamSerializer(team, context={
@@ -119,6 +120,7 @@ class CalendarView(APIView):
             'app': AppSerializer(app).data,
             'days': DaySerializer(days, many=True).data,
             'cells': CellSerializer(cells, many=True).data,
+            'rrs': RRSerializer(rrs, many=True).data,
         }
 
         return Response(result)
@@ -166,6 +168,26 @@ class PlannerView(APIView):
                 'notes': 'detail',
                 'files': 'detail',
             }).data,
+        }
+
+        return Response(result)
+
+
+class LeaveView(APIView):
+
+    def get(self, request, team_id, app_id, year):
+        team = Team.objects.get(pk=team_id)
+        app = App.objects.get(pk=app_id)
+
+        profiles_id = [profile.id for profile in team.profiles.all()]
+
+        for profile_id in profiles_id:
+            Leave.objects.get_or_create(year=year, profile_id=profile_id)
+
+        leaves = Leave.objects.filter(year=year, profile__in=profiles_id)
+
+        result = {
+            'leaves': LeaveSerializer(leaves, many=True).data
         }
 
         return Response(result)

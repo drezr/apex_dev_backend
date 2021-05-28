@@ -421,6 +421,20 @@ class PartSerializer(serializers.ModelSerializer):
         return get_child(part, None, 'project')
 
 
+class LeaveSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Leave
+        fields = '__all__'
+
+
+class RRSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RR
+        fields = '__all__'
+
+
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #
 # @@@@@@@@@@@@@@@@ Links Serializers @@@@@@@@@@@@@@@@ #
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #
