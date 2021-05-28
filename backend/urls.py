@@ -17,6 +17,7 @@ urlpatterns = [
     path('team/<int:team_id>/draft/<int:app_id>/project/<int:project_id>/', ProjectView.as_view()),
     path('team/<int:team_id>/watcher/<int:app_id>/calendar/<int:month>/<int:year>/', CalendarView.as_view()),
     path('team/<int:team_id>/watcher/<int:app_id>/planner/<int:month>/<int:year>/', PlannerView.as_view()),
+    path('team/<int:team_id>/watcher/<int:app_id>/calls/<int:month>/<int:year>/', CallsView.as_view()),
     path('team/<int:team_id>/watcher/<int:app_id>/leave/<int:year>/', LeaveView.as_view()),
     path('team/<int:team_id>/radium/<int:app_id>/works/<int:month>/<int:year>/', WorksView.as_view()),
     

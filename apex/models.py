@@ -296,6 +296,11 @@ class Task(models.Model):
         blank=True,
         through='TaskInputLink',
     )
+    links = models.ManyToManyField(
+        'Link',
+        blank=True,
+        through='TaskLinkLink',
+    )
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -343,6 +348,15 @@ class Input(models.Model):
         return '[#{0}] {1} : {2}'.format(self.id, self.name, self.value)
 
 
+class Link(models.Model):
+
+    name = models.TextField(null=True, blank=True)
+    url = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return '[#{0}] {1} : {2}'.format(self.id, self.name, self.url)
+
+
 class Call(models.Model):
 
     name = models.TextField(null=True, blank=True)
@@ -350,6 +364,18 @@ class Call(models.Model):
     type = models.TextField(null=True, blank=True)
     start = models.TextField(null=True, blank=True)
     end = models.TextField(null=True, blank=True)
+
+    files = models.ManyToManyField(
+        'File',
+        blank=True,
+        through='CallFileLink',
+    )
+
+    links = models.ManyToManyField(
+        'Link',
+        blank=True,
+        through='CallLinkLink',
+    )
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -532,6 +558,30 @@ class CellCallLink(models.Model):
         return '{0} : {1}'.format(self.cell, self.call)
 
 
+class CallFileLink(models.Model):
+
+    call = models.ForeignKey('Call', on_delete=models.CASCADE)
+    file = models.ForeignKey('File', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.call, self.file)
+
+
+class CallLinkLink(models.Model):
+
+    call = models.ForeignKey('Call', on_delete=models.CASCADE)
+    link = models.ForeignKey('Link', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.call, self.link)
+
+
 class WorkFileLink(models.Model):
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
@@ -638,3 +688,15 @@ class TaskInputLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.input)
+
+
+class TaskLinkLink(models.Model):
+
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+    link = models.ForeignKey('Link', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.task, self.link)

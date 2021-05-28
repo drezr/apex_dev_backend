@@ -258,6 +258,18 @@ class InputSerializer(serializers.ModelSerializer):
         return get_link(input, self.context, 'input')
 
 
+class LinkSerializer(serializers.ModelSerializer):
+
+    link = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Link
+        fields = '__all__'
+
+    def get_link(self, link):
+        return get_link(link, self.context, 'link')
+
+
 class FileSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
@@ -273,6 +285,8 @@ class FileSerializer(serializers.ModelSerializer):
 class CallSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+    links = serializers.SerializerMethodField()
 
     class Meta:
         model = Call
@@ -280,6 +294,12 @@ class CallSerializer(serializers.ModelSerializer):
 
     def get_link(self, call):
         return get_link(call, self.context, 'call')
+
+    def get_files(self, call):
+        return get_children(call, self.context, 'call', 'file')
+
+    def get_links(self, call):
+        return get_children(call, self.context, 'call', 'link')
 
 
 class DaySerializer(serializers.ModelSerializer):
@@ -524,6 +544,20 @@ class WorkFileLinkSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CallFileLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CallFileLink
+        fields = '__all__'
+
+
+class CallLinkLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CallLinkLink
+        fields = '__all__'
+
+
 class PartProfileLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -577,4 +611,11 @@ class TaskInputLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskInputLink
+        fields = '__all__'
+
+
+class TaskLinkLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TaskLinkLink
         fields = '__all__'

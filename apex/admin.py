@@ -65,6 +65,7 @@ admin.site.register(Subtask)
 admin.site.register(Note, NoteAdmin)
 admin.site.register(File)
 admin.site.register(Input)
+admin.site.register(Link)
 admin.site.register(Call)
 admin.site.register(Leave, LeaveAdmin)
 admin.site.register(RR)
@@ -118,6 +119,14 @@ class WorkFileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('work', 'file', )
 
 
+class CallFileLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('call', 'file', )
+
+
+class CallLinkLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('call', 'link', )
+
+
 class PartProfileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('part', 'profile', )
 
@@ -150,6 +159,10 @@ class TaskInputLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'input', )
 
 
+class TaskLinkLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('task', 'link', )
+
+
 admin.site.register(TeamProfileLink, TeamProfileLinkAdmin)
 admin.site.register(AppWorkLink, AppWorkLinkAdmin)
 admin.site.register(AppProjectLink, AppProjectLinkAdmin)
@@ -162,6 +175,8 @@ admin.site.register(CellNoteLink, CellNoteLinkAdmin)
 admin.site.register(CellFileLink, CellFileLinkAdmin)
 admin.site.register(CellCallLink, CellCallLinkAdmin)
 admin.site.register(WorkFileLink, WorkFileLinkAdmin)
+admin.site.register(CallFileLink, CallFileLinkAdmin)
+admin.site.register(CallLinkLink, CallLinkLinkAdmin)
 admin.site.register(PartProfileLink, PartProfileLinkAdmin)
 admin.site.register(ProjectTaskLink, ProjectTaskLinkAdmin)
 admin.site.register(AppTemplateLink, AppTemplateLinkAdmin)
@@ -170,3 +185,4 @@ admin.site.register(TaskSubtaskLink, TaskSubtaskLinkAdmin)
 admin.site.register(TaskNoteLink, TaskNoteLinkAdmin)
 admin.site.register(TaskFileLink, TaskFileLinkAdmin)
 admin.site.register(TaskInputLink, TaskInputLinkAdmin)
+admin.site.register(TaskLinkLink, TaskLinkLinkAdmin)
