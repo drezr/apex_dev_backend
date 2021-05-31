@@ -162,6 +162,13 @@ class AppSerializer(serializers.ModelSerializer):
         return get_children(app, self.context, 'app', 'template')
 
 
+class RadiumSettingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = App
+        fields = '__all__'
+
+
 class ProjectSerializer(serializers.ModelSerializer):
 
     tasks = serializers.SerializerMethodField()
