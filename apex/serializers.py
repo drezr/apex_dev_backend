@@ -150,6 +150,7 @@ class AppSerializer(serializers.ModelSerializer):
 
     projects = serializers.SerializerMethodField()
     templates = serializers.SerializerMethodField()
+    tasks = serializers.SerializerMethodField()
     radium_config = serializers.SerializerMethodField()
 
     class Meta:
@@ -161,6 +162,9 @@ class AppSerializer(serializers.ModelSerializer):
 
     def get_templates(self, app):
         return get_children(app, self.context, 'app', 'template')
+
+    def get_tasks(self, app):
+        return get_children(app, self.context, 'app', 'task')
 
     def get_radium_config(self, app):
         if 'radium_config' in self.context:
@@ -179,18 +183,18 @@ class RadiumConfigSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
 
-    tasks = serializers.SerializerMethodField()
     link = serializers.SerializerMethodField()
+    tasks = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = '__all__'
 
-    def get_tasks(self, project):
-        return get_children(project, self.context, 'project', 'task')
-
     def get_link(self, project):
         return get_link(project, self.context, 'project')
+
+    def get_tasks(self, project):
+        return get_children(project, self.context, 'project', 'task')
 
 
 class TemplateSerializer(serializers.ModelSerializer):
@@ -374,6 +378,9 @@ class WorkSerializer(serializers.ModelSerializer):
         model = Work
         fields = '__all__'
 
+    def get_link(self, work):
+        return get_link(work, self.context, 'work')
+
     def get_apps(self, work):
         return get_children(work, self.context, 'work', 'app')
 
@@ -388,9 +395,6 @@ class WorkSerializer(serializers.ModelSerializer):
 
     def get_shifts(self, work):
         return get_children(work, self.context, 'work', 'shift')
-
-    def get_link(self, work):
-        return get_link(work, self.context, 'work')
 
 
 class LimitSerializer(serializers.ModelSerializer):
@@ -448,6 +452,7 @@ class PartSerializer(serializers.ModelSerializer):
 
     def get_team(self, part):
         ctx = {'link': 'detail', 'profiles': 'detail'}
+
         return get_child(part, ctx, 'team')
 
     def get_work(self, part):

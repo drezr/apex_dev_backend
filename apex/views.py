@@ -156,18 +156,15 @@ class PlannerView(APIView):
 
         result = {
             'team': TeamSerializer(team).data,
-            'app': AppSerializer(app).data,
-            'days': days,
-            'tasks': TaskSerializer(app.tasks.all(), many=True, context={
+            'app': AppSerializer(app, context={
                 'link': 'detail',
-                'parent_id': app.id,
-                'parent_type': 'app',
                 'tasks': 'detail',
                 'subtasks': 'detail',
                 'inputs': 'detail',
                 'notes': 'detail',
                 'files': 'detail',
             }).data,
+            'days': days,
         }
 
         return Response(result)
@@ -223,6 +220,11 @@ class LeaveView(APIView):
         leaves = Leave.objects.filter(year=year, profile__in=profiles_id)
 
         result = {
+            'team': TeamSerializer(team, context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data,
+            'app': AppSerializer(app).data,
             'leaves': LeaveSerializer(leaves, many=True).data
         }
 
