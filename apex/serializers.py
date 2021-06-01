@@ -150,6 +150,7 @@ class AppSerializer(serializers.ModelSerializer):
 
     projects = serializers.SerializerMethodField()
     templates = serializers.SerializerMethodField()
+    radium_settings = serializers.SerializerMethodField()
 
     class Meta:
         model = App
@@ -161,11 +162,19 @@ class AppSerializer(serializers.ModelSerializer):
     def get_templates(self, app):
         return get_children(app, self.context, 'app', 'template')
 
+    def get_radium_settings(self, app):
+        if 'radium_settings' in self.context:
+            radium_settings = RadiumSettingsSerializer(
+                app.radiumsettings_set, many=True).data
 
-class RadiumSettingSerializer(serializers.ModelSerializer):
+            if len(radium_settings):
+                return radium_settings[0]
+
+
+class RadiumSettingsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = App
+        model = RadiumSettings
         fields = '__all__'
 
 
@@ -356,6 +365,7 @@ class CellSerializer(serializers.ModelSerializer):
 class WorkSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    apps = serializers.SerializerMethodField()
     s460s = serializers.SerializerMethodField()
     limits = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
@@ -364,6 +374,9 @@ class WorkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Work
         fields = '__all__'
+
+    def get_apps(self, work):
+        return get_children(work, self.context, 'work', 'app')
 
     def get_s460s(self, work):
         return get_children(work, self.context, 'work', 's460')
