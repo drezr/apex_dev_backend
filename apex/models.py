@@ -60,7 +60,7 @@ class App(models.Model):
         return '[#{0}] {1} ({2})'.format(self.id, self.app, self.team.name)
 
 
-class RadiumSettings(models.Model):
+class RadiumConfig(models.Model):
 
     description_position = models.PositiveSmallIntegerField(null=True, blank=True)
     description_visible = models.BooleanField(default=False)

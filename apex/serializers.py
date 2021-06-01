@@ -150,7 +150,7 @@ class AppSerializer(serializers.ModelSerializer):
 
     projects = serializers.SerializerMethodField()
     templates = serializers.SerializerMethodField()
-    radium_settings = serializers.SerializerMethodField()
+    radium_config = serializers.SerializerMethodField()
 
     class Meta:
         model = App
@@ -162,19 +162,18 @@ class AppSerializer(serializers.ModelSerializer):
     def get_templates(self, app):
         return get_children(app, self.context, 'app', 'template')
 
-    def get_radium_settings(self, app):
-        if 'radium_settings' in self.context:
-            radium_settings = RadiumSettingsSerializer(
-                app.radiumsettings_set, many=True).data
+    def get_radium_config(self, app):
+        if 'radium_config' in self.context:
+            radium_config = RadiumConfigSerializer(
+                app.radiumconfig_set, many=True).data
 
-            if len(radium_settings):
-                return radium_settings[0]
+            return None if not len(radium_config) else radium_config[0]
 
 
-class RadiumSettingsSerializer(serializers.ModelSerializer):
+class RadiumConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = RadiumSettings
+        model = RadiumConfig
         fields = '__all__'
 
 

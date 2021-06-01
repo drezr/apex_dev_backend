@@ -292,7 +292,7 @@ class WorksView(APIView):
 
         result = {
             'team': TeamSerializer(team).data,
-            'app': AppSerializer(app,context={'radium_settings': True}).data,
+            'app': AppSerializer(app,context={'radium_config': True}).data,
             'works': WorkSerializer(works, many=True, context={
                 'link': 'detail',
                 'parent_id': app.id,

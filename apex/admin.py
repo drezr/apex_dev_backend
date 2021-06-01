@@ -15,7 +15,7 @@ class AppAdmin(admin.ModelAdmin):
     raw_id_fields = ('team', )
 
 
-class RadiumSettingsAdmin(admin.ModelAdmin):
+class RadiumConfigAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', )
 
 
@@ -55,7 +55,7 @@ admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Circle)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(App, AppAdmin)
-admin.site.register(RadiumSettings, RadiumSettingsAdmin)
+admin.site.register(RadiumConfig, RadiumConfigAdmin)
 admin.site.register(Day, DayAdmin)
 admin.site.register(Cell, CellAdmin)
 admin.site.register(Work)
