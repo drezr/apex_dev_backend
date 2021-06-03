@@ -30,7 +30,9 @@ class HomeView(APIView):
 
 class TeamView(APIView):
 
-    def get(self, request, team_id):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+
         result = {
             'team': TeamSerializer(Team.objects.get(pk=team_id), context={
                 'apps': 'detail'
@@ -42,7 +44,10 @@ class TeamView(APIView):
 
 class DraftView(APIView):
 
-    def get(self, request, team_id, app_id):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+
         result = {
             'team': TeamSerializer(Team.objects.get(pk=team_id), context={
                 'link': 'detail',
@@ -59,7 +64,10 @@ class DraftView(APIView):
 
 class TemplateView(APIView):
 
-    def get(self, request, team_id, app_id):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+
         result = {
             'team': TeamSerializer(Team.objects.get(pk=team_id), context={
                 'link': 'detail',
@@ -77,7 +85,11 @@ class TemplateView(APIView):
 
 class ProjectView(APIView):
 
-    def get(self, request, team_id, app_id, project_id):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        project_id = request.query_params['project_id']
+
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
         project = Project.objects.get(pk=project_id)
@@ -100,7 +112,12 @@ class ProjectView(APIView):
 
 class CalendarView(APIView):
 
-    def get(self, request, team_id, app_id, month, year):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        month = request.query_params['month']
+        year = request.query_params['year']
+
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
@@ -128,7 +145,12 @@ class CalendarView(APIView):
 
 class PlannerView(APIView):
 
-    def get(self, request, team_id, app_id, month, year):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        month = request.query_params['month']
+        year = request.query_params['year']
+
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
         
@@ -172,7 +194,12 @@ class PlannerView(APIView):
 
 class CallsView(APIView):
 
-    def get(self, request, team_id, app_id, month, year):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        month = request.query_params['month']
+        year = request.query_params['year']
+
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
@@ -208,7 +235,11 @@ class CallsView(APIView):
 
 class LeaveView(APIView):
 
-    def get(self, request, team_id, app_id, year):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        year = request.query_params['year']
+
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
@@ -233,7 +264,11 @@ class LeaveView(APIView):
 
 class DayView(APIView):
 
-    def get(self, request, team_id, app_id, date):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        date = request.query_params['date']
+
         day = Day.objects.get(app=app_id, date=date)
 
         day = DaySerializer(day, context={
@@ -255,7 +290,10 @@ class DayView(APIView):
 
 class CellView(APIView):
 
-    def get(self, request, profile_id, date):
+    def get(self, request):
+        profile_id = request.query_params['profile_id']
+        date = request.query_params['date']
+
         cell = Cell.objects.get(profile=profile_id, date=date)
 
         cell = CellSerializer(cell, context={
@@ -285,7 +323,12 @@ class CellView(APIView):
 
 class WorksView(APIView):
 
-    def get(self, request, team_id, app_id, month, year):
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        month = request.query_params['month']
+        year = request.query_params['year']
+
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
         
@@ -311,7 +354,9 @@ class WorksView(APIView):
 
 class ShiftView(APIView):
 
-    def get(self, request, shift_id):
+    def get(self, request):
+        shift_id = request.query_params['shift_id']
+
         shift = Shift.objects.get(pk=shift_id)
 
         result = {
