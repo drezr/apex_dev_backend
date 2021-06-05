@@ -28,6 +28,21 @@ class HomeView(APIView):
         return Response(result)
 
 
+class ProfileView(APIView):
+
+    def get(self, request):
+        username = request.query_params['username']
+        user = User.objects.get(username=username)
+
+        result = {
+            'profile': ProfileSerializer(user.profile, context={
+                'user': 'detail'
+            }).data,
+        }
+
+        return Response(result)
+
+
 class TeamView(APIView):
 
     def get(self, request):

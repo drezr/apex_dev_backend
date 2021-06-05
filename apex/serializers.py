@@ -109,6 +109,7 @@ def get_child(parent, ctx, child_type):
 class ProfileSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -116,6 +117,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_link(self, profile):
         return get_link(profile, self.context, 'profile')
+
+    def get_email(self, profile):
+        return profile.user.username
 
 
 class CircleSerializer(serializers.ModelSerializer):

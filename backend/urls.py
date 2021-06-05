@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin', admin.site.urls),
     path('api-token-auth', obtain_auth_token),
 
+    path('profile', ProfileView.as_view()),
     path('home', HomeView.as_view()),
     path('team', TeamView.as_view()),
     path('draft', DraftView.as_view()),
