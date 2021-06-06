@@ -1,3 +1,5 @@
+from django.http import JsonResponse
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -41,6 +43,17 @@ class ProfileView(APIView):
         }
 
         return Response(result)
+
+
+class AllProfilesView(APIView):
+
+    def get(self, request):
+        profiles = Profile.objects.all()
+
+        all_profiles = [{'id': p.id, 'name': p.name} for p in profiles]
+        result = {'all_profiles': all_profiles}
+
+        return JsonResponse(result, safe=False)
 
 
 class TeamView(APIView):
