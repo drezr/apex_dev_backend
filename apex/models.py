@@ -585,7 +585,7 @@ class Leave(models.Model):
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{0} - {1}'.format(self.profile, self.year)
+        return '[#{0}] {1}'.format(self.profile, self.year)
 
 
 class RR(models.Model):
@@ -593,7 +593,7 @@ class RR(models.Model):
     date = models.DateField()
 
     def __str__(self):
-        return '{0}'.format(self.date)
+        return '[#{0}] {1}'.format(self.id, self.date)
 
 
 class Log(models.Model):
@@ -608,7 +608,21 @@ class Log(models.Model):
     cell = models.ForeignKey('Cell', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{0}'.format(self.date)
+        return '[#{0}] {1} : {2}'.format(self.id, self.field, self.profile.name)
+
+
+class Message(models.Model):
+
+    importance = models.CharField(max_length=20, blank=True, null=True)
+    message = models.TextField(null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+
+    author = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE, related_name='author')
+    profile = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE)
+    app = models.ForeignKey('App', null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '[#{0}] {1}'.format(self.id, self.message)
 
 
 #######################################################
@@ -621,23 +635,22 @@ class TeamProfileLink(models.Model):
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
 
-    watcher_is_manager = models.BooleanField(default=False)
+    is_manager = models.BooleanField(default=False)
+
     watcher_is_editor = models.BooleanField(default=False)
     watcher_is_visible = models.BooleanField(default=False)
     watcher_is_printable = models.BooleanField(default=False)
     watcher_can_see_cells = models.BooleanField(default=False)
     watcher_can_see_quotas = models.BooleanField(default=False)
+    watcher_color = models.CharField(max_length=20, blank=True, null=True)
 
-    draft_is_manager = models.BooleanField(default=False)
     draft_is_editor = models.BooleanField(default=False)
     draft_is_user = models.BooleanField(default=False)
     draft_can_see_private = models.BooleanField(default=False)
 
-    radium_is_manager = models.BooleanField(default=False)
     radium_is_editor = models.BooleanField(default=False)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
-    color = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.profile.name, self.team.name)

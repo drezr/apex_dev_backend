@@ -50,7 +50,9 @@ class TeamView(APIView):
 
         result = {
             'team': TeamSerializer(Team.objects.get(pk=team_id), context={
-                'apps': 'detail'
+                'link': 'detail',
+                'profiles': 'detail',
+                'apps': 'detail',
             }).data,
         }
 

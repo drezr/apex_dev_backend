@@ -109,7 +109,8 @@ def get_child(parent, ctx, child_type):
 class ProfileSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
+    is_staff = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -118,8 +119,11 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_link(self, profile):
         return get_link(profile, self.context, 'profile')
 
-    def get_email(self, profile):
+    def get_username(self, profile):
         return profile.user.username
+
+    def get_is_staff(self, profile):
+        return profile.user.is_staff
 
 
 class CircleSerializer(serializers.ModelSerializer):
@@ -480,6 +484,20 @@ class RRSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RR
+        fields = '__all__'
+
+
+class LogSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Log
+        fields = '__all__'
+
+
+class MessageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Message
         fields = '__all__'
 
 
