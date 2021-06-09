@@ -299,7 +299,7 @@ class DayView(APIView):
         app_id = request.query_params['app_id']
         date = request.query_params['date']
 
-        day = Day.objects.get(app=app_id, date=date)
+        day, c = Day.objects.get_or_create(app_id=app_id, date=date)
 
         day = DaySerializer(day, context={
             'link': 'detail',
@@ -324,11 +324,13 @@ class CellView(APIView):
         profile_id = request.query_params['profile_id']
         date = request.query_params['date']
 
-        cell = Cell.objects.get(profile=profile_id, date=date)
+        cell, c = Cell.objects.get_or_create(profile_id=profile_id, date=date)
 
         cell = CellSerializer(cell, context={
             'link': 'detail',
             'tasks': 'detail',
+            'subtasks': 'detail',
+            'inputs': 'detail',
             'notes': 'detail',
             'files': 'detail',
             'calls': 'detail',
@@ -345,7 +347,7 @@ class CellView(APIView):
         for part in parts:
             for profile in part['profiles']:
                 if profile['link']['is_participant']:
-                    if profile['id'] == profile_id:
+                    if profile['id'] == int(profile_id):
                         cell['parts'].append(part)
 
         return Response({'cell': cell})
