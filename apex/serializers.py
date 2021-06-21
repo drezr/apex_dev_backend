@@ -228,6 +228,7 @@ class TaskSerializer(serializers.ModelSerializer):
     notes = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
+    teammates = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
@@ -247,6 +248,16 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def get_link(self, task):
         return get_link(task, self.context, 'task')
+
+    def get_teammates(self, task):
+        if 'teammates' in self.context:
+            cell_task_links = CellTaskLink.objects.filter(task=task)
+
+            if self.context['teammates'] == 'detail':
+                return [link.cell.profile.name for link in cell_task_links]
+
+            elif self.context['teammates'] == 'id':
+                return [link.cell.profile.id for link in cell_task_links]
 
 
 class SubtaskSerializer(serializers.ModelSerializer):
@@ -450,6 +461,7 @@ class PartSerializer(serializers.ModelSerializer):
     work = serializers.SerializerMethodField()
     shift = serializers.SerializerMethodField()
     project = serializers.SerializerMethodField()
+    teammates = serializers.SerializerMethodField()
 
     class Meta:
         model = Part
@@ -471,6 +483,25 @@ class PartSerializer(serializers.ModelSerializer):
 
     def get_project(self, part):
         return get_child(part, None, 'project')
+
+    def get_teammates(self, part):
+        teammates = list()
+
+        if 'teammates' in self.context:
+            work_parts = part.shift.part_set.all()
+
+            for work_part in work_parts:
+                links = PartProfileLink.objects.filter(part=work_part)
+
+                for link in links:
+                    if link.is_participant:
+                        if self.context['teammates'] == 'detail':
+                            teammates.append(link.profile.name)
+
+                        elif self.context['teammates'] == 'id':
+                            teammates.append(link.profile.id)
+
+            return teammates
 
 
 class LeaveSerializer(serializers.ModelSerializer):

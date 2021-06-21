@@ -402,8 +402,6 @@ class Shift(models.Model):
 
 class Part(models.Model):
 
-    date = models.DateField()
-
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
     shift = models.ForeignKey('Shift', on_delete=models.CASCADE)
     work = models.ForeignKey('Work', on_delete=models.CASCADE)

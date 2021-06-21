@@ -151,8 +151,17 @@ class CalendarView(APIView):
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
-        profiles_id = [profile.id for profile in team.profiles.all()]
-        
+        user_access = TeamProfileLink.objects.get(
+            team_id=team_id,
+            profile=request.user.profile,
+        )
+
+        if user_access.watcher_can_see_cells:
+            profiles_id = [profile.id for profile in team.profiles.all()]
+
+        else:
+            profiles_id = [request.user.profile.id]
+
         days = Day.objects.filter(
             date__month=month, date__year=year, app=app.id)
         cells = Cell.objects.filter(
@@ -306,6 +315,7 @@ class DayView(APIView):
             'tasks': 'detail',
             'notes': 'detail',
             'files': 'detail',
+            'teammates': 'detail',
         }).data
 
         parts = Part.objects.filter(team=team_id, date=date)
@@ -313,6 +323,7 @@ class DayView(APIView):
         day['parts'] = PartSerializer(parts, many=True, context={
             'link': 'detail',
             'profiles': 'detail',
+            'teammates': 'detail',
         }).data
 
         return Response({'day': day})
@@ -334,12 +345,14 @@ class CellView(APIView):
             'notes': 'detail',
             'files': 'detail',
             'calls': 'detail',
+            'teammates': 'detail',
         }).data
 
         parts = Part.objects.filter(profiles__in=[profile_id], date=date)
         parts = PartSerializer(parts, many=True, context={
             'link': 'detail',
             'profiles': 'detail',
+            'teammates': 'detail',
         }).data
 
         cell['parts'] = list()
