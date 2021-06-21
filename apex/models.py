@@ -551,8 +551,8 @@ class Link(models.Model):
 class Call(models.Model):
 
     name = models.TextField(null=True, blank=True)
-    value = models.TextField(null=True, blank=True)
-    type = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    kind = models.TextField(null=True, blank=True)
     start = models.TextField(null=True, blank=True)
     end = models.TextField(null=True, blank=True)
 
