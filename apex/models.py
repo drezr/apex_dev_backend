@@ -402,10 +402,13 @@ class Shift(models.Model):
 
 class Part(models.Model):
 
+    date = models.DateField()
+
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
     shift = models.ForeignKey('Shift', on_delete=models.CASCADE)
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
-    project = models.ForeignKey('Project', null=True, on_delete=models.SET_NULL)
+    project = models.ForeignKey(
+        'Project', null=True, blank=True, on_delete=models.SET_NULL)
 
     profiles = models.ManyToManyField(
         'Profile',
@@ -415,7 +418,7 @@ class Part(models.Model):
 
     def __str__(self):
         return '[#{0}] {1} [{2}] [{3}]'.format(
-            self.id, self.date, self.team.name, self.work.description)
+            self.id, self.team.name, self.date, self.work.description)
 
 
 class Project(models.Model):

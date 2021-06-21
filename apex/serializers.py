@@ -275,6 +275,7 @@ class SubtaskSerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
 
     class Meta:
         model = Note
@@ -282,6 +283,9 @@ class NoteSerializer(serializers.ModelSerializer):
 
     def get_link(self, note):
         return get_link(note, self.context, 'note')
+
+    def get_author(self, note):
+        return note.profile.name
 
 
 class InputSerializer(serializers.ModelSerializer):
