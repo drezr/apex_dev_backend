@@ -519,7 +519,7 @@ class Note(models.Model):
 
 class File(models.Model):
 
-    type = models.CharField(max_length=100, blank=True, null=True)
+    kind = models.CharField(max_length=100, blank=True, null=True)
     name = models.TextField(null=True, blank=True)
     extension = models.CharField(max_length=100, blank=True, null=True)
     uid = models.CharField(max_length=100, blank=True, null=True)
@@ -551,10 +551,10 @@ class Link(models.Model):
 class Call(models.Model):
 
     name = models.TextField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
     kind = models.TextField(null=True, blank=True)
     start = models.TextField(null=True, blank=True)
     end = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
 
     files = models.ManyToManyField(
         'File',
@@ -783,8 +783,7 @@ class CallFileLink(models.Model):
     file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
-    is_original = models.BooleanField(default=True)
-
+    
     def __str__(self):
         return '{0} : {1}'.format(self.call, self.file)
 

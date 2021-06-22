@@ -315,6 +315,7 @@ class DayView(APIView):
             'tasks': 'detail',
             'notes': 'detail',
             'files': 'detail',
+            'links': 'detail',
             'teammates': 'detail',
         }).data
 
@@ -345,6 +346,7 @@ class CellView(APIView):
             'notes': 'detail',
             'files': 'detail',
             'calls': 'detail',
+            'links': 'detail',
             'teammates': 'detail',
         }).data
 
