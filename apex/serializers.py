@@ -480,7 +480,7 @@ class PartSerializer(serializers.ModelSerializer):
         return get_child(part, ctx, 'team')
 
     def get_work(self, part):
-        return get_child(part, None, 'work')
+        return get_child(part, {'files': 'detail'}, 'work')
 
     def get_shift(self, part):
         return get_child(part, None, 'shift')
