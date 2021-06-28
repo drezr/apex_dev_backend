@@ -276,6 +276,7 @@ class NoteSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
+    teammates = serializers.SerializerMethodField()
 
     class Meta:
         model = Note
@@ -286,6 +287,16 @@ class NoteSerializer(serializers.ModelSerializer):
 
     def get_author(self, note):
         return note.profile.name
+
+    def get_teammates(self, note):
+        if 'teammates' in self.context:
+            cell_note_links = CellNoteLink.objects.filter(note=note)
+
+            if self.context['teammates'] == 'detail':
+                return [link.cell.profile.name for link in cell_note_links]
+
+            elif self.context['teammates'] == 'id':
+                return [link.cell.profile.id for link in cell_note_links]
 
 
 class InputSerializer(serializers.ModelSerializer):
@@ -315,6 +326,7 @@ class LinkSerializer(serializers.ModelSerializer):
 class FileSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    teammates = serializers.SerializerMethodField()
 
     class Meta:
         model = File
@@ -322,6 +334,16 @@ class FileSerializer(serializers.ModelSerializer):
 
     def get_link(self, file):
         return get_link(file, self.context, 'file')
+
+    def get_teammates(self, file):
+        if 'teammates' in self.context:
+            cell_file_links = CellFileLink.objects.filter(file=file)
+
+            if self.context['teammates'] == 'detail':
+                return [link.cell.profile.name for link in cell_file_links]
+
+            elif self.context['teammates'] == 'id':
+                return [link.cell.profile.id for link in cell_file_links]
 
 
 class CallSerializer(serializers.ModelSerializer):
@@ -432,18 +454,6 @@ class S460Serializer(serializers.ModelSerializer):
     class Meta:
         model = S460
         fields = '__all__'
-
-
-class FileSerializer(serializers.ModelSerializer):
-
-    link = serializers.SerializerMethodField()
-
-    class Meta:
-        model = File
-        fields = '__all__'
-
-    def get_link(self, work):
-        return get_link(work, self.context, 'file')
 
 
 class ShiftSerializer(serializers.ModelSerializer):
