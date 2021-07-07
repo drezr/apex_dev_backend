@@ -530,13 +530,13 @@ class File(models.Model):
 
 class Input(models.Model):
 
-    type = models.CharField(max_length=100, blank=True, null=True)
-    name = models.TextField(null=True, blank=True)
+    kind = models.CharField(max_length=100, blank=True, null=True)
+    key = models.TextField(null=True, blank=True)
     value = models.TextField(null=True, blank=True)
     heading = models.BooleanField(default=False)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.name, self.value)
+        return '[#{0}] {1} : {2}'.format(self.id, self.key, self.value)
 
 
 class Link(models.Model):
