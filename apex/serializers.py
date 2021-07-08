@@ -546,6 +546,13 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RadiumConfigSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RadiumConfig
+        fields = '__all__'
+
+
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #
 # @@@@@@@@@@@@@@@@ Links Serializers @@@@@@@@@@@@@@@@ #
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #

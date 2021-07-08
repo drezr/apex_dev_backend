@@ -378,6 +378,7 @@ class WorksView(APIView):
 
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
+        config = RadiumConfig.objects.get(app=app_id)
         
         works = Work.objects.filter(
             date__month=month, date__year=year, apps__in=[app.id])
@@ -385,6 +386,7 @@ class WorksView(APIView):
         result = {
             'team': TeamSerializer(team).data,
             'app': AppSerializer(app,context={'radium_config': True}).data,
+            'config': RadiumConfigSerializer(config).data,
             'works': WorkSerializer(works, many=True, context={
                 'link': 'detail',
                 'parent_id': app.id,
