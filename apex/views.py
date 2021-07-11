@@ -401,19 +401,19 @@ class WorksView(APIView):
         return Response(result)
 
 
-class ShiftView(APIView):
+class ShiftsView(APIView):
 
     def get(self, request):
-        shift_id = request.query_params['shift_id']
+        work_id = request.query_params['work_id']
 
-        shift = Shift.objects.get(pk=shift_id)
+        shifts = Shift.objects.filter(work=work_id)
 
         result = {
-            'shifts': ShiftSerializer(shift, context={
+            'shifts': ShiftSerializer(shifts, context={
                 'link': 'detail',
                 'parts': 'detail',
                 'profiles': 'detail',
-            }).data,
+            }, many=True).data,
         }
 
         return Response(result)

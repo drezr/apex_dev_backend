@@ -22,7 +22,7 @@ urlpatterns = [
     path('leave', LeaveView.as_view()),
     path('works', WorksView.as_view()),
     
-    path('shift', ShiftView.as_view()),
+    path('shifts', ShiftsView.as_view()),
     path('day', DayView.as_view()),
     path('cell', CellView.as_view()),
 ]

@@ -426,6 +426,7 @@ class Shift(models.Model):
 
     date = models.DateField()
     shift = models.CharField(max_length=100, blank=True, null=True)
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
