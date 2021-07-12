@@ -25,4 +25,5 @@ urlpatterns = [
     path('shifts', ShiftsView.as_view()),
     path('day', DayView.as_view()),
     path('cell', CellView.as_view()),
+    path('presences', PresencesView.as_view()),
 ]

@@ -464,8 +464,8 @@ class ShiftSerializer(serializers.ModelSerializer):
         model = Shift
         fields = '__all__'
 
-    def get_parts(self, work):
-        return get_children(work, self.context, 'shift', 'part')
+    def get_parts(self, shift):
+        return get_children(shift, self.context, 'shift', 'part')
 
 
 class PartSerializer(serializers.ModelSerializer):
