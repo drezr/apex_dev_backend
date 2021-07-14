@@ -418,6 +418,7 @@ class WorkSerializer(serializers.ModelSerializer):
     limits = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     shifts = serializers.SerializerMethodField()
+    apps = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
@@ -440,6 +441,10 @@ class WorkSerializer(serializers.ModelSerializer):
 
     def get_shifts(self, work):
         return get_children(work, self.context, 'work', 'shift')
+
+    def get_apps(self, work):
+        if 'apps' in self.context:
+            return [app.id for app in work.apps.all()]
 
 
 class LimitSerializer(serializers.ModelSerializer):

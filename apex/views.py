@@ -395,6 +395,7 @@ class WorksView(APIView):
                 's460s': 'detail',
                 'files': 'detail',
                 'shifts': 'detail',
+                'apps': 'id',
             }).data,
         }
 
@@ -441,6 +442,21 @@ class PresencesView(APIView):
 
         result = {
             'presences': presences,
+        }
+
+        return Response(result)
+
+
+class AppsView(APIView):
+
+    def get(self, request):
+        circles = Circle.objects.all()
+
+        result = {
+            'circles': CircleSerializer(
+                circles, many=True,
+                context={'teams': 'detail', 'apps': 'detail'}
+            ).data,
         }
 
         return Response(result)
