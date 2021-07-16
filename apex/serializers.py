@@ -501,7 +501,15 @@ class PartSerializer(serializers.ModelSerializer):
         return get_child(part, None, 'shift')
 
     def get_project(self, part):
-        return get_child(part, None, 'project')
+        project = get_child(part, None, 'project')
+
+        try:
+            if project['id']:
+                return get_child(part, None, 'project')
+
+        except KeyError:
+            return None
+
 
     def get_teammates(self, part):
         teammates = list()
