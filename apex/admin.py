@@ -27,6 +27,32 @@ class CellAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
 
 
+class WorkAdmin(admin.ModelAdmin):
+    raw_id_fields = (
+        'description_last_editor',
+        'note_last_editor',
+        'ilt_last_editor',
+        'upm_last_editor',
+        'status_last_editor',
+        'zkl_last_editor',
+        'cascat_last_editor',
+        'grue_last_editor',
+        'osv_last_editor',
+        'loco_last_editor',
+        'hgs_last_editor',
+        'soudure_last_editor',
+        'pn_last_editor',
+        'art_last_editor',
+        's428_last_editor',
+        's461_last_editor',
+        'atwtx_last_editor',
+        'imputation_last_editor',
+        'extra_last_editor',
+        'scst_last_editor',
+        'colt_id_last_editor',
+    )
+
+
 class LimitAdmin(admin.ModelAdmin):
     raw_id_fields = ('work', )
 
@@ -66,7 +92,7 @@ admin.site.register(App, AppAdmin)
 admin.site.register(RadiumConfig, RadiumConfigAdmin)
 admin.site.register(Day, DayAdmin)
 admin.site.register(Cell, CellAdmin)
-admin.site.register(Work)
+admin.site.register(Work, WorkAdmin)
 admin.site.register(Limit, LimitAdmin)
 admin.site.register(S460, S460Admin)
 admin.site.register(Shift, ShiftAdmin)
