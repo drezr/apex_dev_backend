@@ -151,16 +151,23 @@ class CalendarView(APIView):
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
-        user_access = TeamProfileLink.objects.get(
-            team_id=team_id,
-            profile=request.user.profile,
-        )
+        try:
+            user_access = TeamProfileLink.objects.get(
+                team_id=team_id,
+                profile=request.user.profile,
+            )
+        except TeamProfileLink.DoesNotExist:
+            user_access = None
 
-        if user_access.watcher_can_see_cells:
-            profiles_id = [profile.id for profile in team.profiles.all()]
+        if user_access:
+            if user_access.watcher_can_see_cells:
+                profiles_id = [profile.id for profile in team.profiles.all()]
+
+            else:
+                profiles_id = [request.user.profile.id]
 
         else:
-            profiles_id = [request.user.profile.id]
+            profiles_id = []
 
         days = Day.objects.filter(
             date__month=month, date__year=year, app=app.id)
