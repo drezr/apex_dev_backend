@@ -559,6 +559,13 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class LogSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Log
+        fields = '__all__'
+
+
 class RadiumConfigSerializer(serializers.ModelSerializer):
 
     class Meta:

@@ -27,4 +27,5 @@ urlpatterns = [
     path('cell', CellView.as_view()),
     path('presences', PresencesView.as_view()),
     path('apps', AppsView.as_view()),
+    path('logs', LogsView.as_view()),
 ]
