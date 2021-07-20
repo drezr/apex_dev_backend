@@ -561,9 +561,14 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class LogSerializer(serializers.ModelSerializer):
 
+    author = serializers.SerializerMethodField()
+
     class Meta:
         model = Log
         fields = '__all__'
+
+    def get_author(self, log):
+        return log.profile.name
 
 
 class RadiumConfigSerializer(serializers.ModelSerializer):
