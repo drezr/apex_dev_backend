@@ -27,15 +27,15 @@ source venv/bin/activate
 ```
 
 ```
+cd /project/directory/apex_dev_backend
+```
+
+```
 pip install --upgrade pip
 ```
 
 ```
 pip install -r requierments.txt
-```
-
-```
-cd /project/directory/apex_dev_backend
 ```
 
 ```
