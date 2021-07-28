@@ -593,8 +593,8 @@ class Message(models.Model):
     date = models.DateField(auto_now_add=True)
 
     author = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE, related_name='author')
-    profile = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE)
-    app = models.ForeignKey('App', null=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey('Profile', null=True, blank=True, on_delete=models.CASCADE)
+    app = models.ForeignKey('App', null=True, blank=True, on_delete=models.CASCADE)
     work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):

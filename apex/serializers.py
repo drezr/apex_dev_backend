@@ -554,9 +554,18 @@ class LogSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
 
+    work = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+
     class Meta:
         model = Message
         fields = '__all__'
+
+    def get_work(self, message):
+        return get_child(message, {}, 'work')
+
+    def get_author(self, message):
+        return message.author.name
 
 
 class LogSerializer(serializers.ModelSerializer):

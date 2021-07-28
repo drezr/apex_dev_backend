@@ -486,3 +486,17 @@ class LogsView(APIView):
         }
 
         return Response(result)
+
+
+class MessagesView(APIView):
+
+    def get(self, request):
+        if 'app_id' in request.query_params:
+            app_id = request.query_params['app_id']
+            messages = Message.objects.filter(app=app_id).order_by('-date')
+
+        result = {
+            'messages': MessageSerializer(messages, many=True).data,
+        }
+
+        return Response(result)
