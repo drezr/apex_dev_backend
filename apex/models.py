@@ -308,6 +308,13 @@ class Work(models.Model):
     colt_bg_color = models.CharField(max_length=20, blank=True, null=True)
     colt_is_edited = models.BooleanField(default=False)
 
+    shifts_bg_color = models.CharField(max_length=20, blank=True, null=True)
+    ilts_bg_color = models.CharField(max_length=20, blank=True, null=True)
+    bnxs_bg_color = models.CharField(max_length=20, blank=True, null=True)
+    fmhts_bg_color = models.CharField(max_length=20, blank=True, null=True)
+    limits_bg_color = models.CharField(max_length=20, blank=True, null=True)
+    s460s_bg_color = models.CharField(max_length=20, blank=True, null=True)
+
     color = models.CharField(max_length=20, blank=True, null=True)
     date = models.DateField()
 
