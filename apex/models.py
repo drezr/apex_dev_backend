@@ -104,8 +104,8 @@ class RadiumConfig(models.Model):
     status_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
     status_visible = models.BooleanField(default=True)
     limits_position = models.PositiveSmallIntegerField(null=True, blank=True, default=10)
-    limits_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
-    limits_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
+    limits_width = models.PositiveSmallIntegerField(null=True, blank=True, default=600)
+    limits_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=12)
     limits_visible = models.BooleanField(default=True)
     s460s_position = models.PositiveSmallIntegerField(null=True, blank=True, default=11)
     s460s_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
@@ -351,7 +351,7 @@ class Limit(models.Model):
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[#{0}]'.format(self.id)
+        return '[#{0}] {1}'.format(self.id, self.work.description)
 
 
 class S460(models.Model):
