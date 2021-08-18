@@ -199,9 +199,16 @@ class PlannerView(APIView):
 
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
+
+        watcher_id = None
+
+        for _app in team.app_set.all():
+            if _app.app == 'watcher':
+                watcher_id = _app.id
+                break
         
         days = Day.objects.filter(
-            date__month=month, date__year=year, app=app.id)
+            date__month=month, date__year=year, app=watcher_id)
 
         days = DaySerializer(days, many=True, context={
             'link': 'detail',
@@ -210,6 +217,7 @@ class PlannerView(APIView):
             'inputs': 'detail',
             'notes': 'detail',
             'files': 'detail',
+            'teammates': 'detail',
         }).data
 
         for day in days:
@@ -220,10 +228,14 @@ class PlannerView(APIView):
             day['parts'] = PartSerializer(parts, many=True, context={
                 'link': 'detail',
                 'profiles': 'detail',
+                'teammates': 'detail',
             }).data
 
         result = {
-            'team': TeamSerializer(team).data,
+            'team': TeamSerializer(team, context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data,
             'app': AppSerializer(app, context={
                 'link': 'detail',
                 'tasks': 'detail',
@@ -231,6 +243,7 @@ class PlannerView(APIView):
                 'inputs': 'detail',
                 'notes': 'detail',
                 'files': 'detail',
+                'teammates': 'detail',
             }).data,
             'days': days,
         }
