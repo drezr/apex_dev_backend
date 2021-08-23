@@ -159,6 +159,8 @@ class AppSerializer(serializers.ModelSerializer):
     projects = serializers.SerializerMethodField()
     templates = serializers.SerializerMethodField()
     tasks = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
     radium_config = serializers.SerializerMethodField()
 
     class Meta:
@@ -173,6 +175,12 @@ class AppSerializer(serializers.ModelSerializer):
 
     def get_tasks(self, app):
         return get_children(app, self.context, 'app', 'task')
+
+    def get_files(self, app):
+        return get_children(app, self.context, 'app', 'file')
+
+    def get_notes(self, app):
+        return get_children(app, self.context, 'app', 'note')
 
     def get_radium_config(self, app):
         if 'radium_config' in self.context:
@@ -617,6 +625,20 @@ class AppTaskLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AppTaskLink
+        fields = '__all__'
+
+
+class AppFileLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AppFileLink
+        fields = '__all__'
+
+
+class AppNoteLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AppNoteLink
         fields = '__all__'
 
 

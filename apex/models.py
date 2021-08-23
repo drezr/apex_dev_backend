@@ -51,10 +51,23 @@ class App(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
+    
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
         through='AppTaskLink',
+    )
+    
+    files = models.ManyToManyField(
+        'File',
+        blank=True,
+        through='AppFileLink',
+    )
+    
+    notes = models.ManyToManyField(
+        'Note',
+        blank=True,
+        through='AppNoteLink',
     )
 
     def __str__(self):
@@ -665,6 +678,30 @@ class AppTaskLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.task)
+
+
+class AppFileLink(models.Model):
+
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    file = models.ForeignKey('File', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.app, self.file)
+
+
+class AppNoteLink(models.Model):
+
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    note = models.ForeignKey('Note', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.app, self.note)
 
 
 class DayTaskLink(models.Model):
