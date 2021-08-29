@@ -125,7 +125,10 @@ class ProjectView(APIView):
         project = Project.objects.get(pk=project_id)
 
         result = {
-            'team': TeamSerializer(team).data,
+            'team': TeamSerializer(team, context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data,
             'app': AppSerializer(app).data,
             'project': ProjectSerializer(project, context={
                 'link': 'detail',
