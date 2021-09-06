@@ -56,6 +56,18 @@ class AllProfilesView(APIView):
         return JsonResponse(result, safe=False)
 
 
+class MyApexView(APIView):
+
+    def get(self, request):
+        result = {
+            'profile': ProfileSerializer(request.user.profile, context={
+                'apps': 'detail',
+            }).data,
+        }
+
+        return Response(result)
+
+
 class TeamView(APIView):
 
     def get(self, request):

@@ -50,7 +50,8 @@ class App(models.Model):
     app = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True)
 
-    team = models.ForeignKey('Team', on_delete=models.CASCADE)
+    team = models.ForeignKey('Team', on_delete=models.CASCADE, blank=True, null=True)
+    profile = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
     
     tasks = models.ManyToManyField(
         'Task',
@@ -71,7 +72,15 @@ class App(models.Model):
     )
 
     def __str__(self):
-        return '[#{0}] {1} ({2})'.format(self.id, self.app, self.team.name)
+        name = None
+
+        if self.team:
+            name = 'Team : ' + self.team.name
+
+        elif self.profile:
+            name = 'Profile : ' + self.profile.name
+
+        return '[#{0}] {1} ({2})'.format(self.id, self.app, name)
 
 
 class RadiumConfig(models.Model):

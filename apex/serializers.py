@@ -111,6 +111,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     link = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
     is_staff = serializers.SerializerMethodField()
+    apps = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -124,6 +125,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_is_staff(self, profile):
         return profile.user.is_staff
+
+    def get_apps(self, team):
+        return get_children(team, self.context, 'team', 'app')
 
 
 class CircleSerializer(serializers.ModelSerializer):

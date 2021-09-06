@@ -12,7 +12,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 class AppAdmin(admin.ModelAdmin):
-    raw_id_fields = ('team', )
+    raw_id_fields = ('team', 'profile', )
 
 
 class RadiumConfigAdmin(admin.ModelAdmin):
