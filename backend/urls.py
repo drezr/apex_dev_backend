@@ -14,6 +14,7 @@ urlpatterns = [
     path('home', HomeView.as_view()),
     path('myapex', MyApexView.as_view()),
     path('team', TeamView.as_view()),
+    path('myapexdraft', MyApexDraftView.as_view()),
     path('draft', DraftView.as_view()),
     path('templates', TemplateView.as_view()),
     path('project', ProjectView.as_view()),

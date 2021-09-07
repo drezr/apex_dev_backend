@@ -104,6 +104,22 @@ class DraftView(APIView):
         return Response(result)
 
 
+class MyApexDraftView(APIView):
+
+    def get(self, request):
+        app_id = request.query_params['app_id']
+
+        app = AppSerializer(App.objects.get(pk=app_id), context={
+            'link': 'detail',
+            'projects': 'detail',
+        }).data
+
+        if app['profile'] == request.user.profile.id:
+            return Response({'app': app})
+
+        return Response('Not Allowed')
+
+
 class TemplateView(APIView):
 
     def get(self, request):
@@ -128,19 +144,14 @@ class TemplateView(APIView):
 class ProjectView(APIView):
 
     def get(self, request):
-        team_id = request.query_params['team_id']
+        
         app_id = request.query_params['app_id']
         project_id = request.query_params['project_id']
-
-        team = Team.objects.get(pk=team_id)
+        
         app = App.objects.get(pk=app_id)
         project = Project.objects.get(pk=project_id)
 
         result = {
-            'team': TeamSerializer(team, context={
-                'link': 'detail',
-                'profiles': 'detail',
-            }).data,
             'app': AppSerializer(app).data,
             'project': ProjectSerializer(project, context={
                 'link': 'detail',
@@ -151,6 +162,15 @@ class ProjectView(APIView):
                 'inputs': 'detail',
             }).data,
         }
+
+        if 'team_id' in request.query_params:
+            team_id = request.query_params['team_id']
+            team = Team.objects.get(pk=team_id)
+
+            result['team'] = TeamSerializer(team, context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data
 
         return Response(result)
 
