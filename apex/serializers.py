@@ -165,6 +165,7 @@ class AppSerializer(serializers.ModelSerializer):
     tasks = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
+    contacts = serializers.SerializerMethodField()
     radium_config = serializers.SerializerMethodField()
 
     class Meta:
@@ -185,6 +186,11 @@ class AppSerializer(serializers.ModelSerializer):
 
     def get_notes(self, app):
         return get_children(app, self.context, 'app', 'note')
+
+    def get_contacts(self, app):
+        if 'contacts' in self.context:
+            return ProfileSerializer(
+                app.contacts.all(), many=True, context=self.context).data
 
     def get_radium_config(self, app):
         if 'radium_config' in self.context:
@@ -643,6 +649,13 @@ class AppNoteLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AppNoteLink
+        fields = '__all__'
+
+
+class AppContactLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AppContactLink
         fields = '__all__'
 
 

@@ -70,6 +70,13 @@ class App(models.Model):
         blank=True,
         through='AppNoteLink',
     )
+    
+    contacts = models.ManyToManyField(
+        'Profile',
+        blank=True,
+        through='AppContactLink',
+        related_name='contact'
+    )
 
     def __str__(self):
         name = None
@@ -711,6 +718,17 @@ class AppNoteLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.note)
+
+
+class AppContactLink(models.Model):
+
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    contact = models.ForeignKey('Profile', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.app, self.contact)
 
 
 class DayTaskLink(models.Model):
