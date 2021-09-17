@@ -118,7 +118,12 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_link(self, profile):
-        return get_link(profile, self.context, 'profile')
+        ctx = self.context
+        
+        if 'parent_type' in ctx and ctx['parent_type'] == 'app':
+            return get_link(profile, ctx, 'contact')
+        
+        return get_link(profile, ctx, 'profile')
 
     def get_username(self, profile):
         return profile.user.username

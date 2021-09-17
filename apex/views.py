@@ -561,6 +561,9 @@ class ContactsView(APIView):
 
         app = AppSerializer(App.objects.get(pk=app_id), context={
             'contacts': 'detail',
+            'parent_id': app_id,
+            'parent_type': 'app',
+            'link': 'detail',
         }).data
 
         for contact in app['contacts']:
