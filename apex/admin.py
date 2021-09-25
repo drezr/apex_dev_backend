@@ -51,6 +51,10 @@ class LeaveAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
 
 
+class LeaveConfigAdmin(admin.ModelAdmin):
+    raw_id_fields = ('app', )
+
+
 class LogAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', 'work', 'cell', )
 
@@ -81,6 +85,7 @@ admin.site.register(Input)
 admin.site.register(Link)
 admin.site.register(Call)
 admin.site.register(Leave, LeaveAdmin)
+admin.site.register(LeaveConfig, LeaveConfigAdmin)
 admin.site.register(RR)
 admin.site.register(Log, LogAdmin)
 admin.site.register(Message, MessageAdmin)

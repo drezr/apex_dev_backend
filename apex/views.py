@@ -345,13 +345,16 @@ class LeaveView(APIView):
 
         leaves = Leave.objects.filter(year=year, profile__in=profiles_id)
 
+        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+
         result = {
             'team': TeamSerializer(team, context={
                 'link': 'detail',
                 'profiles': 'detail',
             }).data,
             'app': AppSerializer(app).data,
-            'leaves': LeaveSerializer(leaves, many=True).data
+            'leaves': LeaveSerializer(leaves, many=True).data,
+            'config': LeaveConfigSerializer(config).data,
         }
 
         return Response(result)
@@ -434,7 +437,8 @@ class WorksView(APIView):
 
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
-        config = RadiumConfig.objects.get(app=app_id)
+
+        config, c = RadiumConfig.objects.get_or_create(app_id=app_id)
         
         works = Work.objects.filter(
             date__month=month, date__year=year, apps__in=[app.id])

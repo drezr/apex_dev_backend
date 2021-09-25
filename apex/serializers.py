@@ -561,6 +561,13 @@ class LeaveSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class LeaveConfigSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LeaveConfig
+        fields = '__all__'
+
+
 class RRSerializer(serializers.ModelSerializer):
 
     class Meta:

@@ -195,7 +195,7 @@ class RadiumConfig(models.Model):
     app = models.ForeignKey('App', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.app)        
+        return '[#{0}] {1}'.format(self.id, self.app)
 
 
 class Day(models.Model):
@@ -577,18 +577,71 @@ class Call(models.Model):
 class Leave(models.Model):
 
     year = models.PositiveSmallIntegerField()
-    cn = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    jc = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    cv = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    ch = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    rh = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    rr = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    hs = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_0 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_1 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_2 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_3 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_4 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_5 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_6 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_7 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_8 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    type_9 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.profile, self.year)
+
+
+class LeaveConfig(models.Model):
+
+    leave_count = models.PositiveSmallIntegerField(default=0)
+    leave_0_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_0_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_0_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_0_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_1_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_1_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_1_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_1_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_2_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_2_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_2_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_2_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_3_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_3_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_3_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_3_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_4_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_4_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_4_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_4_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_5_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_5_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_5_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_5_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_6_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_6_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_6_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_6_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_7_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_7_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_7_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_7_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_8_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_8_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_8_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_8_color = models.CharField(max_length=20, blank=True, null=True)
+    leave_9_name = models.CharField(max_length=10, blank=True, null=True)
+    leave_9_desc = models.CharField(max_length=50, blank=True, null=True)
+    leave_9_type = models.CharField(max_length=20, blank=True, null=True)
+    leave_9_color = models.CharField(max_length=20, blank=True, null=True)
+
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '[#{0}] {1}'.format(self.id, self.app)
 
 
 class RR(models.Model):

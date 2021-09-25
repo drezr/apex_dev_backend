@@ -22,7 +22,7 @@ urlpatterns = [
     path('calendar', CalendarView.as_view()),
     path('planner', PlannerView.as_view()),
     path('calls', CallsView.as_view()),
-    path('leave', LeaveView.as_view()),
+    path('leaves', LeaveView.as_view()),
     path('works', WorksView.as_view()),
     
     path('shifts', ShiftsView.as_view()),
