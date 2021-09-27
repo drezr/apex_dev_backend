@@ -532,7 +532,8 @@ class LogsView(APIView):
         elif 'work_id' in request.query_params:
             work_id = request.query_params['work_id']
             field = request.query_params['field']
-            logs = Log.objects.filter(work=work_id, field=field).order_by('-date')
+            logs = Log.objects.filter(
+                work=work_id, field=field).order_by('-date')
 
         result = {
             'logs': LogSerializer(logs, many=True).data,
