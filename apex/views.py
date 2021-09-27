@@ -15,14 +15,20 @@ class HomeView(APIView):
         profile = request.user.profile
 
         user_teams = list()
+        user_circles = list()
 
         for circle in circles:
             teams = circle.team_set.filter(profiles__in=[profile])
             [user_teams.append(team) for team in teams]
 
+            for team in user_teams:
+                if len(circle.team_set.filter(pk=team.id)):
+                    user_circles.append(circle)
+
+
         result = {
             'circles': CircleSerializer(
-                circles, many=True,
+                user_circles, many=True,
                 context={'teams': 'detail'}
             ).data,
             'user_teams': TeamSerializer(user_teams, many=True).data,
