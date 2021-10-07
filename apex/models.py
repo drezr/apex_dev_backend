@@ -633,6 +633,8 @@ class File(models.Model):
     name = models.TextField(null=True, blank=True)
     extension = models.CharField(max_length=100, blank=True, null=True)
     uid = models.CharField(max_length=100, blank=True, null=True)
+    width = models.PositiveSmallIntegerField(null=True, blank=True)
+    height = models.PositiveSmallIntegerField(null=True, blank=True)
 
     def __str__(self):
         return '[#{0}] {1}.{2}'.format(self.id, self.name, self.extension)

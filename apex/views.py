@@ -378,6 +378,8 @@ class DayView(APIView):
         day = DaySerializer(day, context={
             'link': 'detail',
             'tasks': 'detail',
+            'subtasks': 'detail',
+            'inputs': 'detail',
             'notes': 'detail',
             'files': 'detail',
             'links': 'detail',
