@@ -347,9 +347,9 @@ class LeaveView(APIView):
         profiles_id = [profile.id for profile in team.profiles.all()]
 
         for profile_id in profiles_id:
-            Leave.objects.get_or_create(year=year, profile_id=profile_id)
+            Quota.objects.get_or_create(year=year, profile_id=profile_id)
 
-        leaves = Leave.objects.filter(year=year, profile__in=profiles_id)
+        quotas = Quota.objects.filter(year=year, profile__in=profiles_id)
 
         config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
 
@@ -359,7 +359,34 @@ class LeaveView(APIView):
                 'profiles': 'detail',
             }).data,
             'app': AppSerializer(app).data,
-            'leaves': LeaveSerializer(leaves, many=True).data,
+            'quotas': QuotaSerializer(quotas, many=True).data,
+            'config': LeaveConfigSerializer(config).data,
+        }
+
+        return Response(result)
+
+
+class QuotaView(APIView):
+
+    def get(self, request):
+        team_id = request.query_params['team_id']
+        app_id = request.query_params['app_id']
+        profile_id = request.query_params['profile_id']
+        year = request.query_params['year']
+
+        team = Team.objects.get(pk=team_id)
+        app = App.objects.get(pk=app_id)
+        profile = Profile.objects.get(pk=profile_id)
+
+        quota, q = Quota.objects.get_or_create(
+            year=year, profile_id=profile_id)
+        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+
+        result = {
+            'team': TeamSerializer(team).data,
+            'app': AppSerializer(app).data,
+            'profile': ProfileSerializer(profile).data,
+            'quota': QuotaSerializer(quota).data,
             'config': LeaveConfigSerializer(config).data,
         }
 

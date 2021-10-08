@@ -554,10 +554,10 @@ class PartSerializer(serializers.ModelSerializer):
             return teammates
 
 
-class LeaveSerializer(serializers.ModelSerializer):
+class QuotaSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Leave
+        model = Quota
         fields = '__all__'
 
 

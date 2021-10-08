@@ -23,6 +23,7 @@ urlpatterns = [
     path('planner', PlannerView.as_view()),
     path('calls', CallsView.as_view()),
     path('leaves', LeaveView.as_view()),
+    path('quota', QuotaView.as_view()),
     path('works', WorksView.as_view()),
     
     path('shifts', ShiftsView.as_view()),
