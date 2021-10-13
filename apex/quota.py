@@ -70,7 +70,8 @@ def compute_quota(cells, quota, config, holidays, detailed):
         'hour',
     ]
 
-    result, quota, detail, types_sorted = get_types_data(config, leave_types, quota)
+    result, quota, detail, types_sorted = get_types_data(
+        config, leave_types, quota)
 
     for cell in cells:
         code = get_cell_code(cell)
@@ -84,12 +85,10 @@ def compute_quota(cells, quota, config, holidays, detailed):
                     has_hs = re.findall('[-|+][0-9]{1,}[\.*]{0,}[0-9]{0,}', code)
 
                     for hs in has_hs:
-                        amount = float(hs)
-
-                        quota[type_detail['name']] += amount
                         cell['count'] = hs
-                    
+                        quota[type_detail['name']] += float(hs)
                         detail[type_detail['name']].append(cell)
+
                         code = code.replace(hs, '', 1)
 
 

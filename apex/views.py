@@ -394,7 +394,7 @@ class QuotaView(APIView):
         holidays = Holiday.objects.filter(date__year=year)
         holidays = HolidaySerializer(holidays, many=True).data
 
-        computed_quota, detail_quota  = compute_quota(
+        computed_quota, detail_quota = compute_quota(
             cells=cells,
             quota=base_quota,
             config=config,
@@ -408,6 +408,7 @@ class QuotaView(APIView):
             'profile': ProfileSerializer(profile).data,
             'base_quota': base_quota,
             'computed_quota': computed_quota,
+            'detail_quota': detail_quota,
             'config': config,
         }
 
