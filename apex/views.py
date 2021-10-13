@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from .models import *
 from .serializers import *
 
+from .quota import compute_quota
+
 
 class HomeView(APIView):
 
@@ -215,7 +217,7 @@ class CalendarView(APIView):
             date__month=month, date__year=year, app=app.id)
         cells = Cell.objects.filter(
             date__month=month, date__year=year, profile__in=profiles_id)
-        rrs = RR.objects.filter(date__month=month, date__year=year)
+        holidays = Holiday.objects.filter(date__month=month, date__year=year)
 
         result = {
             'team': TeamSerializer(team, context={
@@ -225,7 +227,7 @@ class CalendarView(APIView):
             'app': AppSerializer(app).data,
             'days': DaySerializer(days, many=True).data,
             'cells': CellSerializer(cells, many=True).data,
-            'rrs': RRSerializer(rrs, many=True).data,
+            'holidays': HolidaySerializer(holidays, many=True).data,
         }
 
         return Response(result)
@@ -378,16 +380,35 @@ class QuotaView(APIView):
         app = App.objects.get(pk=app_id)
         profile = Profile.objects.get(pk=profile_id)
 
+        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+        config = LeaveConfigSerializer(config).data
+
         quota, q = Quota.objects.get_or_create(
             year=year, profile_id=profile_id)
-        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+
+        base_quota = QuotaSerializer(quota).data
+
+        cells = Cell.objects.filter(date__year=year, profile=profile_id)
+        cells = CellSerializer(cells, many=True).data
+
+        holidays = Holiday.objects.filter(date__year=year)
+        holidays = HolidaySerializer(holidays, many=True).data
+
+        computed_quota, detail_quota  = compute_quota(
+            cells=cells,
+            quota=base_quota,
+            config=config,
+            holidays=holidays,
+            detailed=True
+        )
 
         result = {
             'team': TeamSerializer(team).data,
             'app': AppSerializer(app).data,
             'profile': ProfileSerializer(profile).data,
-            'quota': QuotaSerializer(quota).data,
-            'config': LeaveConfigSerializer(config).data,
+            'base_quota': base_quota,
+            'computed_quota': computed_quota,
+            'config': config,
         }
 
         return Response(result)
@@ -623,7 +644,7 @@ class ContactsView(APIView):
                 contact['absence'] = ''
 
             else:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_EHolidayOR)
 
 
         result = {

@@ -568,10 +568,10 @@ class LeaveConfigSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RRSerializer(serializers.ModelSerializer):
+class HolidaySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = RR
+        model = Holiday
         fields = '__all__'
 
 

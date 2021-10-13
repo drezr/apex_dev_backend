@@ -86,7 +86,7 @@ admin.site.register(Link)
 admin.site.register(Call)
 admin.site.register(Quota, QuotaAdmin)
 admin.site.register(LeaveConfig, LeaveConfigAdmin)
-admin.site.register(RR)
+admin.site.register(Holiday)
 admin.site.register(Log, LogAdmin)
 admin.site.register(Message, MessageAdmin)
 

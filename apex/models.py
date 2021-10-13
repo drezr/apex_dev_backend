@@ -844,7 +844,7 @@ class LeaveConfig(models.Model):
         return '[#{0}] {1}'.format(self.id, self.app)
 
 
-class RR(models.Model):
+class Holiday(models.Model):
 
     date = models.DateField()
 
