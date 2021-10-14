@@ -38,13 +38,14 @@ def get_types_data(config, leave_types, quota):
                     name = config['leave_' + str(i) + '_name']
                     name = None if not name else name.lower()
 
-                    if name and name not in detail:
-                        result[name] = 0
-                        detail[name] = list()
-                        new_quota[name] = float(quota['type_' + str(i)])
+                    if name and 'type_' + str(i) not in detail:
+                        result['type_' + str(i)] = 0
+                        detail['type_' + str(i)] = list()
+                        new_quota['type_' + str(i)] = float(quota['type_' + str(i)])
 
                         types_sorted[t].append({
                             'name': name,
+                            'generic': 'type_' + str(i),
                             'type': config['leave_' + str(i) + '_type'],
                         })
 
@@ -86,8 +87,8 @@ def compute_quota(cells, quota, config, holidays, detailed):
 
                     for hs in has_hs:
                         cell['count'] = hs
-                        quota[type_detail['name']] += float(hs)
-                        detail[type_detail['name']].append(cell)
+                        quota[type_detail['generic']] += float(hs)
+                        detail[type_detail['generic']].append(cell)
 
                         code = code.replace(hs, '', 1)
 
@@ -96,8 +97,8 @@ def compute_quota(cells, quota, config, holidays, detailed):
                     amount = 0
 
                     if leave_type not in excluded_leave_types:
-                        has_hour = re.search('[0-9](' + type_detail['name'] + ')', code)
-                        hour_count = 8 if not has_hour else has_hour.group(0).replace(type_detail['name'], '')
+                        has_hour = re.search('[0-9](' + type_detail['generic'] + ')', code)
+                        hour_count = 8 if not has_hour else has_hour.group(0).replace(type_detail['generic'], '')
                         amount = 0.5 if int(hour_count) <= 4 else 1
 
                         is_day_type = type_detail['type'] == 'day'
@@ -118,9 +119,9 @@ def compute_quota(cells, quota, config, holidays, detailed):
                                 amount = -amount if is_minus else amount
 
 
-                            quota[type_detail['name']] += amount
+                            quota[type_detail['generic']] += amount
                             cell['count'] = '+' + str(amount) if amount > 0 else amount
-                            detail[type_detail['name']].append(cell)
+                            detail[type_detail['generic']].append(cell)
 
 
                         if is_recovery_type or is_presence_type:
@@ -132,10 +133,10 @@ def compute_quota(cells, quota, config, holidays, detailed):
 
                             if _type:
                                 for _leave_type in types_sorted[_type]:
-                                    quota[_leave_type['name']] += amount
+                                    quota[_leave_type['generic']] += amount
                                     cell['count'] = '+' + str(amount)
                                         
-                                    detail[_leave_type['name']].append(cell)
+                                    detail[_leave_type['generic']].append(cell)
                                     
 
                     if has_hour:
@@ -146,22 +147,10 @@ def compute_quota(cells, quota, config, holidays, detailed):
 
 
 
-    computed_quota = dict()
-
     for key, val in quota.items():
         quota[key] = int(val) if isinstance(val, float) and val.is_integer() else round(val, 2)
 
-        for item in config:
-            if 'name' in item:
-                i = item.split('_')[1]
-                name = config['leave_' + i + '_name']
-                name = '' if not name else name.lower()
-
-                if name == key:
-                    computed_quota['type_' + i] = val
-
-
-    return computed_quota, detail
+    return quota, detail
 
 
 

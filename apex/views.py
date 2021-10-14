@@ -388,7 +388,8 @@ class QuotaView(APIView):
 
         base_quota = QuotaSerializer(quota).data
 
-        cells = Cell.objects.filter(date__year=year, profile=profile_id)
+        cells = Cell.objects.filter(
+            date__year=year, profile=profile_id)
         cells = CellSerializer(cells, many=True).data
 
         holidays = Holiday.objects.filter(date__year=year)
