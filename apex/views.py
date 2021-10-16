@@ -219,6 +219,8 @@ class CalendarView(APIView):
             date__month=month, date__year=year, profile__in=profiles_id)
         holidays = Holiday.objects.filter(date__month=month, date__year=year)
 
+        leave_config, lc = LeaveConfig.objects.get_or_create(app_id=app_id)
+
         result = {
             'team': TeamSerializer(team, context={
                 'link': 'detail',
@@ -228,6 +230,7 @@ class CalendarView(APIView):
             'days': DaySerializer(days, many=True).data,
             'cells': CellSerializer(cells, many=True).data,
             'holidays': HolidaySerializer(holidays, many=True).data,
+            'leave_config': LeaveConfigSerializer(leave_config).data,
         }
 
         return Response(result)

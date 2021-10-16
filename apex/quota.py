@@ -57,7 +57,9 @@ def compute_quota(cells, quota, config, holidays, detailed):
     leave_types = [
         'ignore',
         'counter',
-        'day',
+        'normal_leave',
+        'credit_day',
+        'variable_leave',
         'saturday',
         'sunday',
         'holiday',
@@ -101,7 +103,9 @@ def compute_quota(cells, quota, config, holidays, detailed):
                         hour_count = 8 if not has_hour else has_hour.group(0).replace(type_detail['generic'], '')
                         amount = 0.5 if int(hour_count) <= 4 else 1
 
-                        is_day_type = type_detail['type'] == 'day'
+                        is_normal_type = type_detail['type'] == 'normal_leave'
+                        is_credit_type = type_detail['type'] == 'credit_day'
+                        is_variable_leave = type_detail['type'] == 'variable_leave'
                         is_counter_type = type_detail['type'] == 'counter'
                         is_recovery_type = type_detail['type'] == 'recovery'
                         is_presence_type = type_detail['type'] == 'presence'
@@ -110,7 +114,7 @@ def compute_quota(cells, quota, config, holidays, detailed):
                         is_holi = cell['date'] in holidays
 
                         if not is_sat and not is_sun and not is_holi and not is_recovery_type and not is_presence_type:
-                            is_minus = (is_day_type or not is_sat or not is_sun or not is_holi) and not is_counter_type
+                            is_minus = (is_normal_type or is_credit_type or is_variable_leave or not is_sat or not is_sun or not is_holi) and not is_counter_type
 
                             if has_hour:
                                 amount = -amount if is_minus else amount
