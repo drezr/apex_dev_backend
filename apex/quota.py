@@ -1,4 +1,5 @@
 import datetime
+import math
 import re
 
 
@@ -57,6 +58,11 @@ def compute_quota(cells, quota, config, holidays, detailed):
     leave_types = [
         'ignore',
         'counter',
+        'counter_sick',
+        'counter_special',
+        'counter_unjustified',
+        'counter_strike',
+        'counter_wounded',
         'normal_leave',
         'credit_day',
         'variable_leave',
@@ -72,6 +78,21 @@ def compute_quota(cells, quota, config, holidays, detailed):
         'ignore',
         'hour',
     ]
+
+    counters_count = {
+        'sick': 0,
+        'special': 0,
+        'unjustified': 0,
+        'strike': 0,
+        'wounded': 0,
+        'total': 0,
+        'total_no_wounded': 0,
+    }
+
+    credit_variable_types = {
+        'credit': list(),
+        'variable': list(),
+    }
 
     result, quota, detail, types_sorted = get_types_data(
         config, leave_types, quota)
@@ -90,7 +111,9 @@ def compute_quota(cells, quota, config, holidays, detailed):
                     for hs in has_hs:
                         cell['count'] = hs
                         quota[type_detail['generic']] += float(hs)
-                        detail[type_detail['generic']].append(cell)
+
+                        if detailed:
+                            detail[type_detail['generic']].append(cell)
 
                         code = code.replace(hs, '', 1)
 
@@ -105,16 +128,22 @@ def compute_quota(cells, quota, config, holidays, detailed):
 
                         is_normal_type = type_detail['type'] == 'normal_leave'
                         is_credit_type = type_detail['type'] == 'credit_day'
-                        is_variable_leave = type_detail['type'] == 'variable_leave'
-                        is_counter_type = type_detail['type'] == 'counter'
+                        is_variable_type = type_detail['type'] == 'variable_leave'
+                        is_counter_type = 'counter' in type_detail['type']
                         is_recovery_type = type_detail['type'] == 'recovery'
                         is_presence_type = type_detail['type'] == 'presence'
                         is_sat = type_detail['type'] == 'saturday' and day_name == 'sat'
                         is_sun = type_detail['type'] == 'sunday' and day_name == 'sun'
                         is_holi = cell['date'] in holidays
 
+                        if is_variable_type:
+                            credit_variable_types['variable'].append(type_detail['generic'])
+
+                        elif is_credit_type:
+                            credit_variable_types['credit'].append(type_detail['generic'])
+
                         if not is_sat and not is_sun and not is_holi and not is_recovery_type and not is_presence_type:
-                            is_minus = (is_normal_type or is_credit_type or is_variable_leave or not is_sat or not is_sun or not is_holi) and not is_counter_type
+                            is_minus = (is_normal_type or is_credit_type or is_variable_type or not is_sat or not is_sun or not is_holi) and not is_counter_type
 
                             if has_hour:
                                 amount = -amount if is_minus else amount
@@ -122,10 +151,26 @@ def compute_quota(cells, quota, config, holidays, detailed):
                             else:
                                 amount = -amount if is_minus else amount
 
+                            if is_counter_type:
+                                t = type_detail['type']
+                                counter_type = 'counter' if t == 'counter' else t.split('_')[1]
+
+                                for key, val in counters_count.items():
+                                    if key == counter_type:
+                                        counters_count[key] += 1
+
+                                if counter_type not in ['counter']:
+                                    counters_count['total'] += 1
+
+                                    if counter_type != 'wounded':
+                                        counters_count['total_no_wounded'] += 1
+
 
                             quota[type_detail['generic']] += amount
-                            cell['count'] = '+' + str(amount) if amount > 0 else amount
-                            detail[type_detail['generic']].append(cell)
+                            
+                            if detailed:
+                                cell['count'] = '+' + str(amount) if amount > 0 else amount
+                                detail[type_detail['generic']].append(cell)
 
 
                         if is_recovery_type or is_presence_type:
@@ -138,9 +183,10 @@ def compute_quota(cells, quota, config, holidays, detailed):
                             if _type:
                                 for _leave_type in types_sorted[_type]:
                                     quota[_leave_type['generic']] += amount
-                                    cell['count'] = '+' + str(amount)
-                                        
-                                    detail[_leave_type['generic']].append(cell)
+                                    
+                                    if detailed:
+                                        cell['count'] = '+' + str(amount)
+                                        detail[_leave_type['generic']].append(cell)
                                     
 
                     if has_hour:
@@ -154,9 +200,20 @@ def compute_quota(cells, quota, config, holidays, detailed):
     for key, val in quota.items():
         quota[key] = int(val) if isinstance(val, float) and val.is_integer() else round(val, 2)
 
+
+    for total, _type in zip(['total', 'total_no_wounded'], ['variable', 'credit']):
+        for i in range(math.floor(counters_count[total] / 28)):
+            for type_name in credit_variable_types[_type]:
+                quota[type_name] -= 1
+
+                if detailed:
+                    detail[type_name].append({
+                        'date': None,
+                        'count': -1,
+                    })
+
+
     return quota, detail
-
-
 
 
 # cells = [

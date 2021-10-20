@@ -419,6 +419,58 @@ class QuotaView(APIView):
         return Response(result)
 
 
+class QuotaSimpleView(APIView):
+
+    def get(self, request):
+        end = request.query_params['end']
+        app_id = request.query_params['app_id']
+        profile_id = request.query_params['profile_id']
+        month = request.query_params['month']
+        year = request.query_params['year']
+
+        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+        holidays = Holiday.objects.filter(date__year=year)
+        quota, q = Quota.objects.get_or_create(
+            year=year, profile_id=profile_id)
+
+        end_quota_cells = None
+
+        if end == 'month_start':
+            end_quota_cells = Cell.objects.filter(
+                date__month__lt=month,
+                date__year=year,
+                profile=profile_id,
+            )
+
+        elif end == 'month_end':
+            end_quota_cells = Cell.objects.filter(
+                date__month__lte=month,
+                date__year=year,
+                profile=profile_id,
+            )
+
+        elif end == 'year_end':
+            end_quota_cells = Cell.objects.filter(
+                date__month__lte=12,
+                date__year=year,
+                profile=profile_id,
+            )
+
+        quota, detail_quota = compute_quota(
+            cells=CellSerializer(end_quota_cells, many=True).data,
+            quota=QuotaSerializer(quota).data,
+            config=LeaveConfigSerializer(config).data,
+            holidays=HolidaySerializer(holidays, many=True).data,
+            detailed=False
+        )
+
+        result = {
+            'quota': quota,
+        }
+
+        return Response(result)
+
+
 class DayView(APIView):
 
     def get(self, request):
