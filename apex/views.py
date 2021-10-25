@@ -129,17 +129,12 @@ class MyApexDraftView(APIView):
         return Response('Not Allowed')
 
 
-class TemplateView(APIView):
+class TemplatesView(APIView):
 
     def get(self, request):
-        team_id = request.query_params['team_id']
         app_id = request.query_params['app_id']
 
         result = {
-            'team': TeamSerializer(Team.objects.get(pk=team_id), context={
-                'link': 'detail',
-                'profiles': 'detail',
-            }).data,
             'app': AppSerializer(App.objects.get(pk=app_id), context={
                 'link': 'detail',
                 'templates': 'detail',
