@@ -53,6 +53,8 @@ class App(models.Model):
     team = models.ForeignKey('Team', on_delete=models.CASCADE, blank=True, null=True)
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
     
+    selected_template = models.ForeignKey('Template', on_delete=models.CASCADE, blank=True, null=True)
+    
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
