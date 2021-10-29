@@ -896,6 +896,9 @@ class TeamProfileLink(models.Model):
 
     is_manager = models.BooleanField(default=False)
 
+    planner_is_editor = models.BooleanField(default=False)
+    planner_is_user = models.BooleanField(default=False)
+
     draft_is_editor = models.BooleanField(default=False)
     draft_is_user = models.BooleanField(default=False)
     draft_can_see_private = models.BooleanField(default=False)
@@ -903,6 +906,7 @@ class TeamProfileLink(models.Model):
     radium_is_editor = models.BooleanField(default=False)
 
     watcher_is_editor = models.BooleanField(default=False)
+    watcher_is_user = models.BooleanField(default=False)
     watcher_is_visible = models.BooleanField(default=False)
     watcher_is_printable = models.BooleanField(default=False)
     watcher_can_see_cells = models.BooleanField(default=False)
