@@ -77,6 +77,7 @@ admin.site.register(Shift, ShiftAdmin)
 admin.site.register(Part, PartAdmin)
 admin.site.register(Project)
 admin.site.register(Template)
+admin.site.register(Folder)
 admin.site.register(Task)
 admin.site.register(Subtask)
 admin.site.register(Note, NoteAdmin)
@@ -117,6 +118,10 @@ class AppNoteLinkAdmin(admin.ModelAdmin):
 
 class AppContactLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', 'contact', )
+
+
+class AppFolderLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('app', 'folder', )
 
 
 class DayTaskLinkAdmin(admin.ModelAdmin):
@@ -195,6 +200,30 @@ class TaskLinkLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'link', )
 
 
+class FolderTaskLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('folder', 'task', )
+
+
+class FolderSubtaskLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('folder', 'subtask', )
+
+
+class FolderNoteLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('folder', 'note', )
+
+
+class FolderFileLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('folder', 'file', )
+
+
+class FolderInputLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('folder', 'input', )
+
+
+class FolderLinkLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('folder', 'link', )
+
+
 admin.site.register(TeamProfileLink, TeamProfileLinkAdmin)
 admin.site.register(AppWorkLink, AppWorkLinkAdmin)
 admin.site.register(AppProjectLink, AppProjectLinkAdmin)
@@ -202,6 +231,7 @@ admin.site.register(AppTaskLink, AppTaskLinkAdmin)
 admin.site.register(AppFileLink, AppFileLinkAdmin)
 admin.site.register(AppNoteLink, AppNoteLinkAdmin)
 admin.site.register(AppContactLink, AppContactLinkAdmin)
+admin.site.register(AppFolderLink, AppFolderLinkAdmin)
 admin.site.register(DayTaskLink, DayTaskLinkAdmin)
 admin.site.register(DayNoteLink, DayNoteLinkAdmin)
 admin.site.register(DayFileLink, DayFileLinkAdmin)
@@ -221,3 +251,9 @@ admin.site.register(TaskNoteLink, TaskNoteLinkAdmin)
 admin.site.register(TaskFileLink, TaskFileLinkAdmin)
 admin.site.register(TaskInputLink, TaskInputLinkAdmin)
 admin.site.register(TaskLinkLink, TaskLinkLinkAdmin)
+admin.site.register(FolderTaskLink, FolderTaskLinkAdmin)
+admin.site.register(FolderSubtaskLink, FolderSubtaskLinkAdmin)
+admin.site.register(FolderNoteLink, FolderNoteLinkAdmin)
+admin.site.register(FolderFileLink, FolderFileLinkAdmin)
+admin.site.register(FolderInputLink, FolderInputLinkAdmin)
+admin.site.register(FolderLinkLink, FolderLinkLinkAdmin)

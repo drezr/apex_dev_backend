@@ -79,6 +79,13 @@ class App(models.Model):
         through='AppContactLink',
         related_name='contact'
     )
+    
+    folders = models.ManyToManyField(
+        'Folder',
+        blank=True,
+        through='AppFolderLink',
+        related_name='folder'
+    )
 
     def __str__(self):
         name = None
@@ -574,6 +581,47 @@ class Template(models.Model):
         return '[#{0}] {1}'.format(self.id, self.name)
 
 
+class Folder(models.Model):
+
+    name = models.TextField(null=True, blank=True)
+    color = models.CharField(max_length=40, blank=True, null=True)
+
+    tasks = models.ManyToManyField(
+        'Task',
+        blank=True,
+        through='FolderTaskLink',
+    )
+
+    subtasks = models.ManyToManyField(
+        'Subtask',
+        blank=True,
+        through='FolderSubtaskLink',
+    )
+    notes = models.ManyToManyField(
+        'Note',
+        blank=True,
+        through='FolderNoteLink',
+    )
+    files = models.ManyToManyField(
+        'File',
+        blank=True,
+        through='FolderFileLink',
+    )
+    inputs = models.ManyToManyField(
+        'Input',
+        blank=True,
+        through='FolderInputLink',
+    )
+    links = models.ManyToManyField(
+        'Link',
+        blank=True,
+        through='FolderLinkLink',
+    )
+
+    def __str__(self):
+        return '[#{0}] {1}'.format(self.id, self.name)
+
+
 class Task(models.Model):
 
     name = models.TextField(null=True, blank=True)
@@ -990,6 +1038,17 @@ class AppContactLink(models.Model):
         return '{0} : {1}'.format(self.app, self.contact)
 
 
+class AppFolderLink(models.Model):
+
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.app, self.folder)
+
+
 class DayTaskLink(models.Model):
 
     day = models.ForeignKey('Day', on_delete=models.CASCADE)
@@ -1214,3 +1273,75 @@ class TaskLinkLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.link)
+
+
+class FolderTaskLink(models.Model):
+
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.folder, self.task)
+
+
+class FolderSubtaskLink(models.Model):
+
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+    subtask = models.ForeignKey('Subtask', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.folder, self.subtask)
+
+
+class FolderNoteLink(models.Model):
+
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+    note = models.ForeignKey('Note', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.folder, self.note)
+
+
+class FolderFileLink(models.Model):
+
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+    file = models.ForeignKey('File', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.folder, self.file)
+
+
+class FolderInputLink(models.Model):
+
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+    input = models.ForeignKey('Input', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.folder, self.input)
+
+
+class FolderLinkLink(models.Model):
+
+    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
+    link = models.ForeignKey('Link', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.folder, self.link)

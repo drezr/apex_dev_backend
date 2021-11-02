@@ -280,6 +280,7 @@ class PlannerView(APIView):
             }).data,
             'app': AppSerializer(app, context={
                 'link': 'detail',
+                'folders': 'detail',
                 'tasks': 'detail',
                 'subtasks': 'detail',
                 'inputs': 'detail',

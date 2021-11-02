@@ -167,6 +167,7 @@ class AppSerializer(serializers.ModelSerializer):
 
     projects = serializers.SerializerMethodField()
     templates = serializers.SerializerMethodField()
+    folders = serializers.SerializerMethodField()
     tasks = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
@@ -182,6 +183,9 @@ class AppSerializer(serializers.ModelSerializer):
 
     def get_templates(self, app):
         return get_children(app, self.context, 'app', 'template')
+
+    def get_folders(self, app):
+        return get_children(app, self.context, 'app', 'folder')
 
     def get_tasks(self, app):
         return get_children(app, self.context, 'app', 'task')
@@ -242,6 +246,38 @@ class TemplateSerializer(serializers.ModelSerializer):
 
     def get_link(self, template):
         return get_link(template, self.context, 'template')
+
+
+class FolderSerializer(serializers.ModelSerializer):
+
+    link = serializers.SerializerMethodField()
+    tasks = serializers.SerializerMethodField()
+    subtasks = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
+    inputs = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Folder
+        fields = '__all__'
+
+    def get_tasks(self, folder):
+        return get_children(folder, self.context, 'folder', 'task')
+
+    def get_subtasks(self, folder):
+        return get_children(folder, self.context, 'folder', 'subtask')
+
+    def get_notes(self, folder):
+        return get_children(folder, self.context, 'folder', 'note')
+
+    def get_inputs(self, folder):
+        return get_children(folder, self.context, 'folder', 'input')
+
+    def get_files(self, folder):
+        return get_children(folder, self.context, 'folder', 'file')
+
+    def get_link(self, folder):
+        return get_link(folder, self.context, 'folder')
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -643,6 +679,13 @@ class AppProjectLinkSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AppFolderLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AppFolderLink
+        fields = '__all__'
+
+
 class AppTaskLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -801,4 +844,46 @@ class TaskLinkLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskLinkLink
+        fields = '__all__'
+
+
+class FolderTaskLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FolderTaskLink
+        fields = '__all__'
+
+
+class FolderSubtaskLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FolderSubtaskLink
+        fields = '__all__'
+
+
+class FolderNoteLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FolderNoteLink
+        fields = '__all__'
+
+
+class FolderFileLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FolderFileLink
+        fields = '__all__'
+
+
+class FolderInputLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FolderInputLink
+        fields = '__all__'
+
+
+class FolderLinkLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FolderLinkLink
         fields = '__all__'
