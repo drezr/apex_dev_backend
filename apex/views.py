@@ -93,7 +93,7 @@ class TeamView(APIView):
         return Response(result)
 
 
-class DraftView(APIView):
+class ProjectsView(APIView):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -113,7 +113,7 @@ class DraftView(APIView):
         return Response(result)
 
 
-class MyApexDraftView(APIView):
+class MyApexProjectsView(APIView):
 
     def get(self, request):
         app_id = request.query_params['app_id']
@@ -231,7 +231,7 @@ class CalendarView(APIView):
         return Response(result)
 
 
-class PlannerView(APIView):
+class BoardView(APIView):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -415,7 +415,7 @@ class QuotaView(APIView):
         return Response(result)
 
 
-class QuotaSimpleView(APIView):
+class QuotaLightView(APIView):
 
     def get(self, request):
         end = request.query_params['end']
