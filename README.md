@@ -40,7 +40,7 @@ cd /project/directory/apex_dev_backend
 ```
 
 ```
-pip install -r requierments.txt
+pip install -r requirements.txt
 ```
 
 ```
