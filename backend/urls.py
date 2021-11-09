@@ -35,4 +35,6 @@ urlpatterns = [
     path('apps', AppsView.as_view()),
     path('logs', LogsView.as_view()),
     path('messages', MessagesView.as_view()),
+
+    path('task', TaskView.as_view()),
 ]

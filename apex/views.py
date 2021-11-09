@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
+from .permissions import *
 
 from .quota import compute_quota
 
@@ -705,6 +706,53 @@ class ContactsView(APIView):
 
         result = {
             'app': app,
+        }
+
+        return Response(result)
+
+
+class TaskView(APIView, PermissionHelpers):
+
+    permission_classes = [TaskPermissions|IsSuperUser]
+
+    def get_data(self, request):
+        task_id = request.data['task_id']
+        status = self.has_data(request, 'status')
+        name = self.has_data(request, 'name')
+        task = Task.objects.get(pk=task_id)
+
+        return task, name, status
+
+    def patch(self, request):
+        task, name, _status = self.get_data(request)
+
+        if name: task.name = name
+        elif _status: task.status = _status
+
+        task.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+    def post(self, request):
+        project_id = self.has_data(request, 'project_id')
+
+        task = Task.objects.create(status='pending')
+
+        if project_id:
+            project = Project.objects.get(pk=project_id)
+
+            project_task_link = ProjectTaskLink.objects.create(
+                project=project,
+                task=task,
+                is_original=True,
+                position=len(project.tasks.all()),
+            )
+
+        task = TaskSerializer(task).data
+        task['link'] = ProjectTaskLinkSerializer(project_task_link).data
+
+        result = {
+            'task': task,
         }
 
         return Response(result)
