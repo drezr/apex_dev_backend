@@ -52,6 +52,6 @@ python manage.py runserver
 
 ## License
 
-MIT License
+[MIT License](https://opensource.org/licenses/MIT)
  
-Copyright (c) 2021 Ronan Dumont
+Copyright (c) 2021-present, Ronan Dumont
