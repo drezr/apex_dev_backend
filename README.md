@@ -49,3 +49,9 @@ python manage.py migrate
 ```
 python manage.py runserver
 ```
+
+## License
+
+MIT License
+ 
+Copyright (c) 2021 Ronan Dumont
