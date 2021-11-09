@@ -16,6 +16,14 @@ sudo apt install python3-venv
 ```
 
 ```
+sudo apt install python3-pip
+```
+
+```
+pip install --upgrade pip
+```
+
+```
 cd /project/directory
 ```
 
@@ -29,10 +37,6 @@ source venv/bin/activate
 
 ```
 cd /project/directory/apex_dev_backend
-```
-
-```
-pip install --upgrade pip
 ```
 
 ```
