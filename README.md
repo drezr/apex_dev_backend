@@ -20,10 +20,6 @@ sudo apt install python3-pip
 ```
 
 ```
-pip3 install --upgrade pip
-```
-
-```
 cd /project/directory
 ```
 
@@ -33,6 +29,10 @@ python3 -m venv venv
 
 ```
 source venv/bin/activate
+```
+
+```
+pip3 install --upgrade pip
 ```
 
 ```
