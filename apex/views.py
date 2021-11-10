@@ -713,7 +713,8 @@ class ContactsView(APIView):
 
 class TaskView(APIView, PermissionHelpers):
 
-    permission_classes = [TaskPermissions|IsSuperUser]
+    permission_classes = [TaskPermissions]
+    # permission_classes = [TaskPermissions|IsSuperUser]
 
     def get_data(self, request):
         task_id = request.data['task_id']
@@ -723,51 +724,54 @@ class TaskView(APIView, PermissionHelpers):
 
         return task, name, status
 
-    def patch(self, request):
-        task, name, _status = self.get_data(request)
-
-        if name: task.name = name
-        elif _status: task.status = _status
-
-        task.save()
-
-        return Response(status=status.HTTP_200_OK)
-
     def post(self, request):
+        action = self.has_data(request, 'action')
         project_id = self.has_data(request, 'project_id')
 
-        task = Task.objects.create(status='pending')
+        if action == 'create':
+            task = Task.objects.create(status='pending')
 
-        if project_id:
-            project = Project.objects.get(pk=project_id)
+            task_serialized = TaskSerializer(task, context={
+                'link': 'detail',
+                'subtasks': 'detail',
+                'notes': 'detail',
+                'files': 'detail',
+                'inputs': 'detail',
+            }).data
 
-            project_task_link = ProjectTaskLink.objects.create(
-                project=project,
-                task=task,
-                is_original=True,
-                position=len(project.tasks.all()),
-            )
+            if project_id:
+                project = Project.objects.get(pk=project_id)
 
-        task = TaskSerializer(task, context={
-            'link': 'detail',
-            'subtasks': 'detail',
-            'notes': 'detail',
-            'files': 'detail',
-            'inputs': 'detail',
-        }).data
+                project_task_link = ProjectTaskLink.objects.create(
+                    project=project,
+                    task=task,
+                    is_original=True,
+                    position=len(project.tasks.all()),
+                )
 
-        task['link'] = ProjectTaskLinkSerializer(project_task_link).data
+                task_serialized['link'] = ProjectTaskLinkSerializer(
+                    project_task_link).data
 
-        result = {
-            'task': task,
-        }
+            result = {
+                'task': task_serialized,
+            }
 
-        return Response(result)
+            return Response(result)
 
-    def destroy(self, request):
-        task_id = request.data['task_id']
-        task = Task.objects.get(pk=task_id)
+        elif action == 'update':
+            task, name, _status = self.get_data(request)
 
-        task.delete()
+            if name: task.name = name
+            elif _status: task.status = _status
 
-        return Response(status=status.HTTP_200_OK)
+            task.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+        elif action == 'delete':
+            task_id = request.data['task_id']
+            task = Task.objects.get(pk=task_id)
+
+            task.delete()
+
+            return Response(status=status.HTTP_200_OK)

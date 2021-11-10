@@ -37,27 +37,33 @@ class TaskPermissions(PermissionHelpers):
 
         team = Team.objects.get(pk=team_id)
         app = team.app_set.get(pk=app_id)
-        print(action)
+
+        team_links = TeamProfileLink.objects.filter(
+            team=team,
+            profile=request.user.profile,
+        )
+
+        access = None
+
+        if len(team_links) == 1:
+            access = team_links[0]
+
+        else:
+            print('Warning: more than 1 team profile link !')
+
+            return False
 
         if project_id:
             project = app.project_set.get(pk=project_id)
 
-            link = TeamProfileLink.objects.filter(
-                team=team,
-                profile=request.user.profile,
-            )
-
-            if request.method in ['PATCH', 'DELETE']:
+            if action in ['update', 'delete']:
                 task = project.tasks.get(pk=task_id)
 
-                if request.method == 'PATCH':
-                    if name: return link[0].draft_is_editor
-                    if status: return link[0].draft_is_user
+                if action == 'update':
+                    if name: return access.draft_is_editor
+                    if status: return access.draft_is_user
 
-                elif request.method == 'DELETE':
-                    return link[0].draft_is_editor
-
-            # if request.method == 'DELETE':
-            #     return link[0].draft_is_editor
+                elif action == 'delete':
+                    return access.draft_is_editor
 
         return False
