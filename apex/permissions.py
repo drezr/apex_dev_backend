@@ -27,8 +27,9 @@ class IsSuperUser(permissions.BasePermission):
 class TaskPermissions(PermissionHelpers):
 
     def has_permission(self, request, view):
-        team_id = request.data['team_id']
-        app_id = request.data['app_id']
+        action = self.has_data(request, 'action')
+        team_id = self.has_data(request, 'team_id')
+        app_id = self.has_data(request, 'app_id')
         task_id = self.has_data(request, 'task_id')
         project_id = self.has_data(request, 'project_id')
         status = self.has_data(request, 'status')
@@ -36,8 +37,7 @@ class TaskPermissions(PermissionHelpers):
 
         team = Team.objects.get(pk=team_id)
         app = team.app_set.get(pk=app_id)
-
-        print(request.method)
+        print(action)
 
         if project_id:
             project = app.project_set.get(pk=project_id)

@@ -748,7 +748,14 @@ class TaskView(APIView, PermissionHelpers):
                 position=len(project.tasks.all()),
             )
 
-        task = TaskSerializer(task).data
+        task = TaskSerializer(task, context={
+            'link': 'detail',
+            'subtasks': 'detail',
+            'notes': 'detail',
+            'files': 'detail',
+            'inputs': 'detail',
+        }).data
+
         task['link'] = ProjectTaskLinkSerializer(project_task_link).data
 
         result = {
@@ -756,3 +763,11 @@ class TaskView(APIView, PermissionHelpers):
         }
 
         return Response(result)
+
+    def destroy(self, request):
+        task_id = request.data['task_id']
+        task = Task.objects.get(pk=task_id)
+
+        task.delete()
+
+        return Response(status=status.HTTP_200_OK)
