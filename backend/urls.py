@@ -36,5 +36,5 @@ urlpatterns = [
     path('logs', LogsView.as_view()),
     path('messages', MessagesView.as_view()),
 
-    path('task', TaskView.as_view()),
+    path('element', ElementView.as_view()),
 ]

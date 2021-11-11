@@ -711,27 +711,28 @@ class ContactsView(APIView):
         return Response(result)
 
 
-class TaskView(APIView, PermissionHelpers):
-
-    permission_classes = [TaskPermissions]
-    # permission_classes = [TaskPermissions|IsSuperUser]
-
-    def get_data(self, request):
-        task_id = request.data['task_id']
-        status = self.has_data(request, 'status')
-        name = self.has_data(request, 'name')
-        task = Task.objects.get(pk=task_id)
-
-        return task, name, status
+class ElementView(APIView, ElementHelpers):
 
     def post(self, request):
-        action = self.has_data(request, 'action')
-        project_id = self.has_data(request, 'project_id')
+        data, element, model, serializer, permission = self.get_data(request)
 
-        if action == 'create':
-            task = Task.objects.create(status='pending')
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-            task_serialized = TaskSerializer(task, context={
+        project = None
+        result = dict()
+        create_kwargs = dict()
+
+        if data['project_id']:
+            project = Project.objects.get(pk=data['project_id'])
+
+        if data['action'] == 'create':
+            if data['kind'] == 'task':
+                create_kwargs = {'status': 'pending'}
+
+            element = model.objects.create(**create_kwargs)
+
+            element_serialized = serializer(element, context={
                 'link': 'detail',
                 'subtasks': 'detail',
                 'notes': 'detail',
@@ -739,39 +740,54 @@ class TaskView(APIView, PermissionHelpers):
                 'inputs': 'detail',
             }).data
 
-            if project_id:
-                project = Project.objects.get(pk=project_id)
-
+            if project:
                 project_task_link = ProjectTaskLink.objects.create(
                     project=project,
-                    task=task,
+                    task=element,
                     is_original=True,
                     position=len(project.tasks.all()),
                 )
 
-                task_serialized['link'] = ProjectTaskLinkSerializer(
+                element_serialized['link'] = ProjectTaskLinkSerializer(
                     project_task_link).data
 
-            result = {
-                'task': task_serialized,
-            }
+                result = {
+                    'task': element_serialized,
+                }
 
             return Response(result)
 
-        elif action == 'update':
-            task, name, _status = self.get_data(request)
+        elif data['action'] == 'update':
+            for field in ['name', 'key', 'value', 'heading', 'status']:
+                if data[field]:
+                    setattr(element, field, data[field])
 
-            if name: task.name = name
-            elif _status: task.status = _status
+            element.save()
 
-            task.save()
+            return Response(status=status.HTTP_200_OK)
+
+        elif data['action'] == 'delete':
+            element.delete()
 
             return Response(status=status.HTTP_200_OK)
 
-        elif action == 'delete':
-            task_id = request.data['task_id']
-            task = Task.objects.get(pk=task_id)
+        elif data['action'] == 'position':
+            for element_data in data['position_updates']:
+                element, model, serializer = self.get_objects(element_data)
+                link = None
 
-            task.delete()
+                if project:
+                    if element_data['kind'] == 'task':
+                        link = ProjectTaskLink.objects.get(
+                            project=project,
+                            task=element,
+                        )
+
+                if link:
+                    link.position = element_data['position']
+                    link.save()
 
             return Response(status=status.HTTP_200_OK)
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
