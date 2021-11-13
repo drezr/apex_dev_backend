@@ -713,6 +713,16 @@ class ContactsView(APIView):
 
 class ElementView(APIView, ElementHelpers):
 
+    def get_task_child_link(self, ed, task_id):
+        lm = globals()['Task' + ed['type'].capitalize() + 'Link']
+        em = globals()[ed['type'].capitalize()]
+
+        link_kwargs = {'task': Task.objects.get(pk=task_id)}
+        link_kwargs[ed['type']] = em.objects.get(pk=ed['element_id'])
+
+        return lm.objects.get(**link_kwargs)
+
+
     def post(self, request):
         data, element, model, serializer, permission = self.get_data(request)
 
@@ -720,6 +730,7 @@ class ElementView(APIView, ElementHelpers):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         project = None
+        element_serialized = None
         result = dict()
         create_kwargs = dict()
 
@@ -727,8 +738,11 @@ class ElementView(APIView, ElementHelpers):
             project = Project.objects.get(pk=data['project_id'])
 
         if data['action'] == 'create':
-            if data['kind'] == 'task':
+            if data['type'] == 'task':
                 create_kwargs = {'status': 'pending'}
+
+            elif data['type'] == 'input':
+                create_kwargs = {'kind': data['kind']}
 
             element = model.objects.create(**create_kwargs)
 
@@ -741,19 +755,44 @@ class ElementView(APIView, ElementHelpers):
             }).data
 
             if project:
-                project_task_link = ProjectTaskLink.objects.create(
-                    project=project,
-                    task=element,
-                    is_original=True,
-                    position=len(project.tasks.all()),
-                )
+                if not data['task_id']:
+                    project_task_link = ProjectTaskLink.objects.create(
+                        project=project,
+                        task=element,
+                        is_original=True,
+                        position=len(project.tasks.all()),
+                    )
 
-                element_serialized['link'] = ProjectTaskLinkSerializer(
-                    project_task_link).data
+                    element_serialized['link'] = ProjectTaskLinkSerializer(
+                        project_task_link).data
 
-                result = {
-                    'task': element_serialized,
-                }
+                else:
+                    link_model = globals()[
+                        'Task' + data['type'].capitalize() + 'Link'
+                    ]
+
+                    task = Task.objects.get(pk=data['task_id'])
+
+                    task_inputs = task.inputs.all()
+                    task_notes = task.notes.all()
+                    task_files = task.files.all()
+                    task_subtasks = task.subtasks.all()
+
+                    position = len(task_inputs) + len(task_notes) + len(task_files) + len(task_subtasks)
+
+                    link_kwargs = {
+                        'task': task,
+                        'is_original': True,
+                        'position': position,
+                    }
+
+                    link_kwargs[data['type']] = element
+
+                    link_model.objects.create(**link_kwargs)
+
+            result = {
+                'task': element_serialized,
+            }
 
             return Response(result)
 
@@ -767,6 +806,12 @@ class ElementView(APIView, ElementHelpers):
             return Response(status=status.HTTP_200_OK)
 
         elif data['action'] == 'delete':
+            for child_type in ['notes', 'files', 'inputs', 'subtasks']:
+                child_set = getattr(element, child_type)
+
+                for child in child_set.all():
+                    child.delete()
+
             element.delete()
 
             return Response(status=status.HTTP_200_OK)
@@ -777,11 +822,15 @@ class ElementView(APIView, ElementHelpers):
                 link = None
 
                 if project:
-                    if element_data['kind'] == 'task':
+                    if element_data['type'] == 'task':
                         link = ProjectTaskLink.objects.get(
                             project=project,
                             task=element,
                         )
+
+                    else:
+                        link = self.get_task_child_link(
+                            element_data, data['task_id'])
 
                 if link:
                     link.position = element_data['position']

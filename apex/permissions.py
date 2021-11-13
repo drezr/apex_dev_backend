@@ -3,6 +3,13 @@ from rest_framework import permissions
 from .models import *
 from .serializers import *
 
+
+class IsSuperUser(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user.is_superuser
+
+
 class CommonHelpers:
 
     def has_param(self, request, param):
@@ -11,20 +18,22 @@ class CommonHelpers:
 
         return None
 
+
     def has_data(self, request, data):
         if data in request.data:
             return request.data[data]
 
         return None
 
+
     def get_objects(self, data):
         element = None
         model = None
         serializer = None
 
-        if data['kind']:
-            model = globals()[data['kind'].capitalize()]
-            serializer = globals()[data['kind'].capitalize() + 'Serializer']
+        if data['type']:
+            model = globals()[data['type'].capitalize()]
+            serializer = globals()[data['type'].capitalize() + 'Serializer']
 
             if data['element_id']:
                 element = model.objects.get(pk=data['element_id'])
@@ -32,8 +41,16 @@ class CommonHelpers:
         return element, model, serializer
 
 
-
 class ElementHelpers(CommonHelpers):
+
+    def get_data(self, request):
+        data = self.parse_request_data(request)
+        element, model, serializer = self.get_objects(data)
+        permission = self.get_permission(
+            request, data, element, model, serializer)
+
+        return data, element, model, serializer, permission
+
 
     def parse_request_data(self, request):
         data = {
@@ -41,8 +58,9 @@ class ElementHelpers(CommonHelpers):
             'team_id': self.has_data(request, 'team_id'),
             'app_id': self.has_data(request, 'app_id'),
             'project_id': self.has_data(request, 'project_id'),
-            'task_id': self.has_data(request, 'element_id'),
+            'task_id': self.has_data(request, 'task_id'),
             'element_id': self.has_data(request, 'element_id'),
+            'type': self.has_data(request, 'type'),
             'kind': self.has_data(request, 'kind'),
             'status': self.has_data(request, 'status'),
             'name': self.has_data(request, 'name'),
@@ -53,6 +71,7 @@ class ElementHelpers(CommonHelpers):
         }
 
         return data
+
 
     def get_permission(self, request, data, element, model, serializer):
         team = Team.objects.get(pk=data['team_id'])
@@ -74,45 +93,37 @@ class ElementHelpers(CommonHelpers):
             return False
 
         if data['project_id']:
-            project = app.project_set.get(pk=data['project_id'])
-
-            if data['action'] in ['update', 'position', 'delete']:
-                if data['kind'] == 'task':
-                    task = project.tasks.get(pk=data['element_id'])
-
-                else:
-                    task = project.tasks.get(pk=data['task_id'])
-                    element_set = getattr(task, data['kind'] + 's')
-                    element_set.get(pk=element['element_id'])
-
-                if data['action'] == 'update':
-                    possible_fields = ['name', 'key', 'value', 'heading']
-
-                    for field in possible_fields:
-                        if data[field]:
-                          return access.draft_is_editor  
-
-                    if data['status']:
-                        return access.draft_is_user
-
-                elif data['action'] in ['position', 'delete']:
-                    return access.draft_is_editor
-
-            elif data['action'] == 'create':
-                return access.draft_is_editor
+            return self.get_draft_permission(data, app, access)
 
         return False
 
-    def get_data(self, request):
-        data = self.parse_request_data(request)
-        element, model, serializer = self.get_objects(data)
-        permission = self.get_permission(
-            request, data, element, model, serializer)
 
-        return data, element, model, serializer, permission
+    def get_draft_permission(self, data, app, access):
+        project = app.project_set.get(pk=data['project_id'])
 
+        if data['action'] in ['update', 'position', 'delete']:
+            if data['type'] == 'task':
+                task = project.tasks.get(pk=data['element_id'])
 
-class IsSuperUser(permissions.BasePermission):
+            else:
+                task = project.tasks.get(pk=data['task_id'])
 
-    def has_permission(self, request, view):
-        return request.user.is_superuser
+                for element_data in data['position_updates']:
+                    element_set = getattr(task, element_data['type'] + 's')
+                    element_set.get(pk=element_data['element_id'])
+
+            if data['action'] == 'update':
+                possible_fields = ['name', 'key', 'value', 'heading']
+
+                for field in possible_fields:
+                    if data[field]:
+                      return access.draft_is_editor  
+
+                if data['status']:
+                    return access.draft_is_user
+
+            elif data['action'] in ['position', 'delete']:
+                return access.draft_is_editor
+
+        elif data['action'] == 'create':
+            return access.draft_is_editor
