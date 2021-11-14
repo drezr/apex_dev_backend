@@ -101,9 +101,10 @@ class ElementHelpers(CommonHelpers):
     def get_draft_permission(self, data, app, access):
         project = app.project_set.get(pk=data['project_id'])
 
-        if data['action'] in ['update', 'position', 'delete']:
-            if data['type'] == 'task':
-                task = project.tasks.get(pk=data['element_id'])
+        if data['action'] == 'position':
+            if not data['task_id']:
+                for element_data in data['position_updates']:
+                    task = project.tasks.get(pk=element_data['element_id'])
 
             else:
                 task = project.tasks.get(pk=data['task_id'])
@@ -112,9 +113,21 @@ class ElementHelpers(CommonHelpers):
                     element_set = getattr(task, element_data['type'] + 's')
                     element_set.get(pk=element_data['element_id'])
 
-            if data['action'] == 'update':
-                possible_fields = ['name', 'key', 'value', 'heading']
+            return access.draft_is_editor
 
+
+        elif data['action'] in ['update', 'delete']:
+            if data['type'] == 'task':
+                task = project.tasks.get(pk=data['element_id'])
+
+            else:
+                task = project.tasks.get(pk=data['task_id'])
+                element_set = getattr(task, data['type'] + 's')
+                element_set.get(pk=data['element_id'])
+
+            possible_fields = ['name', 'key', 'value', 'heading']
+
+            if data['action'] == 'update':
                 for field in possible_fields:
                     if data[field]:
                       return access.draft_is_editor  
@@ -122,8 +135,11 @@ class ElementHelpers(CommonHelpers):
                 if data['status']:
                     return access.draft_is_user
 
-            elif data['action'] in ['position', 'delete']:
-                return access.draft_is_editor
+            elif data['action'] == 'delete':
+                return access.draft_is_editor  
 
         elif data['action'] == 'create':
             return access.draft_is_editor
+
+        else:
+            return False

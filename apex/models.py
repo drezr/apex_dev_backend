@@ -669,7 +669,7 @@ class Subtask(models.Model):
 class Note(models.Model):
 
     value = models.TextField(null=True, blank=True)
-    date = models.DateField()
+    date = models.DateField(auto_now_add=True)
 
     profile = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
 

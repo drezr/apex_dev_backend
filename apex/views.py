@@ -738,11 +738,14 @@ class ElementView(APIView, ElementHelpers):
             project = Project.objects.get(pk=data['project_id'])
 
         if data['action'] == 'create':
-            if data['type'] == 'task':
+            if data['type'] in ['task', 'subtask']:
                 create_kwargs = {'status': 'pending'}
 
             elif data['type'] == 'input':
                 create_kwargs = {'kind': data['kind']}
+
+            elif data['type'] == 'note':
+                create_kwargs = {'profile': request.user.profile}
 
             element = model.objects.create(**create_kwargs)
 
@@ -771,6 +774,10 @@ class ElementView(APIView, ElementHelpers):
                         'Task' + data['type'].capitalize() + 'Link'
                     ]
 
+                    link_serializer = globals()[
+                        'Task' + data['type'].capitalize() + 'LinkSerializer'
+                    ]
+
                     task = Task.objects.get(pk=data['task_id'])
 
                     task_inputs = task.inputs.all()
@@ -778,7 +785,8 @@ class ElementView(APIView, ElementHelpers):
                     task_files = task.files.all()
                     task_subtasks = task.subtasks.all()
 
-                    position = len(task_inputs) + len(task_notes) + len(task_files) + len(task_subtasks)
+                    position = len(task_inputs) + len(task_notes) + \
+                               len(task_files) + len(task_subtasks)
 
                     link_kwargs = {
                         'task': task,
@@ -787,11 +795,11 @@ class ElementView(APIView, ElementHelpers):
                     }
 
                     link_kwargs[data['type']] = element
-
-                    link_model.objects.create(**link_kwargs)
+                    link = link_model.objects.create(**link_kwargs)
+                    element_serialized['link'] = link_serializer(link).data
 
             result = {
-                'task': element_serialized,
+                data['type']: element_serialized,
             }
 
             return Response(result)
@@ -806,13 +814,29 @@ class ElementView(APIView, ElementHelpers):
             return Response(status=status.HTTP_200_OK)
 
         elif data['action'] == 'delete':
-            for child_type in ['notes', 'files', 'inputs', 'subtasks']:
-                child_set = getattr(element, child_type)
+            if data['type'] == 'task':
+                link = None
+                
+                if project:
+                    link = ProjectTaskLink.objects.get(
+                        project=project,
+                        task=element,
+                    )
 
-                for child in child_set.all():
-                    child.delete()
+                if link.is_original:
+                    for child_type in ['notes', 'files', 'inputs', 'subtasks']:
+                        child_set = getattr(element, child_type)
 
-            element.delete()
+                        for child in child_set.all():
+                            child.delete()
+
+                    element.delete()
+
+                else:
+                    link.delete()
+
+            else:
+                element.delete()
 
             return Response(status=status.HTTP_200_OK)
 
