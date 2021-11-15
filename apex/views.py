@@ -149,7 +149,6 @@ class TemplatesView(APIView):
 class ProjectView(APIView):
 
     def get(self, request):
-        
         app_id = request.query_params['app_id']
         project_id = request.query_params['project_id']
         
@@ -730,12 +729,20 @@ class ElementView(APIView, ElementHelpers):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         project = None
+        day_cell = None
         element_serialized = None
+        link_model = None
+        link_serializer = None
         result = dict()
         create_kwargs = dict()
+        link_kwargs = dict()
 
-        if data['project_id']:
+        if data['source_type'] == 'project':
             project = Project.objects.get(pk=data['project_id'])
+
+        elif data['source_type'] in ['day', 'cell']:
+            day_cell_model = globals()[data['source_type'].capitalize()]
+            day_cell = day_cell_model.objects.get(pk=data['day_cell_id'])
 
         if data['action'] == 'create':
             if data['type'] in ['task', 'subtask']:
@@ -757,46 +764,69 @@ class ElementView(APIView, ElementHelpers):
                 'inputs': 'detail',
             }).data
 
-            if project:
-                if not data['task_id']:
-                    project_task_link = ProjectTaskLink.objects.create(
-                        project=project,
-                        task=element,
-                        is_original=True,
-                        position=len(project.tasks.all()),
-                    )
 
-                    element_serialized['link'] = ProjectTaskLinkSerializer(
-                        project_task_link).data
-
-                else:
-                    link_model = globals()[
-                        'Task' + data['type'].capitalize() + 'Link'
-                    ]
-
-                    link_serializer = globals()[
-                        'Task' + data['type'].capitalize() + 'LinkSerializer'
-                    ]
-
-                    task = Task.objects.get(pk=data['task_id'])
-
-                    task_inputs = task.inputs.all()
-                    task_notes = task.notes.all()
-                    task_files = task.files.all()
-                    task_subtasks = task.subtasks.all()
-
-                    position = len(task_inputs) + len(task_notes) + \
-                               len(task_files) + len(task_subtasks)
-
+            if not data['task_id']:
+                if project:
+                    link_model = ProjectTaskLink
+                    link_serializer = ProjectTaskLinkSerializer
                     link_kwargs = {
-                        'task': task,
+                        'project': project,
+                        'task': element,
                         'is_original': True,
-                        'position': position,
+                        'position': len(project.tasks.all()),
                     }
 
+                if day_cell:
+                    link_model = globals()[
+                        data['source_type'].capitalize() +
+                        data['type'].capitalize() + 'Link']
+                    link_serializer = globals()[
+                        data['source_type'].capitalize() +
+                        data['type'].capitalize() + 'LinkSerializer']
+
+                    link_kwargs[data['source_type']] = day_cell
                     link_kwargs[data['type']] = element
-                    link = link_model.objects.create(**link_kwargs)
-                    element_serialized['link'] = link_serializer(link).data
+                    link_kwargs['is_original'] = True
+
+                    day_cell_tasks = day_cell.tasks.all()
+                    day_cell_notes = day_cell.notes.all()
+                    day_cell_files = day_cell.files.all()
+                    day_cell_calls = [] if data['source_type'] == 'day' else day_cell.calls.all()
+                    
+                    position = len(day_cell_tasks) + len(day_cell_notes) + \
+                               len(day_cell_calls) + len(day_cell_files)
+                               
+                    link_kwargs['position'] = position
+
+                link = link_model.objects.create(**link_kwargs)
+                element_serialized['link'] = link_serializer(link).data
+
+            else:
+                link_model = globals()[
+                    'Task' + data['type'].capitalize() + 'Link']
+
+                link_serializer = globals()[
+                    'Task' + data['type'].capitalize() + 'LinkSerializer']
+
+                task = Task.objects.get(pk=data['task_id'])
+
+                task_inputs = task.inputs.all()
+                task_notes = task.notes.all()
+                task_files = task.files.all()
+                task_subtasks = task.subtasks.all()
+
+                position = len(task_inputs) + len(task_notes) + \
+                           len(task_files) + len(task_subtasks)
+
+                link_kwargs = {
+                    'task': task,
+                    'is_original': True,
+                    'position': position,
+                }
+
+                link_kwargs[data['type']] = element
+                link = link_model.objects.create(**link_kwargs)
+                element_serialized['link'] = link_serializer(link).data
 
             result = {
                 data['type']: element_serialized,
@@ -805,7 +835,8 @@ class ElementView(APIView, ElementHelpers):
             return Response(result)
 
         elif data['action'] == 'update':
-            for field in ['name', 'key', 'value', 'heading', 'status']:
+            for field in ['name', 'key', 'value', 'heading', 'status',
+                          'kind', 'start', 'end', 'description']:
                 if data[field]:
                     setattr(element, field, data[field])
 

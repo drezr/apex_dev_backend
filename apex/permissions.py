@@ -58,8 +58,10 @@ class ElementHelpers(CommonHelpers):
             'team_id': self.has_data(request, 'team_id'),
             'app_id': self.has_data(request, 'app_id'),
             'project_id': self.has_data(request, 'project_id'),
+            'day_cell_id': self.has_data(request, 'day_cell_id'),
             'task_id': self.has_data(request, 'task_id'),
             'element_id': self.has_data(request, 'element_id'),
+            'source_type': self.has_data(request, 'source_type'),
             'type': self.has_data(request, 'type'),
             'kind': self.has_data(request, 'kind'),
             'status': self.has_data(request, 'status'),
@@ -67,6 +69,9 @@ class ElementHelpers(CommonHelpers):
             'key': self.has_data(request, 'key'),
             'value': self.has_data(request, 'value'),
             'heading': self.has_data(request, 'heading'),
+            'start': self.has_data(request, 'start'),
+            'end': self.has_data(request, 'end'),
+            'description': self.has_data(request, 'description'),
             'position_updates': self.has_data(request, 'position_updates'),
         }
 
@@ -92,9 +97,59 @@ class ElementHelpers(CommonHelpers):
 
             return False
 
-        if data['project_id']:
+        if data['source_type'] == 'project' and data['project_id']:
             return self.get_draft_permission(data, app, access)
 
+        elif data['source_type'] in ['day', 'cell'] and data['day_cell_id']:
+            return self.get_watcher_permission(data, app, access)
+
+        return False
+
+
+    def get_watcher_permission(self, data, app, access):
+        day_cell = None
+
+        if data['source_type'] == 'day':
+            day_cell = app.day_set.get(pk=data['day_cell_id'])
+
+        elif data['source_type'] == 'cell':
+            day_cell = Cell.objects.get(pk=data['day_cell_id'])
+            app.team.profiles.get(pk=day_cell.profile.id)
+
+        if data['action'] in ['update', 'delete']:
+            if data['type'] == 'task':
+                task = day_cell.tasks.get(pk=data['element_id'])
+
+            elif data['type'] == 'call':
+                call = day_cell.calls.get(pk=data['element_id'])
+
+            elif data['type'] == 'note':
+                note = day_cell.notes.get(pk=data['element_id'])
+
+            elif data['type'] == 'file':
+                file = day_cell.files.get(pk=data['element_id'])
+
+            else:
+                task = day_cell.tasks.get(pk=data['task_id'])
+                element_set = getattr(task, data['type'] + 's')
+                element_set.get(pk=data['element_id'])
+
+        possible_fields = ['name', 'key', 'value', 'heading']
+
+        if data['action'] == 'update':
+            for field in possible_fields:
+                if data[field]:
+                  return access.watcher_is_editor  
+
+            if data['status']:
+                return access.watcher_is_user
+
+        elif data['action'] == 'create':
+            return access.watcher_is_editor
+
+        elif data['action'] == 'delete':
+            return access.watcher_is_editor
+        
         return False
 
 
@@ -136,7 +191,7 @@ class ElementHelpers(CommonHelpers):
                     return access.draft_is_user
 
             elif data['action'] == 'delete':
-                return access.draft_is_editor  
+                return access.draft_is_editor
 
         elif data['action'] == 'create':
             return access.draft_is_editor
