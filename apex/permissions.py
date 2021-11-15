@@ -59,9 +59,11 @@ class ElementHelpers(CommonHelpers):
             'app_id': self.has_data(request, 'app_id'),
             'project_id': self.has_data(request, 'project_id'),
             'day_cell_id': self.has_data(request, 'day_cell_id'),
+            'folder_id': self.has_data(request, 'folder_id'),
             'task_id': self.has_data(request, 'task_id'),
             'element_id': self.has_data(request, 'element_id'),
             'source_type': self.has_data(request, 'source_type'),
+            'view': self.has_data(request, 'view'),
             'type': self.has_data(request, 'type'),
             'kind': self.has_data(request, 'kind'),
             'status': self.has_data(request, 'status'),
@@ -97,59 +99,80 @@ class ElementHelpers(CommonHelpers):
 
             return False
 
-        if data['source_type'] == 'project' and data['project_id']:
+        if data['view'] == 'project':
             return self.get_draft_permission(data, app, access)
 
-        elif data['source_type'] in ['day', 'cell'] and data['day_cell_id']:
-            return self.get_watcher_permission(data, app, access)
+        elif data['view'] == 'calendar':
+            return self.get_planner_watcher_permission(data, app, access)
+
+        elif data['view'] == 'board':
+            return self.get_planner_watcher_permission(data, app, access)
 
         return False
 
 
-    def get_watcher_permission(self, data, app, access):
-        day_cell = None
+    def get_planner_watcher_permission(self, data, app, access):
+        parent = None
+        is_editor = None
+        is_user = None
+
+        if data['view'] == 'calendar':
+            is_editor = access.watcher_is_editor
+            is_user = access.watcher_is_user
+
+        elif data['view'] == 'board':
+            is_editor = access.planner_is_editor
+            is_user = access.planner_is_user
+
 
         if data['source_type'] == 'day':
-            day_cell = app.day_set.get(pk=data['day_cell_id'])
+            if data['view'] == 'board':
+                for _app in app.team.app_set.all():
+                    if _app.app == 'watcher':
+                        parent = _app.day_set.get(pk=data['day_cell_id'])
+                        break
+
+            elif data['view'] == 'calendar':
+                parent = app.day_set.get(pk=data['day_cell_id'])
 
         elif data['source_type'] == 'cell':
-            day_cell = Cell.objects.get(pk=data['day_cell_id'])
-            app.team.profiles.get(pk=day_cell.profile.id)
+            parent = Cell.objects.get(pk=data['day_cell_id'])
+            app.team.profiles.get(pk=parent.profile.id)
+
+        elif data['source_type'] == 'folder':
+            parent = Folder.objects.get(pk=data['folder_id'])
+            element_set = getattr(parent, data['type'] + 's')
+            element_set.get(pk=data['element_id'])
+
 
         if data['action'] in ['update', 'delete']:
-            if data['type'] == 'task':
-                task = day_cell.tasks.get(pk=data['element_id'])
-
-            elif data['type'] == 'call':
-                call = day_cell.calls.get(pk=data['element_id'])
-
-            elif data['type'] == 'note':
-                note = day_cell.notes.get(pk=data['element_id'])
-
-            elif data['type'] == 'file':
-                file = day_cell.files.get(pk=data['element_id'])
-
-            else:
-                task = day_cell.tasks.get(pk=data['task_id'])
+            if data['task_id']:
+                task = parent.tasks.get(pk=data['task_id'])
                 element_set = getattr(task, data['type'] + 's')
                 element_set.get(pk=data['element_id'])
+
+            else:
+                element_set = getattr(parent, data['type'] + 's')
+                element_set.get(pk=data['element_id'])
+
 
         possible_fields = ['name', 'key', 'value', 'heading']
 
         if data['action'] == 'update':
             for field in possible_fields:
                 if data[field]:
-                  return access.watcher_is_editor  
+                  return is_editor
 
             if data['status']:
-                return access.watcher_is_user
+                return is_user
 
         elif data['action'] == 'create':
-            return access.watcher_is_editor
+            return is_editor
 
         elif data['action'] == 'delete':
-            return access.watcher_is_editor
-        
+            return is_editor
+
+
         return False
 
 
