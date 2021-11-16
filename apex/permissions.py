@@ -81,6 +81,15 @@ class ElementHelpers(CommonHelpers):
         team = Team.objects.get(pk=data['team_id'])
         app = team.app_set.get(pk=data['app_id'])
 
+
+        # Override "app" if in Planner and parent is a Watcher day
+        is_day = 'day' in [data['grandparent_type'], data['parent_type']]
+
+        if data['view'] == 'board' and is_day:
+            find = [a for a in team.app_set.all() if a.app == 'watcher']
+            app = None if not find else find[0]
+
+
         if data['grandparent_id'] and data['grandparent_type']:
             if data['grandparent_type'] == 'cell':
                 source = Cell.objects.get(pk=data['grandparent_id'])
