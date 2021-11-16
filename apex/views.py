@@ -712,186 +712,227 @@ class ContactsView(APIView):
 
 class ElementView(APIView, ElementHelpers):
 
-    def get_task_child_link(self, ed, task_id):
-        lm = globals()['Task' + ed['type'].capitalize() + 'Link']
-        em = globals()[ed['type'].capitalize()]
+    def get_position(self, data, hierarchy):
+        count = 0
 
-        link_kwargs = {'task': Task.objects.get(pk=task_id)}
-        link_kwargs[ed['type']] = em.objects.get(pk=ed['element_id'])
+        if data['parent_type'] != 'task':
+            count += len(hierarchy['parent'].tasks.all())
 
-        return lm.objects.get(**link_kwargs)
+        if data['parent_type'] in ['task', 'folder', 'day', 'cell']:
+            count += len(hierarchy['parent'].notes.all())
+            count += len(hierarchy['parent'].files.all())
+
+        if data['parent_type'] == 'cell':
+            count += len(hierarchy['parent'].calls.all())
+
+        return count
 
 
     def post(self, request):
-        data, element, model, serializer, permission = self.get_data(request)
+        data, hierarchy, permission = self.get_data(request)
 
         if not permission:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        project = None
-        day_cell = None
-        element_serialized = None
-        link_model = None
-        link_serializer = None
-        result = dict()
-        create_kwargs = dict()
-        link_kwargs = dict()
-
-        if data['source_type'] == 'project':
-            project = Project.objects.get(pk=data['project_id'])
-
-        elif data['source_type'] in ['day', 'cell']:
-            day_cell_model = globals()[data['source_type'].capitalize()]
-            day_cell = day_cell_model.objects.get(pk=data['day_cell_id'])
 
         if data['action'] == 'create':
-            if data['type'] in ['task', 'subtask']:
+            create_kwargs = dict()
+            link_kwargs = dict()
+            element_serialized = None
+
+            if data['element_type'] in ['task', 'subtask']:
                 create_kwargs = {'status': 'pending'}
 
-            elif data['type'] == 'input':
+            elif data['element_type'] == 'input':
                 create_kwargs = {'kind': data['kind']}
 
-            elif data['type'] == 'note':
+            elif data['element_type'] == 'note':
                 create_kwargs = {'profile': request.user.profile}
 
-            element = model.objects.create(**create_kwargs)
+            element = hierarchy['element_model'].objects.create(**create_kwargs)
+            element_serialized = hierarchy['element_serializer'](element).data
 
-            element_serialized = serializer(element, context={
-                'link': 'detail',
-                'subtasks': 'detail',
-                'notes': 'detail',
-                'files': 'detail',
-                'inputs': 'detail',
-            }).data
+            link_kwargs[data['parent_type']] = hierarchy['parent']
+            link_kwargs[data['element_type']] = element
+            link_kwargs['position'] = self.get_position(data, hierarchy)
+            link_kwargs['is_original'] = True
 
-
-            if not data['task_id']:
-                if project:
-                    link_model = ProjectTaskLink
-                    link_serializer = ProjectTaskLinkSerializer
-                    link_kwargs = {
-                        'project': project,
-                        'task': element,
-                        'is_original': True,
-                        'position': len(project.tasks.all()),
-                    }
-
-                if day_cell:
-                    link_model = globals()[
-                        data['source_type'].capitalize() +
-                        data['type'].capitalize() + 'Link']
-                    link_serializer = globals()[
-                        data['source_type'].capitalize() +
-                        data['type'].capitalize() + 'LinkSerializer']
-
-                    link_kwargs[data['source_type']] = day_cell
-                    link_kwargs[data['type']] = element
-                    link_kwargs['is_original'] = True
-
-                    day_cell_tasks = day_cell.tasks.all()
-                    day_cell_notes = day_cell.notes.all()
-                    day_cell_files = day_cell.files.all()
-                    day_cell_calls = [] if data['source_type'] == 'day' else day_cell.calls.all()
-                    
-                    position = len(day_cell_tasks) + len(day_cell_notes) + \
-                               len(day_cell_calls) + len(day_cell_files)
-                               
-                    link_kwargs['position'] = position
-
-                link = link_model.objects.create(**link_kwargs)
-                element_serialized['link'] = link_serializer(link).data
-
-            else:
-                link_model = globals()[
-                    'Task' + data['type'].capitalize() + 'Link']
-
-                link_serializer = globals()[
-                    'Task' + data['type'].capitalize() + 'LinkSerializer']
-
-                task = Task.objects.get(pk=data['task_id'])
-
-                task_inputs = task.inputs.all()
-                task_notes = task.notes.all()
-                task_files = task.files.all()
-                task_subtasks = task.subtasks.all()
-
-                position = len(task_inputs) + len(task_notes) + \
-                           len(task_files) + len(task_subtasks)
-
-                link_kwargs = {
-                    'task': task,
-                    'is_original': True,
-                    'position': position,
-                }
-
-                link_kwargs[data['type']] = element
-                link = link_model.objects.create(**link_kwargs)
-                element_serialized['link'] = link_serializer(link).data
+            link = hierarchy['link_model'].objects.create(**link_kwargs)
+            element_serialized['link'] = hierarchy['link_serializer'](link).data
 
             result = {
-                data['type']: element_serialized,
+                data['element_type']: element_serialized,
             }
 
             return Response(result)
 
-        elif data['action'] == 'update':
-            for field in ['name', 'key', 'value', 'heading', 'status',
-                          'kind', 'start', 'end', 'description']:
-                if data[field]:
-                    setattr(element, field, data[field])
 
-            element.save()
 
-            return Response(status=status.HTTP_200_OK)
 
-        elif data['action'] == 'delete':
-            if data['type'] == 'task':
-                link = None
+        # project = None
+        # day_cell = None
+        # element_serialized = None
+        # link_model = None
+        # link_serializer = None
+        # result = dict()
+        # create_kwargs = dict()
+        # link_kwargs = dict()
+
+        # if data['source_type'] == 'project':
+        #     project = Project.objects.get(pk=data['project_id'])
+
+        # elif data['source_type'] in ['day', 'cell']:
+        #     day_cell_model = globals()[data['source_type'].capitalize()]
+        #     day_cell = day_cell_model.objects.get(pk=data['day_cell_id'])
+
+        # if data['action'] == 'create':
+        #     if data['type'] in ['task', 'subtask']:
+        #         create_kwargs = {'status': 'pending'}
+
+        #     elif data['type'] == 'input':
+        #         create_kwargs = {'kind': data['kind']}
+
+        #     elif data['type'] == 'note':
+        #         create_kwargs = {'profile': request.user.profile}
+
+        #     element = model.objects.create(**create_kwargs)
+
+        #     element_serialized = serializer(element, context={
+        #         'link': 'detail',
+        #         'subtasks': 'detail',
+        #         'notes': 'detail',
+        #         'files': 'detail',
+        #         'inputs': 'detail',
+        #     }).data
+
+
+        #     if not data['task_id']:
+        #         if project:
+        #             link_model = ProjectTaskLink
+        #             link_serializer = ProjectTaskLinkSerializer
+        #             link_kwargs = {
+        #                 'project': project,
+        #                 'task': element,
+        #                 'is_original': True,
+        #                 'position': len(project.tasks.all()),
+        #             }
+
+        #         if day_cell:
+        #             link_model = globals()[
+        #                 data['source_type'].capitalize() +
+        #                 data['type'].capitalize() + 'Link']
+        #             link_serializer = globals()[
+        #                 data['source_type'].capitalize() +
+        #                 data['type'].capitalize() + 'LinkSerializer']
+
+        #             link_kwargs[data['source_type']] = day_cell
+        #             link_kwargs[data['type']] = element
+        #             link_kwargs['is_original'] = True
+
+        #             day_cell_tasks = day_cell.tasks.all()
+        #             day_cell_notes = day_cell.notes.all()
+        #             day_cell_files = day_cell.files.all()
+        #             day_cell_calls = [] if data['source_type'] == 'day' else day_cell.calls.all()
+                    
+        #             position = len(day_cell_tasks) + len(day_cell_notes) + \
+        #                        len(day_cell_calls) + len(day_cell_files)
+                               
+        #             link_kwargs['position'] = position
+
+        #         link = link_model.objects.create(**link_kwargs)
+        #         element_serialized['link'] = link_serializer(link).data
+
+        #     else:
+        #         link_model = globals()[
+        #             'Task' + data['type'].capitalize() + 'Link']
+
+        #         link_serializer = globals()[
+        #             'Task' + data['type'].capitalize() + 'LinkSerializer']
+
+        #         task = Task.objects.get(pk=data['task_id'])
+
+        #         task_inputs = task.inputs.all()
+        #         task_notes = task.notes.all()
+        #         task_files = task.files.all()
+        #         task_subtasks = task.subtasks.all()
+
+        #         position = len(task_inputs) + len(task_notes) + \
+        #                    len(task_files) + len(task_subtasks)
+
+        #         link_kwargs = {
+        #             'task': task,
+        #             'is_original': True,
+        #             'position': position,
+        #         }
+
+        #         link_kwargs[data['type']] = element
+        #         link = link_model.objects.create(**link_kwargs)
+        #         element_serialized['link'] = link_serializer(link).data
+
+        #     result = {
+        #         data['type']: element_serialized,
+        #     }
+
+        #     return Response(result)
+
+        # elif data['action'] == 'update':
+        #     for field in ['name', 'key', 'value', 'heading', 'status',
+        #                   'kind', 'start', 'end', 'description']:
+        #         if data[field]:
+        #             setattr(element, field, data[field])
+
+        #     element.save()
+
+        #     return Response(status=status.HTTP_200_OK)
+
+        # elif data['action'] == 'delete':
+        #     if data['type'] == 'task':
+        #         link = None
                 
-                if project:
-                    link = ProjectTaskLink.objects.get(
-                        project=project,
-                        task=element,
-                    )
+        #         if project:
+        #             link = ProjectTaskLink.objects.get(
+        #                 project=project,
+        #                 task=element,
+        #             )
 
-                if link.is_original:
-                    for child_type in ['notes', 'files', 'inputs', 'subtasks']:
-                        child_set = getattr(element, child_type)
+        #         if link.is_original:
+        #             for child_type in ['notes', 'files', 'inputs', 'subtasks']:
+        #                 child_set = getattr(element, child_type)
 
-                        for child in child_set.all():
-                            child.delete()
+        #                 for child in child_set.all():
+        #                     child.delete()
 
-                    element.delete()
+        #             element.delete()
 
-                else:
-                    link.delete()
+        #         else:
+        #             link.delete()
 
-            else:
-                element.delete()
+        #     else:
+        #         element.delete()
 
-            return Response(status=status.HTTP_200_OK)
+        #     return Response(status=status.HTTP_200_OK)
 
-        elif data['action'] == 'position':
-            for element_data in data['position_updates']:
-                element, model, serializer = self.get_objects(element_data)
-                link = None
+        # elif data['action'] == 'position':
+        #     for element_data in data['position_updates']:
+        #         element, model, serializer = self.get_objects(element_data)
+        #         link = None
 
-                if project:
-                    if element_data['type'] == 'task':
-                        link = ProjectTaskLink.objects.get(
-                            project=project,
-                            task=element,
-                        )
+        #         if project:
+        #             if element_data['type'] == 'task':
+        #                 link = ProjectTaskLink.objects.get(
+        #                     project=project,
+        #                     task=element,
+        #                 )
 
-                    else:
-                        link = self.get_task_child_link(
-                            element_data, data['task_id'])
+        #             else:
+        #                 link = self.get_task_child_link(
+        #                     element_data, data['task_id'])
 
-                if link:
-                    link.position = element_data['position']
-                    link.save()
+        #         if link:
+        #             link.position = element_data['position']
+        #             link.save()
 
-            return Response(status=status.HTTP_200_OK)
+        #     return Response(status=status.HTTP_200_OK)
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)

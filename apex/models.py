@@ -10,6 +10,7 @@ class Profile(models.Model):
     ident = models.CharField(max_length=100, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
     field = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='profile')
 
     user = models.OneToOneField(
         User,
@@ -25,6 +26,7 @@ class Profile(models.Model):
 class Circle(models.Model):
 
     name = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='circle')
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -33,6 +35,7 @@ class Circle(models.Model):
 class Team(models.Model):
 
     name = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='team')
 
     circle = models.ForeignKey('Circle', on_delete=models.CASCADE)
     profiles = models.ManyToManyField(
@@ -52,6 +55,7 @@ class App(models.Model):
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE, blank=True, null=True)
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
+    type = models.CharField(max_length=50, editable=False, default='app')
 
     selected_template = models.ForeignKey('Template', on_delete=models.CASCADE, blank=True, null=True)
     
@@ -306,6 +310,7 @@ class RadiumConfig(models.Model):
     printable_supervisor_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
     printable_supervisor_visible = models.BooleanField(default=True)
 
+    type = models.CharField(max_length=50, editable=False, default='radium_config')
     app = models.ForeignKey('App', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -316,6 +321,7 @@ class Day(models.Model):
 
     date = models.DateField()
     has_content = models.BooleanField(default=False)
+    type = models.CharField(max_length=50, editable=False, default='day')
 
     app = models.ForeignKey('App', on_delete=models.CASCADE)
     tasks = models.ManyToManyField(
@@ -348,6 +354,7 @@ class Cell(models.Model):
     color = models.CharField(max_length=20, blank=True, null=True)
     has_content = models.BooleanField(default=False)
     has_call = models.BooleanField(default=False)
+    type = models.CharField(max_length=50, editable=False, default='cell')
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
     tasks = models.ManyToManyField(
@@ -454,6 +461,7 @@ class Work(models.Model):
 
     color = models.CharField(max_length=20, blank=True, null=True)
     date = models.DateField()
+    type = models.CharField(max_length=50, editable=False, default='work')
 
     apps = models.ManyToManyField(
         'App',
@@ -484,6 +492,7 @@ class Limit(models.Model):
     to_lane = models.CharField(max_length=100, blank=True, null=True)
     to_pk = models.CharField(max_length=100, blank=True, null=True)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='limit')
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
@@ -510,6 +519,7 @@ class Shift(models.Model):
     date = models.DateField()
     shift = models.CharField(max_length=100, blank=True, null=True)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='shift')
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
@@ -522,6 +532,7 @@ class Part(models.Model):
     date = models.DateField()
     needs = models.CharField(max_length=255, blank=True, null=True)
     locked = models.BooleanField(default=False)
+    type = models.CharField(max_length=50, editable=False, default='part')
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
     shift = models.ForeignKey('Shift', on_delete=models.CASCADE)
@@ -546,6 +557,7 @@ class Project(models.Model):
     private = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
     date = models.DateField()
+    type = models.CharField(max_length=50, editable=False, default='project')
 
     apps = models.ManyToManyField(
         'App',
@@ -565,6 +577,7 @@ class Project(models.Model):
 class Template(models.Model):
 
     name = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='template')
 
     apps = models.ManyToManyField(
         'App',
@@ -585,6 +598,7 @@ class Folder(models.Model):
 
     name = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=40, blank=True, null=True)
+    type = models.CharField(max_length=50, editable=False, default='folder')
 
     tasks = models.ManyToManyField(
         'Task',
@@ -626,6 +640,7 @@ class Task(models.Model):
 
     name = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=100, blank=True, null=True)
+    type = models.CharField(max_length=50, editable=False, default='task')
 
     subtasks = models.ManyToManyField(
         'Subtask',
@@ -661,6 +676,7 @@ class Subtask(models.Model):
 
     name = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=100, blank=True, null=True)
+    type = models.CharField(max_length=50, editable=False, default='subtask')
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -670,6 +686,7 @@ class Note(models.Model):
 
     value = models.TextField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
+    type = models.CharField(max_length=50, editable=False, default='note')
 
     profile = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
 
@@ -685,6 +702,7 @@ class File(models.Model):
     uid = models.CharField(max_length=100, blank=True, null=True)
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='file')
 
     def __str__(self):
         return '[#{0}] {1}.{2}'.format(self.id, self.name, self.extension)
@@ -696,6 +714,7 @@ class Input(models.Model):
     key = models.TextField(null=True, blank=True)
     value = models.TextField(null=True, blank=True)
     heading = models.BooleanField(default=False)
+    type = models.CharField(max_length=50, editable=False, default='input')
 
     def __str__(self):
         return '[#{0}] {1} : {2}'.format(self.id, self.key, self.value)
@@ -705,6 +724,7 @@ class Link(models.Model):
 
     name = models.TextField(null=True, blank=True)
     url = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='link')
 
     def __str__(self):
         return '[#{0}] {1} : {2}'.format(self.id, self.name, self.url)
@@ -717,6 +737,7 @@ class Call(models.Model):
     start = models.TextField(null=True, blank=True)
     end = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='call')
 
     files = models.ManyToManyField(
         'File',
@@ -757,6 +778,8 @@ class Quota(models.Model):
     type_17 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     type_18 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     type_19 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+
+    type = models.CharField(max_length=50, editable=False, default='quota')
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
 
@@ -888,6 +911,8 @@ class LeaveConfig(models.Model):
     leave_19_color = models.CharField(max_length=20, default='red')
     leave_19_visible = models.BooleanField(default=False)
 
+    type = models.CharField(max_length=50, editable=False, default='leave_config')
+
     app = models.ForeignKey('App', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -897,6 +922,7 @@ class LeaveConfig(models.Model):
 class Holiday(models.Model):
 
     date = models.DateField()
+    type = models.CharField(max_length=50, editable=False, default='holiday')
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.date)
@@ -908,6 +934,7 @@ class Log(models.Model):
     old_value = models.TextField(null=True, blank=True)
     new_value = models.TextField(null=True, blank=True)
     date = models.DateTimeField(default=timezone.now)
+    type = models.CharField(max_length=50, editable=False, default='log')
 
     profile = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE)
     work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
@@ -922,6 +949,7 @@ class Message(models.Model):
     priority = models.CharField(max_length=20, blank=True, null=True)
     message = models.TextField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
+    type = models.CharField(max_length=50, editable=False, default='message')
 
     author = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE, related_name='author')
     profile = models.ForeignKey('Profile', null=True, blank=True, on_delete=models.CASCADE)
