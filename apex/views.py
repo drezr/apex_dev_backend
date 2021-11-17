@@ -718,6 +718,9 @@ class ElementView(APIView, ElementHelpers):
         if data['parent_type'] != 'task':
             count += len(hierarchy['parent'].tasks.all())
 
+        if data['parent_type'] == 'task':
+            count += len(hierarchy['parent'].inputs.all())
+
         if data['parent_type'] in ['task', 'folder', 'day', 'cell']:
             count += len(hierarchy['parent'].notes.all())
             count += len(hierarchy['parent'].files.all())
@@ -729,6 +732,10 @@ class ElementView(APIView, ElementHelpers):
 
 
     def post(self, request):
+        create_kwargs = dict()
+        link_kwargs = dict()
+        element_serialized = None
+
         data, hierarchy, permission = self.get_data(request)
 
         if not permission:
@@ -736,10 +743,6 @@ class ElementView(APIView, ElementHelpers):
 
 
         if data['action'] == 'create':
-            create_kwargs = dict()
-            link_kwargs = dict()
-            element_serialized = None
-
             if data['element_type'] in ['task', 'subtask']:
                 create_kwargs = {'status': 'pending'}
 
@@ -767,172 +770,79 @@ class ElementView(APIView, ElementHelpers):
             return Response(result)
 
 
+        elif data['action'] == 'update':
+            element = hierarchy['element']
+
+            for field in ['name', 'key', 'value', 'heading', 'status',
+                          'kind', 'start', 'end', 'description']:
+                if data[field]:
+                    setattr(element, field, data[field])
+
+            if data['element_type'] == 'file':
+                # TO DO: update file stuff
+                pass
+
+            element.save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
-        # project = None
-        # day_cell = None
-        # element_serialized = None
-        # link_model = None
-        # link_serializer = None
-        # result = dict()
-        # create_kwargs = dict()
-        # link_kwargs = dict()
+        elif data['action'] == 'delete':
+            link_kwargs[data['parent_type']] = hierarchy['parent']
+            link_kwargs[data['element_type']] = hierarchy['element']
 
-        # if data['source_type'] == 'project':
-        #     project = Project.objects.get(pk=data['project_id'])
+            link = hierarchy['link_model'].objects.get(**link_kwargs)
+            element = hierarchy['element']
 
-        # elif data['source_type'] in ['day', 'cell']:
-        #     day_cell_model = globals()[data['source_type'].capitalize()]
-        #     day_cell = day_cell_model.objects.get(pk=data['day_cell_id'])
+            possible_children = {
+                'task': ['note', 'file', 'input', 'subtask'],
+                'call': ['file'],
+            }
 
-        # if data['action'] == 'create':
-        #     if data['type'] in ['task', 'subtask']:
-        #         create_kwargs = {'status': 'pending'}
+            if link.is_original:
+                for element_type in possible_children:
+                    if data['element_type'] == element_type:
+                        for child_type in possible_children[element_type]:
+                            child_set = getattr(element, child_type + 's')
 
-        #     elif data['type'] == 'input':
-        #         create_kwargs = {'kind': data['kind']}
+                            for child in child_set.all():
+                                child.delete()
 
-        #     elif data['type'] == 'note':
-        #         create_kwargs = {'profile': request.user.profile}
+                                if child_type == 'file':
+                                    # TO DO: delete file stuff
+                                    pass
 
-        #     element = model.objects.create(**create_kwargs)
+                element.delete()
 
-        #     element_serialized = serializer(element, context={
-        #         'link': 'detail',
-        #         'subtasks': 'detail',
-        #         'notes': 'detail',
-        #         'files': 'detail',
-        #         'inputs': 'detail',
-        #     }).data
+            else:
+                link.delete()
+
+            return Response(status=status.HTTP_200_OK)
 
 
-        #     if not data['task_id']:
-        #         if project:
-        #             link_model = ProjectTaskLink
-        #             link_serializer = ProjectTaskLinkSerializer
-        #             link_kwargs = {
-        #                 'project': project,
-        #                 'task': element,
-        #                 'is_original': True,
-        #                 'position': len(project.tasks.all()),
-        #             }
+        elif data['action'] == 'position':
+            element = hierarchy['element']
 
-        #         if day_cell:
-        #             link_model = globals()[
-        #                 data['source_type'].capitalize() +
-        #                 data['type'].capitalize() + 'Link']
-        #             link_serializer = globals()[
-        #                 data['source_type'].capitalize() +
-        #                 data['type'].capitalize() + 'LinkSerializer']
+            for child_data in data['position_updates']:
+                link_kwargs = dict()
 
-        #             link_kwargs[data['source_type']] = day_cell
-        #             link_kwargs[data['type']] = element
-        #             link_kwargs['is_original'] = True
+                child_set = getattr(element, child_data['element_type'] + 's')
+                child = child_set.get(pk=child_data['element_id'])
 
-        #             day_cell_tasks = day_cell.tasks.all()
-        #             day_cell_notes = day_cell.notes.all()
-        #             day_cell_files = day_cell.files.all()
-        #             day_cell_calls = [] if data['source_type'] == 'day' else day_cell.calls.all()
-                    
-        #             position = len(day_cell_tasks) + len(day_cell_notes) + \
-        #                        len(day_cell_calls) + len(day_cell_files)
-                               
-        #             link_kwargs['position'] = position
+                link_kwargs[data['element_type']] = hierarchy['element']
+                link_kwargs[child_data['element_type']] = child
 
-        #         link = link_model.objects.create(**link_kwargs)
-        #         element_serialized['link'] = link_serializer(link).data
+                link_model = globals()[
+                    data['element_type'].capitalize() +
+                    child_data['element_type'].capitalize() + 'Link']
 
-        #     else:
-        #         link_model = globals()[
-        #             'Task' + data['type'].capitalize() + 'Link']
+                link = link_model.objects.get(**link_kwargs)
 
-        #         link_serializer = globals()[
-        #             'Task' + data['type'].capitalize() + 'LinkSerializer']
+                if link:
+                    link.position = child_data['position']
+                    link.save()
 
-        #         task = Task.objects.get(pk=data['task_id'])
-
-        #         task_inputs = task.inputs.all()
-        #         task_notes = task.notes.all()
-        #         task_files = task.files.all()
-        #         task_subtasks = task.subtasks.all()
-
-        #         position = len(task_inputs) + len(task_notes) + \
-        #                    len(task_files) + len(task_subtasks)
-
-        #         link_kwargs = {
-        #             'task': task,
-        #             'is_original': True,
-        #             'position': position,
-        #         }
-
-        #         link_kwargs[data['type']] = element
-        #         link = link_model.objects.create(**link_kwargs)
-        #         element_serialized['link'] = link_serializer(link).data
-
-        #     result = {
-        #         data['type']: element_serialized,
-        #     }
-
-        #     return Response(result)
-
-        # elif data['action'] == 'update':
-        #     for field in ['name', 'key', 'value', 'heading', 'status',
-        #                   'kind', 'start', 'end', 'description']:
-        #         if data[field]:
-        #             setattr(element, field, data[field])
-
-        #     element.save()
-
-        #     return Response(status=status.HTTP_200_OK)
-
-        # elif data['action'] == 'delete':
-        #     if data['type'] == 'task':
-        #         link = None
-                
-        #         if project:
-        #             link = ProjectTaskLink.objects.get(
-        #                 project=project,
-        #                 task=element,
-        #             )
-
-        #         if link.is_original:
-        #             for child_type in ['notes', 'files', 'inputs', 'subtasks']:
-        #                 child_set = getattr(element, child_type)
-
-        #                 for child in child_set.all():
-        #                     child.delete()
-
-        #             element.delete()
-
-        #         else:
-        #             link.delete()
-
-        #     else:
-        #         element.delete()
-
-        #     return Response(status=status.HTTP_200_OK)
-
-        # elif data['action'] == 'position':
-        #     for element_data in data['position_updates']:
-        #         element, model, serializer = self.get_objects(element_data)
-        #         link = None
-
-        #         if project:
-        #             if element_data['type'] == 'task':
-        #                 link = ProjectTaskLink.objects.get(
-        #                     project=project,
-        #                     task=element,
-        #                 )
-
-        #             else:
-        #                 link = self.get_task_child_link(
-        #                     element_data, data['task_id'])
-
-        #         if link:
-        #             link.position = element_data['position']
-        #             link.save()
-
-        #     return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -45,8 +45,8 @@ class ElementHelpers(CommonHelpers):
             'element_type': self.has_data(request, 'element_type'),
             'parent_type': self.has_data(request, 'parent_type'),
             'parent_id': self.has_data(request, 'parent_id'),
-            'grandparent_type': self.has_data(request, 'grandparent_type'),
-            'grandparent_id': self.has_data(request, 'grandparent_id'),
+            'source_type': self.has_data(request, 'source_type'),
+            'source_id': self.has_data(request, 'source_id'),
             'view': self.has_data(request, 'view'),
             'kind': self.has_data(request, 'kind'),
             'status': self.has_data(request, 'status'),
@@ -83,25 +83,26 @@ class ElementHelpers(CommonHelpers):
 
 
         # Override "app" if in Planner and parent is a Watcher day
-        is_day = 'day' in [data['grandparent_type'], data['parent_type']]
+        is_day = 'day' in [data['source_type'], data['parent_type']]
 
         if data['view'] == 'board' and is_day:
             find = [a for a in team.app_set.all() if a.app == 'watcher']
             app = None if not find else find[0]
 
 
-        if data['grandparent_id'] and data['grandparent_type']:
-            if data['grandparent_type'] == 'cell':
-                source = Cell.objects.get(pk=data['grandparent_id'])
+        if data['source_id'] and data['source_type']:
+            if data['source_type'] == 'cell':
+                source = Cell.objects.get(pk=data['source_id'])
                 profile = team.profiles.get(pk=source.profile.id)
 
             else:
                 try:
-                    source_set = getattr(app, data['grandparent_type'] + 's')
+                    source_set = getattr(app, data['source_type'] + 's')
                 except AttributeError:
-                    source_set = getattr(app, data['grandparent_type'] + '_set')
+                    source_set = getattr(
+                        app, data['source_type'] + '_set')
 
-                source = source_set.get(pk=data['grandparent_id'])
+                source = source_set.get(pk=data['source_id'])
 
             try:
                 parent_set = getattr(source, data['parent_type'] + 's')
@@ -110,7 +111,7 @@ class ElementHelpers(CommonHelpers):
 
             parent = parent_set.get(pk=data['parent_id'])
 
-        else:
+        elif data['parent_id'] and data['parent_type']:
             if data['parent_type'] == 'cell':
                 source = Cell.objects.get(pk=data['parent_id'])
                 profile = team.profiles.get(pk=source.profile.id)
@@ -130,10 +131,27 @@ class ElementHelpers(CommonHelpers):
             element_set = getattr(parent, data['element_type'] + 's')
             element = element_set.get(pk=data['element_id'])
 
-        elif data['action'] == 'position':
+        if data['action'] == 'position':
+            if parent:
+                element_set = getattr(parent, data['element_type'] + 's')
+                element = element_set.get(pk=data['element_id']) 
+            
+            else:
+                if data['element_type'] == 'cell':
+                    element = Cell.objects.get(pk=data['element_id'])
+                    profile = team.profiles.get(pk=element.profile.id)
+
+                else:
+                    try:
+                        element_set = getattr(app, data['element_type'] + 's')
+                    except AttributeError:
+                        element_set = getattr(app, data['element_type'] + '_set')
+
+                    element = element_set.get(pk=data['element_id']) 
+
             for child in data['position_updates']:
-                child_set = getattr(parent, child['element_type'] + 's')
-                child = child_set.get(pk=data['element_id'])
+                child_set = getattr(element, child['element_type'] + 's')
+                child = child_set.get(pk=child['element_id'])
 
 
         if data['element_type']:
@@ -141,13 +159,13 @@ class ElementHelpers(CommonHelpers):
             element_serializer = globals()[
                 data['element_type'].capitalize() + 'Serializer']
 
-        if data['grandparent_type']:
+        if data['source_type']:
             parent_model = globals()[data['parent_type'].capitalize()]
             parent_serializer = globals()[
                 data['parent_type'].capitalize() + 'Serializer']
-            source_model = globals()[data['grandparent_type'].capitalize()]
+            source_model = globals()[data['source_type'].capitalize()]
             source_serializer = globals()[
-                data['grandparent_type'].capitalize() + 'Serializer']
+                data['source_type'].capitalize() + 'Serializer']
 
         elif data['parent_type']:
             parent_model = globals()[data['parent_type'].capitalize()]
