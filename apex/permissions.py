@@ -82,6 +82,35 @@ class ElementHelpers(CommonHelpers):
         app = team.app_set.get(pk=data['app_id'])
 
 
+        if data['element_type']:
+            element_model = globals()[data['element_type'].capitalize()]
+            element_serializer = globals()[
+                data['element_type'].capitalize() + 'Serializer']
+
+        if data['source_type']:
+            parent_model = globals()[data['parent_type'].capitalize()]
+            parent_serializer = globals()[
+                data['parent_type'].capitalize() + 'Serializer']
+            source_model = globals()[data['source_type'].capitalize()]
+            source_serializer = globals()[
+                data['source_type'].capitalize() + 'Serializer']
+
+        elif data['parent_type']:
+            parent_model = globals()[data['parent_type'].capitalize()]
+            parent_serializer = globals()[
+                data['parent_type'].capitalize() + 'Serializer']
+            source_model = parent_model
+            source_serializer = parent_serializer
+
+        if data['element_type'] and data['parent_type']:
+            link_model = globals()[
+                data['parent_type'].capitalize() +
+                data['element_type'].capitalize() + 'Link']
+            link_serializer = globals()[
+                data['parent_type'].capitalize() +
+                data['element_type'].capitalize() + 'LinkSerializer']
+
+
         # Override "app" if in Planner and parent is a Watcher day
         is_day = 'day' in [data['source_type'], data['parent_type']]
 
@@ -145,42 +174,14 @@ class ElementHelpers(CommonHelpers):
                     try:
                         element_set = getattr(app, data['element_type'] + 's')
                     except AttributeError:
-                        element_set = getattr(app, data['element_type'] + '_set')
+                        element_set = getattr(
+                            app, data['element_type'] + '_set')
 
                     element = element_set.get(pk=data['element_id']) 
 
             for child in data['position_updates']:
                 child_set = getattr(element, child['element_type'] + 's')
                 child = child_set.get(pk=child['element_id'])
-
-
-        if data['element_type']:
-            element_model = globals()[data['element_type'].capitalize()]
-            element_serializer = globals()[
-                data['element_type'].capitalize() + 'Serializer']
-
-        if data['source_type']:
-            parent_model = globals()[data['parent_type'].capitalize()]
-            parent_serializer = globals()[
-                data['parent_type'].capitalize() + 'Serializer']
-            source_model = globals()[data['source_type'].capitalize()]
-            source_serializer = globals()[
-                data['source_type'].capitalize() + 'Serializer']
-
-        elif data['parent_type']:
-            parent_model = globals()[data['parent_type'].capitalize()]
-            parent_serializer = globals()[
-                data['parent_type'].capitalize() + 'Serializer']
-            source_model = parent_model
-            source_serializer = parent_serializer
-
-        if data['element_type'] and data['parent_type']:
-            link_model = globals()[
-                data['parent_type'].capitalize() +
-                data['element_type'].capitalize() + 'Link']
-            link_serializer = globals()[
-                data['parent_type'].capitalize() +
-                data['element_type'].capitalize() + 'LinkSerializer']
 
 
         return {
