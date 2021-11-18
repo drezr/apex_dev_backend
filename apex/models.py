@@ -911,8 +911,6 @@ class LeaveConfig(models.Model):
     leave_19_color = models.CharField(max_length=20, default='red')
     leave_19_visible = models.BooleanField(default=False)
 
-    type = models.CharField(max_length=50, editable=False, default='leave_config')
-
     app = models.ForeignKey('App', on_delete=models.CASCADE)
 
     def __str__(self):
