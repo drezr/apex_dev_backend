@@ -25,6 +25,16 @@ class CommonHelpers:
 
         return None
 
+    def get_element_from_set(self, parent, _type, _id):
+        element_set = None
+
+        try:
+            element_set = getattr(parent, _type + 's')
+        except AttributeError:
+            element_set = getattr(parent, _type + '_set')
+
+        return element_set.get(pk=_id)
+
 
 class ElementHelpers(CommonHelpers):
 
@@ -45,6 +55,8 @@ class ElementHelpers(CommonHelpers):
             'element_type': self.has_data(request, 'element_type'),
             'parent_type': self.has_data(request, 'parent_type'),
             'parent_id': self.has_data(request, 'parent_id'),
+            'new_parent_type': self.has_data(request, 'new_parent_type'),
+            'new_parent_id': self.has_data(request, 'new_parent_id'),
             'source_type': self.has_data(request, 'source_type'),
             'source_id': self.has_data(request, 'source_id'),
             'view': self.has_data(request, 'view'),
@@ -72,6 +84,10 @@ class ElementHelpers(CommonHelpers):
         parent_set = None
         parent_model = None
         parent_serializer = None
+        new_parent = None
+        new_parent_model = None
+        new_parent_serializer = None
+        new_parent_set = None
         element = None
         element_model = None
         element_serializer = None
@@ -102,6 +118,11 @@ class ElementHelpers(CommonHelpers):
             source_model = parent_model
             source_serializer = parent_serializer
 
+        if data['new_parent_type']:
+            new_parent_model = globals()[data['new_parent_type'].capitalize()]
+            new_parent_serializer = globals()[
+                data['new_parent_type'].capitalize() + 'Serializer']
+
         if data['element_type'] and data['parent_type']:
             link_model = globals()[
                 data['parent_type'].capitalize() +
@@ -125,20 +146,11 @@ class ElementHelpers(CommonHelpers):
                 profile = team.profiles.get(pk=source.profile.id)
 
             else:
-                try:
-                    source_set = getattr(app, data['source_type'] + 's')
-                except AttributeError:
-                    source_set = getattr(
-                        app, data['source_type'] + '_set')
+                source = self.get_element_from_set(
+                    app, data['source_type'], data['source_id'])
 
-                source = source_set.get(pk=data['source_id'])
-
-            try:
-                parent_set = getattr(source, data['parent_type'] + 's')
-            except AttributeError:
-                parent_set = getattr(source, data['parent_type'] + '_set')
-
-            parent = parent_set.get(pk=data['parent_id'])
+            source = self.get_element_from_set(
+                source, data['parent_type'], data['parent_id'])
 
         elif data['parent_id'] and data['parent_type']:
             if data['parent_type'] == 'cell':
@@ -147,12 +159,8 @@ class ElementHelpers(CommonHelpers):
                 parent = source
 
             else:
-                try:
-                    source_set = getattr(app, data['parent_type'] + 's')
-                except AttributeError:
-                    source_set = getattr(app, data['parent_type'] + '_set')
-
-                source = source_set.get(pk=data['parent_id'])
+                source = self.get_element_from_set(
+                    app, data['parent_type'], data['parent_id'])
                 parent = source
 
 
@@ -171,17 +179,20 @@ class ElementHelpers(CommonHelpers):
                     profile = team.profiles.get(pk=element.profile.id)
 
                 else:
-                    try:
-                        element_set = getattr(app, data['element_type'] + 's')
-                    except AttributeError:
-                        element_set = getattr(
-                            app, data['element_type'] + '_set')
-
-                    element = element_set.get(pk=data['element_id']) 
+                    element = self.get_element_from_set(
+                        app, data['element_type'], data['element_id'])
 
             for child in data['position_updates']:
                 child_set = getattr(element, child['element_type'] + 's')
                 child = child_set.get(pk=child['element_id'])
+
+        if data['action'] == 'move':
+            element = self.get_element_from_set(
+                parent, data['element_type'], data['element_id'])
+
+            # Might break in other contexts than Planner's folders
+            new_parent = self.get_element_from_set(
+                app, data['new_parent_type'], data['new_parent_id'])
 
 
         return {
@@ -193,6 +204,9 @@ class ElementHelpers(CommonHelpers):
             'parent': parent,
             'parent_model': parent_model,
             'parent_serializer': parent_serializer,
+            'new_parent': new_parent,
+            'new_parent_model': new_parent_model,
+            'new_parent_serializer': new_parent_serializer,
             'element': element,
             'element_model': element_model,
             'element_serializer': element_serializer,
@@ -223,7 +237,7 @@ class ElementHelpers(CommonHelpers):
 
         # Check access
 
-        if data['action'] in ['create', 'delete', 'position']:
+        if data['action'] in ['create', 'delete', 'position', 'move']:
             return is_editor
 
         if data['action'] == 'update':

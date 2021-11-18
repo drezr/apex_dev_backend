@@ -825,8 +825,6 @@ class ElementView(APIView, ElementHelpers):
 
             for child_data in data['position_updates']:
                 link_kwargs = dict()
-                has_old_parent = 'old_parent_id' in child_data and \
-                                 child_data['old_parent_id']
 
                 child_set = getattr(element, child_data['element_type'] + 's')
                 child = child_set.get(pk=child_data['element_id'])
@@ -844,7 +842,22 @@ class ElementView(APIView, ElementHelpers):
                     link.position = child_data['position']
                     link.save()
 
-            return Response(status=status.HTTP_200_OK)
+                    return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'move':
+            link_kwargs = dict()
+
+            link_kwargs[data['parent_type']] = hierarchy['parent']
+            link_kwargs[data['element_type']] = hierarchy['element']
+
+            link = hierarchy['link_model'].objects.get(**link_kwargs)
+
+            if link:
+                setattr(link, data['parent_type'], hierarchy['new_parent'])
+                link.save()
+
+                return Response(status=status.HTTP_200_OK)
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
