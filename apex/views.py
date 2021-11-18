@@ -842,7 +842,7 @@ class ElementView(APIView, ElementHelpers):
                     link.position = child_data['position']
                     link.save()
 
-                    return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
 
         elif data['action'] == 'move':
