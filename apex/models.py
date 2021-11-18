@@ -323,7 +323,7 @@ class Day(models.Model):
     has_content = models.BooleanField(default=False)
     type = models.CharField(max_length=50, editable=False, default='day')
 
-    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    team = models.ForeignKey('Team', on_delete=models.CASCADE)
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
@@ -342,7 +342,7 @@ class Day(models.Model):
 
     def __str__(self):
         return '[#{0}] {1} ({2})'.format(
-            self.id, self.date, self.app.team.name)
+            self.id, self.date, self.team.name)
 
 
 class Cell(models.Model):

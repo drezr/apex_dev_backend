@@ -308,6 +308,16 @@ class TaskSerializer(serializers.ModelSerializer):
     def get_link(self, task):
         return get_link(task, self.context, 'task')
 
+    # -------- WIP --------
+    def get_children(self, task):
+        children = list()
+
+        for _type in ['subtask', 'input', 'file', 'note']:
+            elements = get_children(task, self.context, 'task', _type)
+            [children.append(dict(c)) for c in elements]
+
+        return children
+
     def get_teammates(self, task):
         if 'teammates' in self.context:
             cell_task_links = CellTaskLink.objects.filter(task=task)

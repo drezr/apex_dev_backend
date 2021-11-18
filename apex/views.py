@@ -209,7 +209,7 @@ class CalendarView(APIView):
             profiles_id = []
 
         days = Day.objects.filter(
-            date__month=month, date__year=year, app=app.id)
+            date__month=month, date__year=year, team=team)
         cells = Cell.objects.filter(
             date__month=month, date__year=year, profile__in=profiles_id)
         holidays = Holiday.objects.filter(date__month=month, date__year=year)
@@ -241,16 +241,9 @@ class BoardView(APIView):
 
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
-
-        watcher_id = None
-
-        for _app in team.app_set.all():
-            if _app.app == 'watcher':
-                watcher_id = _app.id
-                break
         
         days = Day.objects.filter(
-            date__month=month, date__year=year, app=watcher_id)
+            date__month=month, date__year=year, team=team)
 
         days = DaySerializer(days, many=True, context={
             'link': 'detail',
@@ -474,7 +467,7 @@ class DayView(APIView):
         app_id = request.query_params['app_id']
         date = request.query_params['date']
 
-        day, c = Day.objects.get_or_create(app_id=app_id, date=date)
+        day, c = Day.objects.get_or_create(team_id=team_id, date=date)
 
         day = DaySerializer(day, context={
             'link': 'detail',
@@ -700,7 +693,7 @@ class ContactsView(APIView):
                 contact['absence'] = ''
 
             else:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_EHolidayOR)
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
         result = {
@@ -712,21 +705,21 @@ class ContactsView(APIView):
 
 class ElementView(APIView, ElementHelpers):
 
-    def get_position(self, data, hierarchy):
+    def get_child_count(self, data, element, hierarchy):
         count = 0
 
         if data['parent_type'] != 'task':
-            count += len(hierarchy['parent'].tasks.all())
+            count += len(hierarchy[element].tasks.all())
 
         if data['parent_type'] == 'task':
-            count += len(hierarchy['parent'].inputs.all())
+            count += len(hierarchy[element].inputs.all())
 
         if data['parent_type'] in ['task', 'folder', 'day', 'cell']:
-            count += len(hierarchy['parent'].notes.all())
-            count += len(hierarchy['parent'].files.all())
+            count += len(hierarchy[element].notes.all())
+            count += len(hierarchy[element].files.all())
 
         if data['parent_type'] == 'cell':
-            count += len(hierarchy['parent'].calls.all())
+            count += len(hierarchy[element].calls.all())
 
         return count
 
@@ -752,16 +745,29 @@ class ElementView(APIView, ElementHelpers):
             elif data['element_type'] == 'note':
                 create_kwargs = {'profile': request.user.profile}
 
-            element = hierarchy['element_model'].objects.create(**create_kwargs)
-            element_serialized = hierarchy['element_serializer'](element).data
+            element = hierarchy['element_model'].objects.create(
+                **create_kwargs)
+            element_serialized = hierarchy['element_serializer'](
+                element, context={
+                    'tasks': 'detail',
+                    'subtasks': 'detail',
+                    'inputs': 'detail',
+                    'notes': 'detail',
+                    'files': 'detail',
+                    'calls': 'detail',
+                    'links': 'detail',
+                    'teammates': 'detail',
+                }).data
 
             link_kwargs[data['parent_type']] = hierarchy['parent']
             link_kwargs[data['element_type']] = element
-            link_kwargs['position'] = self.get_position(data, hierarchy)
+            link_kwargs['position'] = self.get_child_count(
+                data, 'parent', hierarchy)
             link_kwargs['is_original'] = True
 
             link = hierarchy['link_model'].objects.create(**link_kwargs)
-            element_serialized['link'] = hierarchy['link_serializer'](link).data
+            element_serialized['link'] = hierarchy['link_serializer'](
+                link).data
 
             result = {
                 data['element_type']: element_serialized,
@@ -798,6 +804,14 @@ class ElementView(APIView, ElementHelpers):
                 'task': ['note', 'file', 'input', 'subtask'],
                 'call': ['file'],
             }
+
+            if data['parent_type'] == 'day':
+                parent_child_count = self.get_child_count(
+                    data, 'parent', hierarchy)
+
+                if parent_child_count <= 1:
+                    hierarchy['parent'].has_content = False
+                    hierarchy['parent'].save()
 
             if link.is_original:
                 for element_type in possible_children:
@@ -846,16 +860,64 @@ class ElementView(APIView, ElementHelpers):
 
 
         elif data['action'] == 'move':
-            link_kwargs = dict()
+            old_link_kwargs = dict()
+            new_link_kwargs = dict()
 
-            link_kwargs[data['parent_type']] = hierarchy['parent']
-            link_kwargs[data['element_type']] = hierarchy['element']
+            old_link_kwargs[data['parent_type']] = hierarchy['parent']
+            old_link_kwargs[data['element_type']] = hierarchy['element']
+            new_link_kwargs[data['new_parent_type']] = hierarchy['new_parent']
+            new_link_kwargs[data['element_type']] = hierarchy['element']
 
-            link = hierarchy['link_model'].objects.get(**link_kwargs)
+            old_link = hierarchy['link_model'].objects.get(**old_link_kwargs)
+            new_link, c = hierarchy['new_link_model'].objects.get_or_create(
+                **new_link_kwargs)
 
-            if link:
-                setattr(link, data['parent_type'], hierarchy['new_parent'])
-                link.save()
+            if old_link and new_link:
+                if old_link == new_link:
+                    setattr(old_link, data['parent_type'],
+                            hierarchy['new_parent'])
+                    old_link.save()
+
+                else:
+                    old_link.delete()
+
+                    setattr(new_link, data['new_parent_type'],
+                            hierarchy['new_parent'])
+                    new_link.save()
+
+                    if data['parent_type'] == 'day':
+                        parent_child_count = self.get_child_count(
+                            data, 'parent', hierarchy)
+
+                        if parent_child_count == 0:
+                            hierarchy['parent'].has_content = False
+                            hierarchy['parent'].save()
+
+                    if data['new_parent_type'] == 'day':
+                        hierarchy['new_parent'].has_content = True
+                        hierarchy['new_parent'].save()
+
+                        day_serialized = DaySerializer(
+                            hierarchy['new_parent'], context={
+                                'link': 'detail',
+                                'tasks': 'detail',
+                                'subtasks': 'detail',
+                                'inputs': 'detail',
+                                'notes': 'detail',
+                                'files': 'detail',
+                                'links': 'detail',
+                                'teammates': 'detail',
+                            }).data
+
+                        day_serialized['link'] = \
+                            hierarchy['new_link_serializer'](new_link).data
+
+                        result = {
+                            'day': day_serialized,
+                        }
+
+                        return Response(result)
+
 
                 return Response(status=status.HTTP_200_OK)
 

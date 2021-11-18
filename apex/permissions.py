@@ -57,6 +57,7 @@ class ElementHelpers(CommonHelpers):
             'parent_id': self.has_data(request, 'parent_id'),
             'new_parent_type': self.has_data(request, 'new_parent_type'),
             'new_parent_id': self.has_data(request, 'new_parent_id'),
+            'new_parent_date': self.has_data(request, 'new_parent_date'),
             'source_type': self.has_data(request, 'source_type'),
             'source_id': self.has_data(request, 'source_id'),
             'view': self.has_data(request, 'view'),
@@ -93,6 +94,8 @@ class ElementHelpers(CommonHelpers):
         element_serializer = None
         link_model = None
         link_serializer = None
+        new_link_model = None
+        new_link_serializer = None
 
         team = Team.objects.get(pk=data['team_id'])
         app = team.app_set.get(pk=data['app_id'])
@@ -131,17 +134,21 @@ class ElementHelpers(CommonHelpers):
                 data['parent_type'].capitalize() +
                 data['element_type'].capitalize() + 'LinkSerializer']
 
-
-        # Override "app" if in Planner and parent is a Watcher day
-        is_day = 'day' in [data['source_type'], data['parent_type']]
-
-        if data['view'] == 'board' and is_day:
-            find = [a for a in team.app_set.all() if a.app == 'watcher']
-            app = None if not find else find[0]
+        if data['element_type'] and data['new_parent_type']:
+            new_link_model = globals()[
+                data['new_parent_type'].capitalize() +
+                data['element_type'].capitalize() + 'Link']
+            new_link_serializer = globals()[
+                data['new_parent_type'].capitalize() +
+                data['element_type'].capitalize() + 'LinkSerializer']
 
 
         if data['source_id'] and data['source_type']:
-            if data['source_type'] == 'cell':
+            if data['source_type'] == 'day':
+                source = self.get_element_from_set(
+                    team, data['source_type'], data['source_id'])
+
+            elif data['source_type'] == 'cell':
                 source = Cell.objects.get(pk=data['source_id'])
                 profile = team.profiles.get(pk=source.profile.id)
 
@@ -149,11 +156,16 @@ class ElementHelpers(CommonHelpers):
                 source = self.get_element_from_set(
                     app, data['source_type'], data['source_id'])
 
-            source = self.get_element_from_set(
+            parent = self.get_element_from_set(
                 source, data['parent_type'], data['parent_id'])
 
         elif data['parent_id'] and data['parent_type']:
-            if data['parent_type'] == 'cell':
+            if data['parent_type'] == 'day':
+                source = self.get_element_from_set(
+                    team, data['parent_type'], data['parent_id'])
+                parent = source
+
+            elif data['parent_type'] == 'cell':
                 source = Cell.objects.get(pk=data['parent_id'])
                 profile = team.profiles.get(pk=source.profile.id)
                 parent = source
@@ -174,7 +186,11 @@ class ElementHelpers(CommonHelpers):
                 element = element_set.get(pk=data['element_id']) 
             
             else:
-                if data['element_type'] == 'cell':
+                if data['element_type'] == 'day':
+                    element = self.get_element_from_set(
+                        team, data['element_type'], data['element_id'])
+
+                elif data['element_type'] == 'cell':
                     element = Cell.objects.get(pk=data['element_id'])
                     profile = team.profiles.get(pk=element.profile.id)
 
@@ -187,12 +203,17 @@ class ElementHelpers(CommonHelpers):
                 child = child_set.get(pk=child['element_id'])
 
         if data['action'] == 'move':
-            element = self.get_element_from_set(
-                parent, data['element_type'], data['element_id'])
+            if data['new_parent_type'] == 'day':
+                element = self.get_element_from_set(
+                    parent, data['element_type'], data['element_id'])
+                date = data['new_parent_date']
+                new_parent, c = Day.objects.get_or_create(team=team, date=date)
 
-            # Might break in other contexts than Planner's folders
-            new_parent = self.get_element_from_set(
-                app, data['new_parent_type'], data['new_parent_id'])
+            else:
+                element = self.get_element_from_set(
+                    parent, data['element_type'], data['element_id'])
+                new_parent = self.get_element_from_set(
+                    app, data['new_parent_type'], data['new_parent_id'])
 
 
         return {
@@ -212,6 +233,8 @@ class ElementHelpers(CommonHelpers):
             'element_serializer': element_serializer,
             'link_model': link_model,
             'link_serializer': link_serializer,
+            'new_link_model': new_link_model,
+            'new_link_serializer': new_link_serializer,
         }
 
 

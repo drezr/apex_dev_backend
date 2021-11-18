@@ -20,7 +20,7 @@ class RadiumConfigAdmin(admin.ModelAdmin):
 
 
 class DayAdmin(admin.ModelAdmin):
-    raw_id_fields = ('app', )
+    raw_id_fields = ('team', )
 
 
 class CellAdmin(admin.ModelAdmin):
