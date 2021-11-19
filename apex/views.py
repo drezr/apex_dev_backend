@@ -762,7 +762,7 @@ class ElementView(APIView, ElementHelpers):
             link_kwargs[data['parent_type']] = hierarchy['parent']
             link_kwargs[data['element_type']] = element
             link_kwargs['position'] = self.get_child_count(
-                data, 'parent', hierarchy)
+                data, 'parent', hierarchy) + 1
             link_kwargs['is_original'] = True
 
             link = hierarchy['link_model'].objects.create(**link_kwargs)

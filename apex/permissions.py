@@ -267,8 +267,10 @@ class ElementHelpers(CommonHelpers):
             possible_fields = ['name', 'key', 'value', 'heading']
 
             for field in possible_fields:
-                if data[field]:
+                if data[field] != None:
                   return is_editor
 
             if data['status']:
                 return is_user
+
+        return False
