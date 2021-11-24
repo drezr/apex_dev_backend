@@ -36,16 +36,6 @@ class CommonHelpers:
         return element_set.get(pk=_id)
 
 
-class ElementHelpers(CommonHelpers):
-
-    def get_data(self, request):
-        data = self.parse_request_data(request)
-        hierarchy = self.get_hierarchy(data)
-        permission = self.get_permission(request, data, hierarchy['team'])
-
-        return data, hierarchy, permission
-
-
     def parse_request_data(self, request):
         data = {
             'action': self.has_data(request, 'action'),
@@ -60,6 +50,7 @@ class ElementHelpers(CommonHelpers):
             'new_parent_date': self.has_data(request, 'new_parent_date'),
             'source_type': self.has_data(request, 'source_type'),
             'source_id': self.has_data(request, 'source_id'),
+            'profile_id': self.has_data(request, 'profile_id'),
             'view': self.has_data(request, 'view'),
             'kind': self.has_data(request, 'kind'),
             'status': self.has_data(request, 'status'),
@@ -70,10 +61,53 @@ class ElementHelpers(CommonHelpers):
             'start': self.has_data(request, 'start'),
             'end': self.has_data(request, 'end'),
             'description': self.has_data(request, 'description'),
+            'presence': self.has_data(request, 'presence'),
+            'absence': self.has_data(request, 'absence'),
+            'color': self.has_data(request, 'color'),
             'position_updates': self.has_data(request, 'position_updates'),
         }
 
         return data
+
+
+class CellHelpers(CommonHelpers):
+
+    def get_data(self, request):
+        data = self.parse_request_data(request)
+        hierarchy = self.get_hierarchy(data)
+        permission = self.get_permission(request, data, hierarchy['team'])
+
+        return data, hierarchy, permission
+
+
+    def get_hierarchy(self, data):
+        team = Team.objects.get(pk=data['team_id'])
+        profile = team.profiles.get(pk=data['profile_id'])
+        cell = profile.cell_set.get(pk=data['element_id'])
+
+        return {
+            'team': team,
+            'profile': profile,
+            'cell': cell,
+        }
+
+    def get_permission(self, request, data, team):
+        access = TeamProfileLink.objects.filter(
+            team=team,
+            profile=request.user.profile,
+        ).first()
+
+        return access.watcher_is_editor if access else False 
+
+
+class ElementHelpers(CommonHelpers):
+
+    def get_data(self, request):
+        data = self.parse_request_data(request)
+        hierarchy = self.get_hierarchy(data)
+        permission = self.get_permission(request, data, hierarchy['team'])
+
+        return data, hierarchy, permission
 
 
     def get_hierarchy(self, data):

@@ -491,7 +491,7 @@ class DayView(APIView):
         return Response({'day': day})
 
 
-class CellView(APIView):
+class CellView(APIView, CellHelpers):
 
     def get(self, request):
         profile_id = request.query_params['profile_id']
@@ -527,6 +527,33 @@ class CellView(APIView):
                         cell['parts'].append(part)
 
         return Response({'cell': cell})
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+
+        # Check for cell duplication
+        cell_duplicates = Cell.objects.filter(
+            profile=hierarchy['profile'],
+            date=hierarchy['cell'].date,
+        )
+
+        if len(cell_duplicates) > 1:
+            for _cell in cell_duplicates:
+                if _cell.id != hierarchy['cell'].id:
+                    _cell.delete()
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        if data['action'] == 'update':
+            hierarchy['cell'].presence = data['presence']
+            hierarchy['cell'].absence = data['absence']
+            hierarchy['cell'].color = data['color']
+
+            hierarchy['cell'].save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
 class WorksView(APIView):
