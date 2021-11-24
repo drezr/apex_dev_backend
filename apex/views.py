@@ -732,21 +732,23 @@ class ContactsView(APIView):
 
 class ElementView(APIView, ElementHelpers):
 
-    def get_child_count(self, data, element, hierarchy):
+    def get_child_count(self, data, element, hierarchy, option='all'):
         count = 0
 
-        if data['parent_type'] != 'task':
-            count += len(hierarchy[element].tasks.all())
+        if option == 'all' or option == 'exclude_calls':
+            if data['parent_type'] != 'task':
+                count += len(hierarchy[element].tasks.all())
 
-        if data['parent_type'] == 'task':
-            count += len(hierarchy[element].inputs.all())
+            if data['parent_type'] == 'task':
+                count += len(hierarchy[element].inputs.all())
 
-        if data['parent_type'] in ['task', 'folder', 'day', 'cell']:
-            count += len(hierarchy[element].notes.all())
-            count += len(hierarchy[element].files.all())
+            if data['parent_type'] in ['task', 'folder', 'day', 'cell']:
+                count += len(hierarchy[element].notes.all())
+                count += len(hierarchy[element].files.all())
 
-        if data['parent_type'] == 'cell':
-            count += len(hierarchy[element].calls.all())
+        if option == 'all' or option == 'only_calls':
+            if data['parent_type'] == 'cell':
+                count += len(hierarchy[element].calls.all())
 
         return count
 
@@ -796,6 +798,15 @@ class ElementView(APIView, ElementHelpers):
             element_serialized['link'] = hierarchy['link_serializer'](
                 link).data
 
+            if data['parent_type'] in ['day', 'cell']:
+                if data['element_type'] == 'call':
+                    hierarchy['parent'].has_call = True
+
+                else:
+                    hierarchy['parent'].has_content = True
+
+                hierarchy['parent'].save()
+
             result = {
                 data['element_type']: element_serialized,
             }
@@ -832,13 +843,22 @@ class ElementView(APIView, ElementHelpers):
                 'call': ['file'],
             }
 
-            if data['parent_type'] == 'day':
-                parent_child_count = self.get_child_count(
-                    data, 'parent', hierarchy)
+            if data['parent_type'] in ['day', 'cell']:
+                if data['element_type'] == 'call':
+                    count = self.get_child_count(
+                        data, 'parent', hierarchy, 'only_calls')
 
-                if parent_child_count <= 1:
-                    hierarchy['parent'].has_content = False
-                    hierarchy['parent'].save()
+                    if count <= 1:
+                        hierarchy['parent'].has_call = False
+
+                else:
+                    count = self.get_child_count(
+                        data, 'parent', hierarchy, 'exclude_calls')
+
+                    if count <= 1:
+                        hierarchy['parent'].has_content = False
+                
+                hierarchy['parent'].save()
 
             if link.is_original:
                 for element_type in possible_children:
@@ -914,7 +934,7 @@ class ElementView(APIView, ElementHelpers):
 
                     if data['parent_type'] == 'day':
                         parent_child_count = self.get_child_count(
-                            data, 'parent', hierarchy)
+                            data, 'parent', hierarchy, 'exclude_calls')
 
                         if parent_child_count == 0:
                             hierarchy['parent'].has_content = False
