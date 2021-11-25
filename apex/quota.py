@@ -122,8 +122,8 @@ def compute_quota(cells, quota, config, holidays, detailed):
                     amount = 0
 
                     if leave_type not in excluded_leave_types:
-                        has_hour = re.search('[0-9](' + type_detail['generic'] + ')', code)
-                        hour_count = 8 if not has_hour else has_hour.group(0).replace(type_detail['generic'], '')
+                        has_hour = re.search('[0-9](' + type_detail['name'] + ')', code)
+                        hour_count = 8 if not has_hour else has_hour.group(0).replace(type_detail['name'], '')
                         amount = 0.5 if int(hour_count) <= 4 else 1
 
                         is_normal_type = type_detail['type'] == 'normal_leave'
