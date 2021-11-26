@@ -89,11 +89,13 @@ class WorksHelpers(CommonHelpers):
         parent = None
         element = None
 
-        if data['parent_type']:
-            pass
+        if data['parent_type'] and data['parent_id']:
+            if data['parent_type'] == 'work':
+                parent = app.work_set.get(pk=data['element_id'])
 
-        if data['element_type']:
-            pass
+        if data['element_type'] and data['element_id']:
+            if data['element_type'] == 'work':
+                element = app.work_set.get(pk=data['element_id'])
 
         return {
             'team': team,

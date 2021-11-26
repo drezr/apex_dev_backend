@@ -645,13 +645,6 @@ class WorksView(APIView, WorksHelpers):
                 date=data['date'])
             position = len(works_in_month)
 
-            work_serialized = WorkSerializer(work, context={
-                'limits': 'detail',
-                's460s': 'detail',
-                'files': 'detail',
-                'shifts': 'detail',
-            }).data
-
             link = AppWorkLink.objects.create(
                 app=hierarchy['app'],
                 work=work,
@@ -659,12 +652,36 @@ class WorksView(APIView, WorksHelpers):
                 is_original=True,
             )
 
+            work_serialized = WorkSerializer(work, context={
+                'limits': 'detail',
+                's460s': 'detail',
+                'files': 'detail',
+                'shifts': 'detail',
+                'apps': 'id',
+            }).data
+
             work_serialized['link'] = AppWorkLinkSerializer(link).data
 
             return Response({
                 'work': work_serialized,
             })
 
+
+        elif data['action'] == 'update':
+            for key, val in data['value'].items():
+                if 'color' not in key:
+                    Log.objects.create(
+                        field=key,
+                        old_value=getattr(hierarchy['element'], key),
+                        new_value=val,
+                        profile=request.user.profile,
+                        work=hierarchy['element']
+                    )
+
+                setattr(hierarchy['element'], key, val)
+                hierarchy['element'].save()
+
+            return Response(status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
