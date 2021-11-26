@@ -382,7 +382,6 @@ class LeaveView(APIView, LeaveHelpers):
 
             for key, val in data['value'].items():
                 if key not in ['id', 'app']:
-                    print(key)
                     setattr(config, key, val)
 
             config.save()
@@ -592,7 +591,7 @@ class CellView(APIView, CellHelpers):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class WorksView(APIView):
+class WorksView(APIView, WorksHelpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -628,6 +627,46 @@ class WorksView(APIView):
         }
 
         return Response(result)
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        if data['action'] == 'create':
+            work = Work.objects.create(
+                color='light-blue',
+                date=data['date'],
+            )
+
+            works_in_month = hierarchy['app'].work_set.filter(
+                date=data['date'])
+            position = len(works_in_month)
+
+            work_serialized = WorkSerializer(work, context={
+                'limits': 'detail',
+                's460s': 'detail',
+                'files': 'detail',
+                'shifts': 'detail',
+            }).data
+
+            link = AppWorkLink.objects.create(
+                app=hierarchy['app'],
+                work=work,
+                position=position,
+                is_original=True,
+            )
+
+            work_serialized['link'] = AppWorkLinkSerializer(link).data
+
+            return Response({
+                'work': work_serialized,
+            })
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShiftsView(APIView):

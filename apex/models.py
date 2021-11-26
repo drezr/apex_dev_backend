@@ -476,7 +476,8 @@ class Work(models.Model):
     )
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.description[:10])
+        desc = '' if not self.description else self.description[:10]
+        return '[#{0}] {1}'.format(self.id, desc)
 
 
 class Limit(models.Model):

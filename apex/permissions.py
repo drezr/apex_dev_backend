@@ -64,11 +64,51 @@ class CommonHelpers:
             'presence': self.has_data(request, 'presence'),
             'absence': self.has_data(request, 'absence'),
             'color': self.has_data(request, 'color'),
+            'date': self.has_data(request, 'date'),
             'year': self.has_data(request, 'year'),
             'position_updates': self.has_data(request, 'position_updates'),
         }
 
         return data
+
+
+class WorksHelpers(CommonHelpers):
+
+    def get_data(self, request):
+        data = self.parse_request_data(request)
+        hierarchy = self.get_hierarchy(data)
+        permission = self.get_permission(request, data, hierarchy['team'])
+
+        return data, hierarchy, permission
+
+
+    def get_hierarchy(self, data):
+        team = Team.objects.get(pk=data['team_id'])
+        app = team.app_set.get(pk=data['app_id'])
+
+        parent = None
+        element = None
+
+        if data['parent_type']:
+            pass
+
+        if data['element_type']:
+            pass
+
+        return {
+            'team': team,
+            'app': app,
+            'parent': parent,
+            'element': element,
+        }
+
+    def get_permission(self, request, data, team):
+        access = TeamProfileLink.objects.filter(
+            team=team,
+            profile=request.user.profile,
+        ).first()
+
+        return access.is_manager if access else False
 
 
 class LeaveHelpers(CommonHelpers):
