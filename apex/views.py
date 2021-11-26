@@ -328,7 +328,7 @@ class CallsView(APIView):
         return Response(result)
 
 
-class LeaveView(APIView):
+class LeaveView(APIView, LeaveHelpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -358,6 +358,39 @@ class LeaveView(APIView):
         }
 
         return Response(result)
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        if data['action'] == 'update_leave':
+            quota = Quota.objects.get(
+                profile=hierarchy['profile'],
+                year=data['year'],
+            )
+
+            setattr(quota, data['element_type'], data['value'])
+            quota.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+        elif data['action'] == 'update_config':
+            config = LeaveConfig.objects.get(app=hierarchy['app'])
+
+            for key, val in data['value'].items():
+                if key not in ['id', 'app']:
+                    print(key)
+                    setattr(config, key, val)
+
+            config.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class QuotaView(APIView):
@@ -554,6 +587,9 @@ class CellView(APIView, CellHelpers):
             hierarchy['cell'].save()
 
             return Response(status=status.HTTP_200_OK)
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class WorksView(APIView):
