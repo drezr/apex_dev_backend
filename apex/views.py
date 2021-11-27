@@ -724,6 +724,31 @@ class WorksView(APIView, WorksHelpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'update_child':
+            del data['value']['id']
+            del data['value']['work']
+
+            for key, val in data['value'].items():
+                setattr(hierarchy['element'], key, val)
+
+            hierarchy['element'].save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_child_position':
+            updates = data['position_updates']
+
+            for update in updates:
+                child_model = globals()[update['element_type'].capitalize()]
+                child = child_model.objects.get(pk=update['element_id'])
+                child.position = update['element_position']
+
+                child.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
         elif data['action'] == 'update_config':
             columns = data['value']
 
