@@ -684,6 +684,25 @@ class WorksView(APIView, WorksHelpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'delete_work':
+            work = hierarchy['element']
+            app = hierarchy['app']
+
+            for child_type in ['shift', 'limit', 's460']:
+                child_set = getattr(work, child_type + '_set')
+
+                for item in child_set.all():
+                    item.delete()
+
+            for file in work.files.all():
+                file.delete()
+                # TODO file related suff
+
+            work.delete()
+
+            return Response(status=status.HTTP_200_OK)
+
+
         elif data['action'] == 'create_child':
             _type = data['element_type']
             child_model = globals()[_type.capitalize()]
