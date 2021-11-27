@@ -635,7 +635,7 @@ class WorksView(APIView, WorksHelpers):
         if not permission:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        if data['action'] == 'create':
+        if data['action'] == 'create_work':
             work = Work.objects.create(
                 color='light-blue',
                 date=data['date'],
@@ -667,7 +667,7 @@ class WorksView(APIView, WorksHelpers):
             })
 
 
-        elif data['action'] == 'update':
+        elif data['action'] == 'update_work':
             for key, val in data['value'].items():
                 if 'color' not in key:
                     Log.objects.create(
@@ -682,6 +682,64 @@ class WorksView(APIView, WorksHelpers):
                 hierarchy['element'].save()
 
             return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'create_child':
+            _type = data['element_type']
+            child_model = globals()[_type.capitalize()]
+            child_serializer = globals()[_type.capitalize() + 'Serializer']
+            child_set = getattr(hierarchy['parent'], _type + '_set')
+
+            position = len(child_set.all())
+
+            child = child_model.objects.create(
+                position=position,
+                work=hierarchy['parent'],
+            )
+
+            child_serialized = child_serializer(child, context={
+                'parts': 'detail',
+            }).data
+
+            data = dict()
+            data[_type] = child_serialized
+
+            return Response(data)
+
+
+        elif data['action'] == 'delete_child':
+            _type = data['element_type']
+            child_model = globals()[_type.capitalize()]
+
+            hierarchy['element'].delete()
+
+            work = hierarchy['parent']
+            child_set = getattr(work, _type + '_set')
+            children = child_set.all().order_by('position')
+
+            for i, child in enumerate(children):
+                child.position = i
+                child.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_config':
+            columns = data['value']
+
+            config = RadiumConfig.objects.get(pk=data['element_id'])
+
+            for column in columns:
+                name = column['name']
+                del column['name']
+
+                for key, val in column.items():
+                    setattr(config, name + '_' + key, val)
+
+            config.save()
+
+            return Response(status=status.HTTP_200_OK)
+
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -735,10 +793,23 @@ class AppsView(APIView):
 
     def get(self, request):
         circles = Circle.objects.all()
+        profile = request.user.profile
+
+        user_teams = list()
+        user_circles = list()
+
+        for circle in circles:
+            teams = circle.team_set.filter(profiles__in=[profile])
+            [user_teams.append(team) for team in teams]
+
+            for team in user_teams:
+                if len(circle.team_set.filter(pk=team.id)):
+                    user_circles.append(circle)
+
 
         result = {
             'circles': CircleSerializer(
-                circles, many=True,
+                user_circles, many=True,
                 context={'teams': 'detail', 'apps': 'detail'}
             ).data,
         }

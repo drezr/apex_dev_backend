@@ -508,6 +508,7 @@ class S460(models.Model):
     start = models.CharField(max_length=100, blank=True, null=True)
     end = models.CharField(max_length=100, blank=True, null=True)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
+    type = models.CharField(max_length=50, editable=False, default='s460')
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
@@ -517,7 +518,7 @@ class S460(models.Model):
 
 class Shift(models.Model):
 
-    date = models.DateField()
+    date = models.DateField(null=True, blank=True)
     shift = models.CharField(max_length=100, blank=True, null=True)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     type = models.CharField(max_length=50, editable=False, default='shift')

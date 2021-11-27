@@ -91,11 +91,15 @@ class WorksHelpers(CommonHelpers):
 
         if data['parent_type'] and data['parent_id']:
             if data['parent_type'] == 'work':
-                parent = app.work_set.get(pk=data['element_id'])
+                parent = app.work_set.get(pk=data['parent_id'])
 
         if data['element_type'] and data['element_id']:
             if data['element_type'] == 'work':
                 element = app.work_set.get(pk=data['element_id'])
+
+            elif data['element_type'] in ['shift', 'limit', 's460', 'file']:
+                child_set = getattr(parent, data['element_type'] + '_set')
+                element = child_set.get(pk=data['element_id'])
 
         return {
             'team': team,
@@ -110,7 +114,11 @@ class WorksHelpers(CommonHelpers):
             profile=request.user.profile,
         ).first()
 
-        return access.is_manager if access else False
+        if data['action'] == 'update_config':
+            return access.is_manager if access else False
+
+        else:
+            return access.radium_is_editor if access else False
 
 
 class LeaveHelpers(CommonHelpers):
