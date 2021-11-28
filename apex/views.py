@@ -693,7 +693,7 @@ class WorksView(APIView, WorksHelpers):
 
                 for item in child_set.all():
                     if child_type == 'shift':
-                        for part in item.part_set:
+                        for part in item.part_set.all():
                             part.delete()
 
                     item.delete()
