@@ -785,6 +785,28 @@ class WorksView(APIView, WorksHelpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'create_parts':
+            parts = list()
+
+            for team_id in data['value']:
+                part = Part.objects.create(
+                    date=hierarchy['element'].date,
+                    team=hierarchy['team'],
+                    shift=hierarchy['element'],
+                    work=hierarchy['parent'],
+                )
+
+                part_serialized = PartSerializer(part, context={                'link': 'detail',
+                    'parts': 'detail',
+                    'profiles': 'detail',
+                    'project': 'detail',
+                }).data
+
+                parts.append(part_serialized)
+
+            return Response({'parts': parts})
+
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
