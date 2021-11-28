@@ -692,6 +692,10 @@ class WorksView(APIView, WorksHelpers):
                 child_set = getattr(work, child_type + '_set')
 
                 for item in child_set.all():
+                    if child_type == 'shift':
+                        for part in item.part_set:
+                            part.delete()
+
                     item.delete()
 
             for file in work.files.all():
@@ -699,6 +703,19 @@ class WorksView(APIView, WorksHelpers):
                 # TODO file related suff
 
             work.delete()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_work_position':
+            for update in data['position_updates']:
+                work_link = AppWorkLink.objects.get(
+                    app=hierarchy['app'],
+                    work_id=update['element_id']
+                )
+
+                work_link.position = update['element_position']
+                work_link.save()
 
             return Response(status=status.HTTP_200_OK)
 
@@ -796,7 +813,7 @@ class WorksView(APIView, WorksHelpers):
                     work=hierarchy['parent'],
                 )
 
-                part_serialized = PartSerializer(part, context={                'link': 'detail',
+                part_serialized = PartSerializer(part, context={
                     'parts': 'detail',
                     'profiles': 'detail',
                     'project': 'detail',
@@ -804,7 +821,52 @@ class WorksView(APIView, WorksHelpers):
 
                 parts.append(part_serialized)
 
+                day, c = Day.objects.get_or_create(
+                    team=hierarchy['team'], date=hierarchy['element'].date)
+
+                day.has_content = True
+                day.save()
+
             return Response({'parts': parts})
+
+
+        elif data['action'] == 'update_part':
+            part = hierarchy['element']
+
+            part.needs = data['value']['needs']
+            part.locked = data['value']['locked']
+
+            part.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'delete_part':
+            no_child = True
+            date = hierarchy['element'].date
+
+            hierarchy['element'].delete()
+
+            day = Day.objects.get(team=hierarchy['team'], date=date)
+
+            for child_type in ['task', 'note', 'file']:
+                child_set = getattr(day, child_type + 's')
+
+                if len(child_set.all()) > 0:
+                    no_child = False
+                    break
+
+            if no_child:
+                parts = Part.objects.filter(team=hierarchy['team'], date=date)
+
+                if len(parts) > 0:
+                    no_child = False
+
+            if no_child:
+                day.has_content = False
+                day.save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -978,6 +1040,20 @@ class ElementView(APIView, ElementHelpers):
         if option == 'all' or option == 'only_calls':
             if data['parent_type'] == 'cell':
                 count += len(hierarchy[element].calls.all())
+
+
+        if option == 'all' or option == 'exclude_calls':
+            if data['parent_type'] == 'day':
+                parts = Part.objects.filter(
+                    team=hierarchy['team'], date=hierarchy['parent'].date)
+
+                count += len(parts)
+
+            elif data['parent_type'] == 'cell':
+                pass
+
+                #TODO PartProfileLink + Cell check
+
 
         return count
 

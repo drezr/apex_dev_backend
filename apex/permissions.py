@@ -86,12 +86,20 @@ class WorksHelpers(CommonHelpers):
         team = Team.objects.get(pk=data['team_id'])
         app = team.app_set.get(pk=data['app_id'])
 
+        source = None
         parent = None
         element = None
+
+        if data['source_type'] and data['source_id']:
+            if data['source_type'] == 'work':
+                source = app.work_set.get(pk=data['source_id'])
 
         if data['parent_type'] and data['parent_id']:
             if data['parent_type'] == 'work':
                 parent = app.work_set.get(pk=data['parent_id'])
+
+            if data['parent_type'] == 'shift':
+                parent = source.shift_set.get(pk=data['parent_id'])
 
         if data['element_type'] and data['element_id']:
             if data['element_type'] == 'work':
@@ -101,9 +109,13 @@ class WorksHelpers(CommonHelpers):
                 child_set = getattr(parent, data['element_type'] + '_set')
                 element = child_set.get(pk=data['element_id'])
 
+            elif data['element_type'] == 'part':
+                element = parent.part_set.get(pk=data['element_id'])
+
         return {
             'team': team,
             'app': app,
+            'source': source,
             'parent': parent,
             'element': element,
         }
