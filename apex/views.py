@@ -11,6 +11,75 @@ from .permissions import *
 from .quota import compute_quota
 
 
+class Helpers:
+
+    def day_has_child(self, team, day):
+        has_child = False
+
+        for child_type in ['task', 'note', 'file']:
+            child_set = getattr(day, child_type + 's')
+
+            if len(child_set.all()) > 0:
+                has_child = True
+                break
+
+        if not has_child:
+            parts = Part.objects.filter(team=team, date=day.date)
+
+            if len(parts) > 0:
+                has_child = True
+
+        return has_child
+
+
+    def cell_has_child(self, profile, cell):
+        has_child = False
+
+        parts = Part.objects.filter(
+            profiles__in=[profile.id],
+            date=cell.date,
+        )
+
+        for part in parts:
+            for _profile in part.profiles.all():
+                if _profile == profile:
+                    _link = PartProfileLink.objects.get(
+                        part=part,
+                        profile=profile,
+                    )
+
+                    if _link.is_participant:
+                        has_child = True
+                        break
+
+        for child_type in ['task', 'note', 'file']:
+            child_set = getattr(cell, child_type + 's')
+
+            if len(child_set.all()) > 0:
+                has_child = True
+                break
+
+        return has_child
+
+
+    def set_day_cells_has_content(self, team, profiles, date):
+        day, d = Day.objects.get_or_create(team=team, date=date)
+        has_child = self.day_has_child(team, day)
+
+        day.has_content = has_child
+        day.save()
+
+        for profile in profiles:
+            cell, c = Cell.objects.get_or_create(
+                profile=profile, date=date)
+
+            has_child = self.cell_has_child(
+                cell.profile, cell)
+
+            cell.has_content = has_child
+            cell.save()
+
+
 class HomeView(APIView):
 
     def get(self, request):
@@ -591,7 +660,7 @@ class CellView(APIView, CellHelpers):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class WorksView(APIView, WorksHelpers):
+class WorksView(APIView, WorksHelpers, Helpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -612,7 +681,8 @@ class WorksView(APIView, WorksHelpers):
                 'link': 'detail',
                 'profiles': 'detail',
             }).data,
-            'app': AppSerializer(app,context={'radium_config': True}).data,
+            'app': AppSerializer(app, context={
+                'radium_config': True}).data,
             'config': RadiumConfigSerializer(config).data,
             'works': WorkSerializer(works, many=True, context={
                 'link': 'detail',
@@ -635,18 +705,24 @@ class WorksView(APIView, WorksHelpers):
         if not permission:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        team = hierarchy['team']
+        app = hierarchy['app']
+        source = hierarchy['source']
+        parent = hierarchy['parent']
+        element = hierarchy['element']
+
         if data['action'] == 'create_work':
             work = Work.objects.create(
                 color='light-blue',
                 date=data['date'],
             )
 
-            works_in_month = hierarchy['app'].work_set.filter(
+            works_in_month = app.work_set.filter(
                 date=data['date'])
             position = len(works_in_month)
 
             link = AppWorkLink.objects.create(
-                app=hierarchy['app'],
+                app=app,
                 work=work,
                 position=position,
                 is_original=True,
@@ -672,37 +748,40 @@ class WorksView(APIView, WorksHelpers):
                 if 'color' not in key:
                     Log.objects.create(
                         field=key,
-                        old_value=getattr(hierarchy['element'], key),
+                        old_value=getattr(element, key),
                         new_value=val,
                         profile=request.user.profile,
-                        work=hierarchy['element']
+                        work=element
                     )
 
-                setattr(hierarchy['element'], key, val)
-                hierarchy['element'].save()
+                setattr(element, key, val)
+                element.save()
 
             return Response(status=status.HTTP_200_OK)
 
 
         elif data['action'] == 'delete_work':
-            work = hierarchy['element']
-            app = hierarchy['app']
-
             for child_type in ['shift', 'limit', 's460']:
-                child_set = getattr(work, child_type + '_set')
+                child_set = getattr(element, child_type + '_set')
 
                 for item in child_set.all():
                     if child_type == 'shift':
                         for part in item.part_set.all():
+                            date = part.date
+                            profiles = [p for p in part.profiles.all()]
+                            part_team = part.team
+
                             part.delete()
 
-                    item.delete()
+                            self.set_day_cells_has_content(
+                                part_team, profiles, date)
 
-            for file in work.files.all():
+
+            for file in element.files.all():
                 file.delete()
                 # TODO file related suff
 
-            work.delete()
+            element.delete()
 
             return Response(status=status.HTTP_200_OK)
 
@@ -710,7 +789,7 @@ class WorksView(APIView, WorksHelpers):
         elif data['action'] == 'update_work_position':
             for update in data['position_updates']:
                 work_link = AppWorkLink.objects.get(
-                    app=hierarchy['app'],
+                    app=app,
                     work_id=update['element_id']
                 )
 
@@ -723,14 +802,15 @@ class WorksView(APIView, WorksHelpers):
         elif data['action'] == 'create_child':
             _type = data['element_type']
             child_model = globals()[_type.capitalize()]
-            child_serializer = globals()[_type.capitalize() + 'Serializer']
-            child_set = getattr(hierarchy['parent'], _type + '_set')
+            child_serializer = globals()[
+                _type.capitalize() + 'Serializer']
+            child_set = getattr(parent, _type + '_set')
 
             position = len(child_set.all())
 
             child = child_model.objects.create(
                 position=position,
-                work=hierarchy['parent'],
+                work=parent,
             )
 
             child_serialized = child_serializer(child, context={
@@ -747,10 +827,22 @@ class WorksView(APIView, WorksHelpers):
             _type = data['element_type']
             child_model = globals()[_type.capitalize()]
 
-            hierarchy['element'].delete()
+            date = element.date
 
-            work = hierarchy['parent']
-            child_set = getattr(work, _type + '_set')
+            if element.type == 'shift':
+                for part in element.part_set.all():
+                    profiles = [p for p in part.profiles.all()]
+                    part_team = part.team
+
+                    part.delete()
+
+                    self.set_day_cells_has_content(
+                        part_team, profiles, date)
+
+
+            element.delete()
+
+            child_set = getattr(parent, _type + '_set')
             children = child_set.all().order_by('position')
 
             for i, child in enumerate(children):
@@ -765,9 +857,26 @@ class WorksView(APIView, WorksHelpers):
             del data['value']['work']
 
             for key, val in data['value'].items():
-                setattr(hierarchy['element'], key, val)
+                setattr(element, key, val)
 
-            hierarchy['element'].save()
+            if element.type == 'shift':
+                for part in element.part_set.all():
+                    old_date = part.date
+                    part.date = element.date
+                    part_team = part.team
+
+                    part.save()
+
+                    if old_date != element.date:
+                        profiles = [p for p in part.profiles.all()]
+
+                        self.set_day_cells_has_content(
+                            part_team, profiles, old_date)
+
+                        self.set_day_cells_has_content(
+                            part_team, profiles, element.date)
+
+            element.save()
 
             return Response(status=status.HTTP_200_OK)
 
@@ -776,8 +885,10 @@ class WorksView(APIView, WorksHelpers):
             updates = data['position_updates']
 
             for update in updates:
-                child_model = globals()[update['element_type'].capitalize()]
-                child = child_model.objects.get(pk=update['element_id'])
+                child_model = globals()[
+                    update['element_type'].capitalize()]
+                child = child_model.objects.get(
+                    pk=update['element_id'])
                 child.position = update['element_position']
 
                 child.save()
@@ -807,10 +918,10 @@ class WorksView(APIView, WorksHelpers):
 
             for team_id in data['value']:
                 part = Part.objects.create(
-                    date=hierarchy['element'].date,
-                    team=hierarchy['team'],
-                    shift=hierarchy['element'],
-                    work=hierarchy['parent'],
+                    date=element.date,
+                    team=team,
+                    shift=element,
+                    work=parent,
                 )
 
                 part_serialized = PartSerializer(part, context={
@@ -822,7 +933,7 @@ class WorksView(APIView, WorksHelpers):
                 parts.append(part_serialized)
 
                 day, c = Day.objects.get_or_create(
-                    team=hierarchy['team'], date=hierarchy['element'].date)
+                    team=team, date=element.date)
 
                 day.has_content = True
                 day.save()
@@ -831,40 +942,83 @@ class WorksView(APIView, WorksHelpers):
 
 
         elif data['action'] == 'update_part':
-            part = hierarchy['element']
+            element.needs = data['value']['needs']
+            element.locked = data['value']['locked']
 
-            part.needs = data['value']['needs']
-            part.locked = data['value']['locked']
-
-            part.save()
+            element.save()
 
             return Response(status=status.HTTP_200_OK)
 
 
         elif data['action'] == 'delete_part':
-            no_child = True
-            date = hierarchy['element'].date
+            date = element.date
+            profiles = [p for p in element.profiles.all()]
+            part_team = element.team
 
-            hierarchy['element'].delete()
+            element.delete()
 
-            day = Day.objects.get(team=hierarchy['team'], date=date)
+            self.set_day_cells_has_content(part_team, profiles, date)
 
-            for child_type in ['task', 'note', 'file']:
-                child_set = getattr(day, child_type + 's')
+            return Response(status=status.HTTP_200_OK)
 
-                if len(child_set.all()) > 0:
-                    no_child = False
-                    break
 
-            if no_child:
-                parts = Part.objects.filter(team=hierarchy['team'], date=date)
+        elif data['action'] == 'create_part_profile_link':
+            cell, c = Cell.objects.get_or_create(
+                profile_id=data['profile_id'],
+                date=element.date,
+            )
 
-                if len(parts) > 0:
-                    no_child = False
+            profile = Profile.objects.get(pk=data['profile_id'])
 
-            if no_child:
-                day.has_content = False
-                day.save()
+            link, c = PartProfileLink.objects.get_or_create(
+                part=element,
+                profile=profile,
+            )
+
+            profile_serialized = ProfileSerializer(profile).data
+            profile_serialized['link'] = PartProfileLinkSerializer(
+                link).data
+
+            return Response({'profile': profile_serialized})
+
+
+        elif data['action'] == 'update_part_profile_link':
+            profile = Profile.objects.get(pk=data['profile_id'])
+
+            link = PartProfileLink.objects.get(
+                part=element,
+                profile=profile,
+            )
+
+            is_participant = data['value']['is_participant'] \
+                             and not link.is_participant
+
+            is_not_participant = not data['value']['is_participant'] \
+                                 and link.is_participant
+            link.is_available = data['value']['is_available']
+            link.is_participant = data['value']['is_participant']
+            link.save()
+
+            if is_participant:
+                cell = Cell.objects.get(
+                    profile_id=data['profile_id'],
+                    date=element.date,
+                )
+
+                cell.has_content = True
+                cell.save()
+
+            if is_not_participant:
+                cell = Cell.objects.get(
+                    profile_id=data['profile_id'],
+                    date=element.date,
+                )
+
+                has_child = self.cell_has_child(profile, cell)
+
+                if not has_child:
+                    cell.has_content = False
+                    cell.save()
 
             return Response(status=status.HTTP_200_OK)
 
