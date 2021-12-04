@@ -10,6 +10,8 @@ from .permissions import *
 
 from .quota import compute_quota
 
+from .radium_default_config import radium_default_config
+
 
 class Helpers:
 
@@ -105,6 +107,7 @@ class HomeView(APIView):
             ).data,
             'user_teams': TeamSerializer(user_teams, many=True).data,
         }
+
 
         return Response(result)
 
@@ -671,7 +674,18 @@ class WorksView(APIView, WorksHelpers, Helpers):
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
-        config, c = RadiumConfig.objects.get_or_create(app_id=app_id)
+        config, is_new = RadiumConfig.objects.get_or_create(app_id=app_id)
+
+        if is_new:
+            for column in radium_default_config:
+                RadiumConfigColumn.objects.create(
+                    name=column['name'],
+                    position=column['position'],
+                    width=column['width'],
+                    textsize=column['textsize'],
+                    visible=column['visible'],
+                    config=config,
+                )
         
         works = Work.objects.filter(
             date__month=month, date__year=year, apps__in=[app.id])
@@ -681,8 +695,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 'link': 'detail',
                 'profiles': 'detail',
             }).data,
-            'app': AppSerializer(app, context={
-                'radium_config': True}).data,
+            'app': AppSerializer(app).data,
             'config': RadiumConfigSerializer(config).data,
             'works': WorkSerializer(works, many=True, context={
                 'link': 'detail',
@@ -902,13 +915,16 @@ class WorksView(APIView, WorksHelpers, Helpers):
             config = RadiumConfig.objects.get(pk=data['element_id'])
 
             for column in columns:
-                name = column['name']
-                del column['name']
+                config_column = RadiumConfigColumn.objects.get(
+                    pk=column['id'])
+
+                for attr in ['id', 'name', 'config']:
+                    del column[attr]
 
                 for key, val in column.items():
-                    setattr(config, name + '_' + key, val)
+                    setattr(config_column, key, val)
 
-            config.save()
+                config_column.save()
 
             return Response(status=status.HTTP_200_OK)
 

@@ -103,220 +103,6 @@ class App(models.Model):
         return '[#{0}] {1} ({2})'.format(self.id, self.app, name)
 
 
-class RadiumConfig(models.Model):
-
-    shifts_position = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
-    shifts_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
-    shifts_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    shifts_visible = models.BooleanField(default=True)
-    description_position = models.PositiveSmallIntegerField(null=True, blank=True, default=1)
-    description_width = models.PositiveSmallIntegerField(null=True, blank=True, default=400)
-    description_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    description_visible = models.BooleanField(default=True)
-    note_position = models.PositiveSmallIntegerField(null=True, blank=True, default=2)
-    note_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
-    note_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    note_visible = models.BooleanField(default=True)
-    ilt_position = models.PositiveSmallIntegerField(null=True, blank=True, default=3)
-    ilt_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    ilt_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    ilt_visible = models.BooleanField(default=True)
-    files_position = models.PositiveSmallIntegerField(null=True, blank=True, default=4)
-    files_width = models.PositiveSmallIntegerField(null=True, blank=True, default=300)
-    files_visible = models.BooleanField(default=True)
-    upm_position = models.PositiveSmallIntegerField(null=True, blank=True, default=5)
-    upm_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    upm_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    upm_visible = models.BooleanField(default=True)
-    colt_position = models.PositiveSmallIntegerField(null=True, blank=True, default=6)
-    colt_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    colt_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    colt_visible = models.BooleanField(default=True)
-    status_position = models.PositiveSmallIntegerField(null=True, blank=True, default=7)
-    status_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
-    status_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    status_visible = models.BooleanField(default=True)
-    limits_position = models.PositiveSmallIntegerField(null=True, blank=True, default=8)
-    limits_width = models.PositiveSmallIntegerField(null=True, blank=True, default=600)
-    limits_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=12)
-    limits_visible = models.BooleanField(default=True)
-    s460s_position = models.PositiveSmallIntegerField(null=True, blank=True, default=9)
-    s460s_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
-    s460s_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=12)
-    s460s_visible = models.BooleanField(default=True)
-    zkl_position = models.PositiveSmallIntegerField(null=True, blank=True, default=10)
-    zkl_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    zkl_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    zkl_visible = models.BooleanField(default=True)
-    cascat_position = models.PositiveSmallIntegerField(null=True, blank=True, default=11)
-    cascat_width = models.PositiveSmallIntegerField(null=True, blank=True, default=150)
-    cascat_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    cascat_visible = models.BooleanField(default=True)
-    grue_position = models.PositiveSmallIntegerField(null=True, blank=True, default=12)
-    grue_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    grue_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    grue_visible = models.BooleanField(default=True)
-    osv_position = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    osv_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    osv_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    osv_visible = models.BooleanField(default=True)
-    loco_position = models.PositiveSmallIntegerField(null=True, blank=True, default=14)
-    loco_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    loco_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    loco_visible = models.BooleanField(default=True)
-    hgs_position = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    hgs_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    hgs_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    hgs_visible = models.BooleanField(default=True)
-    soudure_position = models.PositiveSmallIntegerField(null=True, blank=True, default=16)
-    soudure_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    soudure_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    soudure_visible = models.BooleanField(default=True)
-    pn_position = models.PositiveSmallIntegerField(null=True, blank=True, default=17)
-    pn_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    pn_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    pn_visible = models.BooleanField(default=True)
-    art_position = models.PositiveSmallIntegerField(null=True, blank=True, default=18)
-    art_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    art_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    art_visible = models.BooleanField(default=True)
-    s428_position = models.PositiveSmallIntegerField(null=True, blank=True, default=19)
-    s428_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    s428_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    s428_visible = models.BooleanField(default=True)
-    s461_position = models.PositiveSmallIntegerField(null=True, blank=True, default=20)
-    s461_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    s461_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    s461_visible = models.BooleanField(default=True)
-    atwtx_position = models.PositiveSmallIntegerField(null=True, blank=True, default=21)
-    atwtx_width = models.PositiveSmallIntegerField(null=True, blank=True, default=150)
-    atwtx_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    atwtx_visible = models.BooleanField(default=True)
-    imputation_position = models.PositiveSmallIntegerField(null=True, blank=True, default=22)
-    imputation_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    imputation_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    imputation_visible = models.BooleanField(default=True)
-    extra_position = models.PositiveSmallIntegerField(null=True, blank=True, default=23)
-    extra_width = models.PositiveSmallIntegerField(null=True, blank=True, default=100)
-    extra_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    extra_visible = models.BooleanField(default=True)
-    line_position = models.PositiveSmallIntegerField(null=True, blank=True, default=24)
-    line_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    line_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    line_visible = models.BooleanField(default=True)
-    supervisor_position = models.PositiveSmallIntegerField(null=True, blank=True, default=25)
-    supervisor_width = models.PositiveSmallIntegerField(null=True, blank=True, default=150)
-    supervisor_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    supervisor_visible = models.BooleanField(default=True)
-
-    printable_shifts_position = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
-    printable_shifts_width = models.PositiveSmallIntegerField(null=True, blank=True, default=160)
-    printable_shifts_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_shifts_visible = models.BooleanField(default=True)
-    printable_description_position = models.PositiveSmallIntegerField(null=True, blank=True, default=1)
-    printable_description_width = models.PositiveSmallIntegerField(null=True, blank=True, default=300)
-    printable_description_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_description_visible = models.BooleanField(default=True)
-    printable_note_position = models.PositiveSmallIntegerField(null=True, blank=True, default=2)
-    printable_note_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
-    printable_note_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_note_visible = models.BooleanField(default=True)
-    printable_ilt_position = models.PositiveSmallIntegerField(null=True, blank=True, default=3)
-    printable_ilt_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_ilt_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_ilt_visible = models.BooleanField(default=True)
-    printable_upm_position = models.PositiveSmallIntegerField(null=True, blank=True, default=5)
-    printable_upm_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_upm_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_upm_visible = models.BooleanField(default=True)
-    printable_colt_position = models.PositiveSmallIntegerField(null=True, blank=True, default=6)
-    printable_colt_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_colt_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_colt_visible = models.BooleanField(default=True)
-    printable_status_position = models.PositiveSmallIntegerField(null=True, blank=True, default=7)
-    printable_status_width = models.PositiveSmallIntegerField(null=True, blank=True, default=200)
-    printable_status_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_status_visible = models.BooleanField(default=True)
-    printable_limits_position = models.PositiveSmallIntegerField(null=True, blank=True, default=8)
-    printable_limits_width = models.PositiveSmallIntegerField(null=True, blank=True, default=500)
-    printable_limits_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=12)
-    printable_limits_visible = models.BooleanField(default=True)
-    printable_s460s_position = models.PositiveSmallIntegerField(null=True, blank=True, default=9)
-    printable_s460s_width = models.PositiveSmallIntegerField(null=True, blank=True, default=160)
-    printable_s460s_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=12)
-    printable_s460s_visible = models.BooleanField(default=True)
-    printable_zkl_position = models.PositiveSmallIntegerField(null=True, blank=True, default=10)
-    printable_zkl_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_zkl_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_zkl_visible = models.BooleanField(default=True)
-    printable_cascat_position = models.PositiveSmallIntegerField(null=True, blank=True, default=11)
-    printable_cascat_width = models.PositiveSmallIntegerField(null=True, blank=True, default=125)
-    printable_cascat_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_cascat_visible = models.BooleanField(default=True)
-    printable_grue_position = models.PositiveSmallIntegerField(null=True, blank=True, default=12)
-    printable_grue_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_grue_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_grue_visible = models.BooleanField(default=True)
-    printable_osv_position = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_osv_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_osv_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_osv_visible = models.BooleanField(default=True)
-    printable_loco_position = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_loco_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_loco_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_loco_visible = models.BooleanField(default=True)
-    printable_hgs_position = models.PositiveSmallIntegerField(null=True, blank=True, default=15)
-    printable_hgs_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_hgs_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_hgs_visible = models.BooleanField(default=True)
-    printable_soudure_position = models.PositiveSmallIntegerField(null=True, blank=True, default=16)
-    printable_soudure_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_soudure_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_soudure_visible = models.BooleanField(default=True)
-    printable_pn_position = models.PositiveSmallIntegerField(null=True, blank=True, default=17)
-    printable_pn_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_pn_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_pn_visible = models.BooleanField(default=True)
-    printable_art_position = models.PositiveSmallIntegerField(null=True, blank=True, default=18)
-    printable_art_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_art_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_art_visible = models.BooleanField(default=True)
-    printable_s428_position = models.PositiveSmallIntegerField(null=True, blank=True, default=19)
-    printable_s428_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_s428_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_s428_visible = models.BooleanField(default=True)
-    printable_s461_position = models.PositiveSmallIntegerField(null=True, blank=True, default=20)
-    printable_s461_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_s461_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_s461_visible = models.BooleanField(default=True)
-    printable_atwtx_position = models.PositiveSmallIntegerField(null=True, blank=True, default=21)
-    printable_atwtx_width = models.PositiveSmallIntegerField(null=True, blank=True, default=125)
-    printable_atwtx_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_atwtx_visible = models.BooleanField(default=True)
-    printable_imputation_position = models.PositiveSmallIntegerField(null=True, blank=True, default=22)
-    printable_imputation_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_imputation_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_imputation_visible = models.BooleanField(default=True)
-    printable_extra_position = models.PositiveSmallIntegerField(null=True, blank=True, default=23)
-    printable_extra_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_extra_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_extra_visible = models.BooleanField(default=True)
-    printable_line_position = models.PositiveSmallIntegerField(null=True, blank=True, default=24)
-    printable_line_width = models.PositiveSmallIntegerField(null=True, blank=True, default=75)
-    printable_line_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_line_visible = models.BooleanField(default=True)
-    printable_supervisor_position = models.PositiveSmallIntegerField(null=True, blank=True, default=25)
-    printable_supervisor_width = models.PositiveSmallIntegerField(null=True, blank=True, default=120)
-    printable_supervisor_textsize = models.PositiveSmallIntegerField(null=True, blank=True, default=13)
-    printable_supervisor_visible = models.BooleanField(default=True)
-
-    type = models.CharField(max_length=50, editable=False, default='radium_config')
-    app = models.ForeignKey('App', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.app)
-
-
 class Day(models.Model):
 
     date = models.DateField()
@@ -757,6 +543,47 @@ class Call(models.Model):
         return '[#{0}] {1}'.format(self.id, self.name)
 
 
+class Holiday(models.Model):
+
+    date = models.DateField()
+    type = models.CharField(max_length=50, editable=False, default='holiday')
+
+    def __str__(self):
+        return '[#{0}] {1}'.format(self.id, self.date)
+
+
+class Log(models.Model):
+
+    field = models.CharField(max_length=255, blank=True, null=True)
+    old_value = models.TextField(null=True, blank=True)
+    new_value = models.TextField(null=True, blank=True)
+    date = models.DateTimeField(default=timezone.now)
+    type = models.CharField(max_length=50, editable=False, default='log')
+
+    profile = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE)
+    work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
+    cell = models.ForeignKey('Cell', null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '[#{0}] {1} : {2}'.format(self.id, self.field, self.profile.name)
+
+
+class Message(models.Model):
+
+    priority = models.CharField(max_length=20, blank=True, null=True)
+    message = models.TextField(null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+    type = models.CharField(max_length=50, editable=False, default='message')
+
+    author = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE, related_name='author')
+    profile = models.ForeignKey('Profile', null=True, blank=True, on_delete=models.CASCADE)
+    app = models.ForeignKey('App', null=True, blank=True, on_delete=models.CASCADE)
+    work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '[#{0}] {1}'.format(self.id, self.message)
+
+
 class Quota(models.Model):
 
     year = models.PositiveSmallIntegerField()
@@ -919,45 +746,45 @@ class LeaveConfig(models.Model):
         return '[#{0}] {1}'.format(self.id, self.app)
 
 
-class Holiday(models.Model):
+class LeaveType(models.Model):
 
-    date = models.DateField()
-    type = models.CharField(max_length=50, editable=False, default='holiday')
+    name = models.CharField(max_length=10, blank=True, null=True)
+    desc = models.CharField(max_length=50, blank=True, null=True)
+    type = models.CharField(max_length=20, default='day')
+    color = models.CharField(max_length=20, default='red')
+    position = models.PositiveSmallIntegerField()
+    visible = models.BooleanField(default=False)
 
-    def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.date)
-
-
-class Log(models.Model):
-
-    field = models.CharField(max_length=255, blank=True, null=True)
-    old_value = models.TextField(null=True, blank=True)
-    new_value = models.TextField(null=True, blank=True)
-    date = models.DateTimeField(default=timezone.now)
-    type = models.CharField(max_length=50, editable=False, default='log')
-
-    profile = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE)
-    work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
-    cell = models.ForeignKey('Cell', null=True, blank=True, on_delete=models.CASCADE)
+    config = models.ForeignKey(
+        'LeaveConfig', related_name='leave_type_set', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.field, self.profile.name)
+        return '[#{0}] {1} : {2}'.format(self.id, self.config, self.name)
 
 
-class Message(models.Model):
+class RadiumConfig(models.Model):
 
-    priority = models.CharField(max_length=20, blank=True, null=True)
-    message = models.TextField(null=True, blank=True)
-    date = models.DateField(auto_now_add=True)
-    type = models.CharField(max_length=50, editable=False, default='message')
+    # Kind of an empty model. Might add more config options later.
 
-    author = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE, related_name='author')
-    profile = models.ForeignKey('Profile', null=True, blank=True, on_delete=models.CASCADE)
-    app = models.ForeignKey('App', null=True, blank=True, on_delete=models.CASCADE)
-    work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.message)
+        return '[#{0}] {1}'.format(self.id, self.app)
+
+
+class RadiumConfigColumn(models.Model):
+
+    name = models.CharField(max_length=50)
+    position = models.PositiveSmallIntegerField()
+    width = models.PositiveSmallIntegerField()
+    textsize = models.PositiveSmallIntegerField()
+    visible = models.BooleanField(default=True)
+
+    config = models.ForeignKey(
+        'RadiumConfig', related_name='column_set', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '[#{0}] {1} : {2}'.format(self.id, self.config, self.name)
 
 
 #######################################################

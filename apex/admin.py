@@ -19,6 +19,10 @@ class RadiumConfigAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', )
 
 
+class RadiumConfigColumnAdmin(admin.ModelAdmin):
+    raw_id_fields = ('config', )
+
+
 class DayAdmin(admin.ModelAdmin):
     raw_id_fields = ('team', )
 
@@ -55,6 +59,10 @@ class LeaveConfigAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', )
 
 
+class LeaveTypeAdmin(admin.ModelAdmin):
+    raw_id_fields = ('config', )
+
+
 class LogAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', 'work', 'cell', )
 
@@ -68,6 +76,7 @@ admin.site.register(Circle)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(App, AppAdmin)
 admin.site.register(RadiumConfig, RadiumConfigAdmin)
+admin.site.register(RadiumConfigColumn, RadiumConfigColumnAdmin)
 admin.site.register(Day, DayAdmin)
 admin.site.register(Cell, CellAdmin)
 admin.site.register(Work)
@@ -87,6 +96,7 @@ admin.site.register(Link)
 admin.site.register(Call)
 admin.site.register(Quota, QuotaAdmin)
 admin.site.register(LeaveConfig, LeaveConfigAdmin)
+admin.site.register(LeaveType, LeaveTypeAdmin)
 admin.site.register(Holiday)
 admin.site.register(Log, LogAdmin)
 admin.site.register(Message, MessageAdmin)

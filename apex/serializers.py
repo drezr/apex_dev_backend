@@ -172,7 +172,6 @@ class AppSerializer(serializers.ModelSerializer):
     files = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
     contacts = serializers.SerializerMethodField()
-    radium_config = serializers.SerializerMethodField()
 
     class Meta:
         model = App
@@ -201,18 +200,24 @@ class AppSerializer(serializers.ModelSerializer):
             return ProfileSerializer(
                 app.contacts.all(), many=True, context=self.context).data
 
-    def get_radium_config(self, app):
-        if 'radium_config' in self.context:
-            radium_config = RadiumConfigSerializer(
-                app.radiumconfig_set, many=True).data
-
-            return None if not len(radium_config) else radium_config[0]
-
 
 class RadiumConfigSerializer(serializers.ModelSerializer):
 
+    columns = serializers.SerializerMethodField()
+
     class Meta:
         model = RadiumConfig
+        fields = '__all__'
+
+    def get_columns(self, config):
+        return RadiumConfigColumnSerializer(
+            config.column_set.all(), many=True).data
+
+
+class RadiumConfigColumnSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RadiumConfigColumn
         fields = '__all__'
 
 
@@ -609,8 +614,21 @@ class QuotaSerializer(serializers.ModelSerializer):
 
 class LeaveConfigSerializer(serializers.ModelSerializer):
 
+    leave_types = serializers.SerializerMethodField()
+
     class Meta:
         model = LeaveConfig
+        fields = '__all__'
+
+    def get_leave_types(self, config):
+        return LeaveTypeSerializer(
+            config.leave_type_set.all(), many=True).data
+
+
+class LeaveTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LeaveType
         fields = '__all__'
 
 
@@ -654,13 +672,6 @@ class LogSerializer(serializers.ModelSerializer):
 
     def get_author(self, log):
         return log.profile.name
-
-
-class RadiumConfigSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = RadiumConfig
-        fields = '__all__'
 
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #
