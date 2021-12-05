@@ -367,6 +367,20 @@ class BoardView(APIView, Helpers, BoardHelpers):
                 'teammates': 'detail',
             }).data
 
+
+        if len(app.folders.all()) == 0:
+            new_folder = Folder.objects.create(
+                name='1',
+                color='light-blue',
+            )
+
+            AppFolderLink.objects.create(
+                folder=new_folder,
+                app=app,
+                position=0,
+            )
+
+
         result = {
             'team': TeamSerializer(team, context={
                 'link': 'detail',

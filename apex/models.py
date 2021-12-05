@@ -19,6 +19,9 @@ class Profile(models.Model):
         related_name='profile',
     )
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return self.name
 
@@ -27,6 +30,9 @@ class Circle(models.Model):
 
     name = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=50, editable=False, default='circle')
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -43,6 +49,9 @@ class Team(models.Model):
         blank=True,
         through='TeamProfileLink',
     )
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -91,6 +100,9 @@ class App(models.Model):
         related_name='folder'
     )
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         name = None
 
@@ -125,6 +137,9 @@ class Day(models.Model):
         blank=True,
         through='DayFileLink',
     )
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1} ({2})'.format(
@@ -163,6 +178,9 @@ class Cell(models.Model):
         blank=True,
         through='CellCallLink',
     )
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1} ({2})'.format(
@@ -261,6 +279,9 @@ class Work(models.Model):
         through='WorkFileLink',
     )
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         desc = '' if not self.description else self.description[:10]
         return '[#{0}] {1}'.format(self.id, desc)
@@ -283,6 +304,9 @@ class Limit(models.Model):
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.work.description)
 
@@ -298,6 +322,9 @@ class S460(models.Model):
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.work.description)
 
@@ -310,6 +337,9 @@ class Shift(models.Model):
     type = models.CharField(max_length=50, editable=False, default='shift')
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1} | {2}'.format(self.id, self.date, self.shift)
@@ -333,6 +363,9 @@ class Part(models.Model):
         blank=True,
         through='PartProfileLink',
     )
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1} [{2}] [{3}]'.format(
@@ -358,6 +391,9 @@ class Project(models.Model):
         through='ProjectTaskLink',
     )
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
 
@@ -377,6 +413,9 @@ class Template(models.Model):
         blank=True,
         through='TemplateInputLink',
     )
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -420,6 +459,9 @@ class Folder(models.Model):
         through='FolderLinkLink',
     )
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
 
@@ -456,6 +498,9 @@ class Task(models.Model):
         through='TaskLinkLink',
     )
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
 
@@ -465,6 +510,9 @@ class Subtask(models.Model):
     name = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=100, blank=True, null=True)
     type = models.CharField(max_length=50, editable=False, default='subtask')
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
@@ -476,7 +524,11 @@ class Note(models.Model):
     date = models.DateField(auto_now_add=True)
     type = models.CharField(max_length=50, editable=False, default='note')
 
-    profile = models.ForeignKey('Profile', on_delete=models.SET_NULL, null=True)
+    profile = models.ForeignKey(
+        'Profile', on_delete=models.SET_NULL, null=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.value)
@@ -492,6 +544,9 @@ class File(models.Model):
     height = models.PositiveSmallIntegerField(null=True, blank=True)
     type = models.CharField(max_length=50, editable=False, default='file')
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}.{2}'.format(self.id, self.name, self.extension)
 
@@ -504,6 +559,9 @@ class Input(models.Model):
     heading = models.BooleanField(default=False)
     type = models.CharField(max_length=50, editable=False, default='input')
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1} : {2}'.format(self.id, self.key, self.value)
 
@@ -513,6 +571,9 @@ class Link(models.Model):
     name = models.TextField(null=True, blank=True)
     url = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=50, editable=False, default='link')
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1} : {2}'.format(self.id, self.name, self.url)
@@ -539,6 +600,9 @@ class Call(models.Model):
         through='CallLinkLink',
     )
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.name)
 
@@ -547,6 +611,9 @@ class Holiday(models.Model):
 
     date = models.DateField()
     type = models.CharField(max_length=50, editable=False, default='holiday')
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.date)
@@ -564,6 +631,9 @@ class Log(models.Model):
     work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
     cell = models.ForeignKey('Cell', null=True, blank=True, on_delete=models.CASCADE)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1} : {2}'.format(self.id, self.field, self.profile.name)
 
@@ -579,6 +649,9 @@ class Message(models.Model):
     profile = models.ForeignKey('Profile', null=True, blank=True, on_delete=models.CASCADE)
     app = models.ForeignKey('App', null=True, blank=True, on_delete=models.CASCADE)
     work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.message)
@@ -611,6 +684,9 @@ class Quota(models.Model):
     type = models.CharField(max_length=50, editable=False, default='quota')
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.profile, self.year)
@@ -742,6 +818,9 @@ class LeaveConfig(models.Model):
 
     app = models.ForeignKey('App', on_delete=models.CASCADE)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.app)
 
@@ -758,6 +837,9 @@ class LeaveType(models.Model):
     config = models.ForeignKey(
         'LeaveConfig', related_name='leave_type_set', on_delete=models.CASCADE)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '[#{0}] {1} : {2}'.format(self.id, self.config, self.name)
 
@@ -767,6 +849,9 @@ class RadiumConfig(models.Model):
     # Kind of an empty model. Might add more config options later.
 
     app = models.ForeignKey('App', on_delete=models.CASCADE)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1}'.format(self.id, self.app)
@@ -782,6 +867,9 @@ class RadiumConfigColumn(models.Model):
 
     config = models.ForeignKey(
         'RadiumConfig', related_name='column_set', on_delete=models.CASCADE)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '[#{0}] {1} : {2}'.format(self.id, self.config, self.name)
@@ -818,6 +906,9 @@ class TeamProfileLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.profile.name, self.team.name)
 
@@ -829,6 +920,9 @@ class AppWorkLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.work)
@@ -842,6 +936,9 @@ class AppProjectLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.project)
 
@@ -853,6 +950,9 @@ class AppTaskLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.task)
@@ -866,6 +966,9 @@ class AppFileLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.file)
 
@@ -878,6 +981,9 @@ class AppNoteLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.note)
 
@@ -889,6 +995,9 @@ class AppContactLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.contact)
 
@@ -899,6 +1008,9 @@ class AppFolderLink(models.Model):
     folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.folder)
@@ -912,6 +1024,9 @@ class DayTaskLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.day, self.task)
 
@@ -923,6 +1038,9 @@ class DayNoteLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.day, self.note)
@@ -936,6 +1054,9 @@ class DayFileLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.day, self.file)
 
@@ -947,6 +1068,9 @@ class CellTaskLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.task)
@@ -960,6 +1084,9 @@ class CellNoteLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.note)
 
@@ -971,6 +1098,9 @@ class CellFileLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.file)
@@ -984,6 +1114,9 @@ class CellCallLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.call)
 
@@ -994,6 +1127,9 @@ class CallFileLink(models.Model):
     file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
     
     def __str__(self):
         return '{0} : {1}'.format(self.call, self.file)
@@ -1007,6 +1143,9 @@ class CallLinkLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.call, self.link)
 
@@ -1017,6 +1156,9 @@ class WorkFileLink(models.Model):
     file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.work, self.file)
@@ -1030,6 +1172,9 @@ class PartProfileLink(models.Model):
     is_participant = models.BooleanField(default=False)
     is_available = models.BooleanField(default=False)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.profile.name, self.part)
 
@@ -1041,6 +1186,9 @@ class ProjectTaskLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.project, self.task)
@@ -1054,6 +1202,9 @@ class AppTemplateLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.template)
 
@@ -1065,6 +1216,9 @@ class TemplateInputLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.template, self.input)
@@ -1078,6 +1232,9 @@ class TaskSubtaskLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.subtask)
 
@@ -1089,6 +1246,9 @@ class TaskNoteLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.note)
@@ -1102,6 +1262,9 @@ class TaskFileLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.file)
 
@@ -1113,6 +1276,9 @@ class TaskInputLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.input)
@@ -1126,6 +1292,9 @@ class TaskLinkLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.link)
 
@@ -1137,6 +1306,9 @@ class FolderTaskLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.task)
@@ -1150,6 +1322,9 @@ class FolderSubtaskLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.subtask)
 
@@ -1161,6 +1336,9 @@ class FolderNoteLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.note)
@@ -1174,6 +1352,9 @@ class FolderFileLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.file)
 
@@ -1186,6 +1367,9 @@ class FolderInputLink(models.Model):
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
 
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.input)
 
@@ -1197,6 +1381,9 @@ class FolderLinkLink(models.Model):
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
     is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.link)

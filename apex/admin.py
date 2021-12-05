@@ -5,6 +5,7 @@ from .models import *
 
 class ProfileAdmin(admin.ModelAdmin):
     raw_id_fields = ('user', )
+    readonly_fields = ('created_date', 'updated_date', )
 
 
 class TeamAdmin(admin.ModelAdmin):
