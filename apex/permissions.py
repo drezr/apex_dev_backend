@@ -89,9 +89,9 @@ class BoardHelpers(CommonHelpers):
 
         if data['action'] == 'update_element_teammates':
             _data['profile'] = team.profiles.get(pk=data['profile_id'])
-            _data['day'] = team.day_set.get(pk=data['parent_id'])
+            _data['parent'] = team.day_set.get(pk=data['parent_id'])
 
-            element_set = getattr(_data['day'], data['element_type'] + 's')
+            element_set = getattr(_data['parent'], data['element_type'] + 's')
             _data['element'] = element_set.get(pk=data['element_id'])
 
             _data['link_model'] = globals()[
@@ -100,7 +100,7 @@ class BoardHelpers(CommonHelpers):
 
         elif data['action'] == 'update_part_teammates':
             _data['profile'] = team.profiles.get(pk=data['profile_id'])
-            _data['part'] = Part.objects.get(pk=data['element_id'])
+            _data['parent'] = Part.objects.get(pk=data['element_id'])
 
         return _data
 

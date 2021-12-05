@@ -397,13 +397,13 @@ class BoardView(APIView, Helpers, BoardHelpers):
         if not permission:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+        cell, c = Cell.objects.get_or_create(
+            profile=hierarchy['profile'],
+            date=hierarchy['parent'].date,
+        )
+
 
         if data['action'] == 'update_element_teammates':
-            cell, c = Cell.objects.get_or_create(
-                profile=hierarchy['profile'],
-                date=hierarchy['day'].date,
-            )
-
             link_kwargs['cell'] = cell
             link_kwargs[data['element_type']] = hierarchy['element']
             link, l = hierarchy['link_model'].objects.get_or_create(
@@ -423,24 +423,17 @@ class BoardView(APIView, Helpers, BoardHelpers):
             else:
                 link.delete()
 
-                has_child = self.cell_has_child(hierarchy['profile'], cell)
-
-                if not has_child:
-                    cell.has_content = False
-                    cell.save()
+                cell.has_content = self.cell_has_child(
+                    hierarchy['profile'], cell)
+                cell.save()
 
             return Response(status=status.HTTP_200_OK)
 
 
         elif data['action'] == 'update_part_teammates':
-            cell, c = Cell.objects.get_or_create(
-                profile=hierarchy['profile'],
-                date=hierarchy['part'].date,
-            )
-
             link, l = PartProfileLink.objects.get_or_create(
                 profile=hierarchy['profile'],
-                part=hierarchy['part'],
+                part=hierarchy['parent'],
             )
 
             link.is_participant = is_participant
