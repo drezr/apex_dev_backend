@@ -390,15 +390,15 @@ class BoardView(APIView, Helpers, BoardHelpers):
 
     def post(self, request):
         data, hierarchy, permission = self.get_data(request)
+
         link_kwargs = dict()
+        is_participant = data['value']
 
         if not permission:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-        if data['action'] == 'update_teammate':
-            is_participant = data['value']
-
+        if data['action'] == 'update_element_teammates':
             cell, c = Cell.objects.get_or_create(
                 profile=hierarchy['profile'],
                 date=hierarchy['day'].date,
@@ -430,6 +430,31 @@ class BoardView(APIView, Helpers, BoardHelpers):
                     cell.save()
 
             return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_part_teammates':
+            cell, c = Cell.objects.get_or_create(
+                profile=hierarchy['profile'],
+                date=hierarchy['part'].date,
+            )
+
+            link, l = PartProfileLink.objects.get_or_create(
+                profile=hierarchy['profile'],
+                part=hierarchy['part'],
+            )
+
+            link.is_participant = is_participant
+            link.save()
+
+            cell.has_content = self.cell_has_child(
+                hierarchy['profile'], cell)
+            cell.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class CallsView(APIView):
@@ -1585,6 +1610,5 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
 
                 return Response(status=status.HTTP_200_OK)
-
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
