@@ -72,8 +72,6 @@ class CommonHelpers:
         return data
 
 
-class WorksHelpers(CommonHelpers):
-
     def get_data(self, request):
         data = self.parse_request_data(request)
         hierarchy = self.get_hierarchy(data)
@@ -81,6 +79,37 @@ class WorksHelpers(CommonHelpers):
 
         return data, hierarchy, permission
 
+
+class BoardHelpers(CommonHelpers):
+
+    def get_hierarchy(self, data):
+        team = Team.objects.get(pk=data['team_id'])
+        app = team.app_set.get(pk=data['app_id'])
+        _data = {'team': team, 'app': app}
+
+        if data['action'] == 'update_teammate':
+            _data['profile'] = team.profiles.get(pk=data['profile_id'])
+            _data['day'] = team.day_set.get(pk=data['parent_id'])
+
+            element_set = getattr(_data['day'], data['element_type'] + 's')
+            _data['element'] = element_set.get(pk=data['element_id'])
+
+            _data['link_model'] = globals()[
+                'Cell' + data['element_type'].capitalize() + 'Link']
+
+        return _data
+
+
+    def get_permission(self, request, data, team):
+        access = TeamProfileLink.objects.filter(
+            team=team,
+            profile=request.user.profile,
+        ).first()
+
+        return access.planner_is_editor if access else False
+
+
+class WorksHelpers(CommonHelpers):
 
     def get_hierarchy(self, data):
         team = Team.objects.get(pk=data['team_id'])
@@ -135,14 +164,6 @@ class WorksHelpers(CommonHelpers):
 
 class LeaveHelpers(CommonHelpers):
 
-    def get_data(self, request):
-        data = self.parse_request_data(request)
-        hierarchy = self.get_hierarchy(data)
-        permission = self.get_permission(request, data, hierarchy['team'])
-
-        return data, hierarchy, permission
-
-
     def get_hierarchy(self, data):
         team = Team.objects.get(pk=data['team_id'])
         app = team.app_set.get(pk=data['app_id'])
@@ -163,14 +184,6 @@ class LeaveHelpers(CommonHelpers):
 
 
 class CellHelpers(CommonHelpers):
-
-    def get_data(self, request):
-        data = self.parse_request_data(request)
-        hierarchy = self.get_hierarchy(data)
-        permission = self.get_permission(request, data, hierarchy['team'])
-
-        return data, hierarchy, permission
-
 
     def get_hierarchy(self, data):
         team = Team.objects.get(pk=data['team_id'])
@@ -193,14 +206,6 @@ class CellHelpers(CommonHelpers):
 
 
 class ElementHelpers(CommonHelpers):
-
-    def get_data(self, request):
-        data = self.parse_request_data(request)
-        hierarchy = self.get_hierarchy(data)
-        permission = self.get_permission(request, data, hierarchy['team'])
-
-        return data, hierarchy, permission
-
 
     def get_hierarchy(self, data):
         source = None

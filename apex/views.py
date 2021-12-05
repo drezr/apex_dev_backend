@@ -64,6 +64,35 @@ class Helpers:
         return has_child
 
 
+    def cell_child_count(self, profile, cell):
+        count = 0
+
+        parts = Part.objects.filter(
+            profiles__in=[profile.id],
+            date=cell.date,
+        )
+
+        for part in parts:
+            for _profile in part.profiles.all():
+                if _profile == profile:
+                    _link = PartProfileLink.objects.get(
+                        part=part,
+                        profile=profile,
+                    )
+
+                    if _link.is_participant:
+                        count +=1
+
+        for child_type in ['task', 'note', 'file']:
+            child_set = getattr(cell, child_type + 's')
+            child_set_count = len(child_set.all())
+
+            if child_set_count > 0:
+                count += child_set_count
+
+        return count
+
+
     def set_day_cells_has_content(self, team, profiles, date):
         day, d = Day.objects.get_or_create(team=team, date=date)
         has_child = self.day_has_child(team, day)
@@ -303,7 +332,7 @@ class CalendarView(APIView):
         return Response(result)
 
 
-class BoardView(APIView):
+class BoardView(APIView, Helpers, BoardHelpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -357,6 +386,50 @@ class BoardView(APIView):
         }
 
         return Response(result)
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+        link_kwargs = dict()
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+        if data['action'] == 'update_teammate':
+            is_participant = data['value']
+
+            cell, c = Cell.objects.get_or_create(
+                profile=hierarchy['profile'],
+                date=hierarchy['day'].date,
+            )
+
+            link_kwargs['cell'] = cell
+            link_kwargs[data['element_type']] = hierarchy['element']
+            link, l = hierarchy['link_model'].objects.get_or_create(
+                **link_kwargs)
+
+            if is_participant:
+                child_count = self.cell_child_count(
+                    hierarchy['profile'], cell)
+
+                link.position = child_count - 1
+                link.is_original = False
+                link.save()
+
+                cell.has_content = True
+                cell.save()
+
+            else:
+                link.delete()
+
+                has_child = self.cell_has_child(hierarchy['profile'], cell)
+
+                if not has_child:
+                    cell.has_content = False
+                    cell.save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
 class CallsView(APIView):
@@ -1191,7 +1264,7 @@ class ContactsView(APIView):
         return Response(result)
 
 
-class ElementView(APIView, ElementHelpers):
+class ElementView(APIView, ElementHelpers, Helpers):
 
     def get_child_count(self, data, element, hierarchy, option='all'):
         count = 0
@@ -1332,6 +1405,28 @@ class ElementView(APIView, ElementHelpers):
 
                     if count <= 1:
                         hierarchy['parent'].has_content = False
+
+
+                    cell_link_model = globals()[
+                        'Cell' +
+                        data['element_type'].capitalize() + 'Link']
+
+                    cell_link_kwargs = dict()
+                    cell_link_kwargs[data['element_type']] = hierarchy['element']
+
+                    cell_links = cell_link_model.objects.filter(
+                        **cell_link_kwargs
+                    )
+
+                    for cell_link in cell_links:
+                        cell = cell_link.cell
+
+                        child_count = self.cell_child_count(cell.profile, cell)
+
+                        if child_count == 1:
+                            cell.has_content = False
+                            cell.save()
+
                 
                 hierarchy['parent'].save()
 
@@ -1394,6 +1489,13 @@ class ElementView(APIView, ElementHelpers):
             new_link, c = hierarchy['new_link_model'].objects.get_or_create(
                 **new_link_kwargs)
 
+            cell_link_model = globals()[
+                'Cell' + data['element_type'].capitalize() + 'Link']
+
+            cell_link_kwargs = dict()
+            cell_link_kwargs[data['element_type']] = hierarchy['element']
+            cell_links = cell_link_model.objects.filter(**cell_link_kwargs)
+
             if old_link and new_link:
                 if old_link == new_link:
                     setattr(old_link, data['parent_type'],
@@ -1434,11 +1536,52 @@ class ElementView(APIView, ElementHelpers):
                         day_serialized['link'] = \
                             hierarchy['new_link_serializer'](new_link).data
 
+
+                        for cell_link in cell_links:
+                            old_cell = cell_link.cell
+                            new_cell, c = Cell.objects.get_or_create(
+                                profile=old_cell.profile,
+                                date=hierarchy['new_parent'].date
+                            )
+
+                            new_cell.has_content = True
+                            new_cell.save()
+
+                            cell_link.cell = new_cell
+
+                            child_count = self.cell_child_count(
+                                new_cell.profile, new_cell)
+
+                            cell_link.position = child_count
+
+                            cell_link.save()
+
+                            has_child = self.cell_has_child(
+                                old_cell.profile, old_cell)
+
+                            if not has_child:
+                                old_cell.has_content = False
+                                old_cell.save()
+
+
                         result = {
                             'day': day_serialized,
                         }
 
                         return Response(result)
+
+
+                    if data['new_parent_type'] == 'folder':
+                        for cell_link in cell_links:
+                            cell = cell_link.cell
+                            cell_link.delete()
+
+                            child_count = self.cell_child_count(
+                                cell.profile, cell)
+
+                            if child_count == 0:
+                                cell.has_content = False
+                                cell.save()
 
 
                 return Response(status=status.HTTP_200_OK)
