@@ -515,14 +515,21 @@ class LeaveView(APIView, LeaveHelpers):
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
+        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+
         profiles_id = [profile.id for profile in team.profiles.all()]
 
         for profile_id in profiles_id:
-            Quota.objects.get_or_create(year=year, profile_id=profile_id)
+            for leave_type in config.leave_type_set.all():
+                if leave_type.visible:
+                    Quota.objects.get_or_create(
+                        code=leave_type.code,
+                        year=year,
+                        profile_id=profile_id,
+                    )
 
-        quotas = Quota.objects.filter(year=year, profile__in=profiles_id)
-
-        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+        quotas = Quota.objects.filter(
+            profile__in=profiles_id, year=year)
 
         result = {
             'team': TeamSerializer(team, context={
@@ -546,22 +553,81 @@ class LeaveView(APIView, LeaveHelpers):
         if data['action'] == 'update_leave':
             quota = Quota.objects.get(
                 profile=hierarchy['profile'],
+                code=data['element_type'],
                 year=data['year'],
             )
 
-            setattr(quota, data['element_type'], data['value'])
+            quota.value = data['value']
+
             quota.save()
 
             return Response(status=status.HTTP_200_OK)
 
         elif data['action'] == 'update_config':
             config = LeaveConfig.objects.get(app=hierarchy['app'])
+            leave_type = LeaveType.objects.get(pk=data['value']['id'])
 
             for key, val in data['value'].items():
-                if key not in ['id', 'app']:
-                    setattr(config, key, val)
+                if key in ['code', 'desc', 'kind', 'color', 'visible']:
+                    if key == 'code' and leave_type.code != val:
+                        for profile in hierarchy['team'].profiles.all():
+                            quotas = Quota.objects.filter(
+                                code=leave_type.code,
+                                profile=profile,
+                            )
 
-            config.save()
+                            for quota in quotas:
+                                quota.code = val
+                                quota.save()
+
+                    setattr(leave_type, key, val)
+
+            leave_type.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+        elif data['action'] == 'update_leave_types_position':
+            for lt in data['value']:
+                leave_type = LeaveType.objects.get(pk=lt['id'])
+                leave_type.position = lt['position']
+                leave_type.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'add_leave_type':
+            config = LeaveConfig.objects.get(app=hierarchy['app'])
+
+            leave_types = config.leave_type_set.all()
+
+            new_leave_type = LeaveType.objects.create(
+                config=config,
+                position=len(leave_types),
+            )
+
+            new_quotas = list()
+
+            for profile in hierarchy['team'].profiles.all():
+                new_quota = Quota.objects.create(
+                    code=new_leave_type.code,
+                    year=data['year'],
+                    profile=profile,
+                )
+
+                new_quotas.append(new_quota)
+
+
+            result = {
+                'new_leave_type': LeaveTypeSerializer(
+                    new_leave_type).data,
+                'new_quotas': QuotaSerializer(
+                    new_quotas, many=True).data,
+            }
+
+            return Response(result)
+
+
+        elif data['action'] == 'delete_leave_type':
 
             return Response(status=status.HTTP_200_OK)
 
@@ -582,36 +648,38 @@ class QuotaView(APIView):
         profile = Profile.objects.get(pk=profile_id)
 
         config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
-        config = LeaveConfigSerializer(config).data
 
-        quota, q = Quota.objects.get_or_create(
-            year=year, profile_id=profile_id)
+        for leave_type in config.leave_type_set.all():
+            if leave_type.visible:
+                Quota.objects.get_or_create(
+                    code=leave_type.code,
+                    year=year,
+                    profile_id=profile_id,
+                )
 
-        base_quota = QuotaSerializer(quota).data
-
+        quotas = Quota.objects.filter(
+            profile=profile_id, year=year)
         cells = Cell.objects.filter(
             date__year=year, profile=profile_id)
-        cells = CellSerializer(cells, many=True).data
-
         holidays = Holiday.objects.filter(date__year=year)
-        holidays = HolidaySerializer(holidays, many=True).data
 
-        computed_quota, detail_quota = compute_quota(
-            cells=cells,
-            quota=base_quota,
-            config=config,
-            holidays=holidays,
+
+        base_quotas, computed_quotas, detailed_quotas = compute_quota(
+            cells=CellSerializer(cells, many=True).data,
+            quotas=QuotaSerializer(quotas, many=True).data,
+            config=LeaveConfigSerializer(config).data,
+            holidays=HolidaySerializer(holidays, many=True).data,
             detailed=True
         )
 
         result = {
             'team': TeamSerializer(team).data,
             'app': AppSerializer(app).data,
+            'config': LeaveConfigSerializer(config).data,
             'profile': ProfileSerializer(profile).data,
-            'base_quota': base_quota,
-            'computed_quota': computed_quota,
-            'detail_quota': detail_quota,
-            'config': config,
+            'base_quotas': base_quotas,
+            'computed_quotas': computed_quotas,
+            'detailed_quotas': detailed_quotas,
         }
 
         return Response(result)
@@ -626,10 +694,20 @@ class QuotaLightView(APIView):
         month = request.query_params['month']
         year = request.query_params['year']
 
-        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
         holidays = Holiday.objects.filter(date__year=year)
-        quota, q = Quota.objects.get_or_create(
-            year=year, profile_id=profile_id)
+
+        config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
+
+        for leave_type in config.leave_type_set.all():
+            if leave_type.visible:
+                Quota.objects.get_or_create(
+                    code=leave_type.code,
+                    year=year,
+                    profile_id=profile_id,
+                )
+
+
+        quotas = Quota.objects.filter(profile=profile_id, year=year)
 
         end_quota_cells = None
 
@@ -654,16 +732,16 @@ class QuotaLightView(APIView):
                 profile=profile_id,
             )
 
-        quota, detail_quota = compute_quota(
+        base_quotas, computed_quotas, detailed_quotas = compute_quota(
             cells=CellSerializer(end_quota_cells, many=True).data,
-            quota=QuotaSerializer(quota).data,
+            quotas=QuotaSerializer(quotas, many=True).data,
             config=LeaveConfigSerializer(config).data,
             holidays=HolidaySerializer(holidays, many=True).data,
             detailed=False
         )
 
         result = {
-            'quota': quota,
+            'quota': computed_quotas,
         }
 
         return Response(result)

@@ -659,29 +659,9 @@ class Message(models.Model):
 
 class Quota(models.Model):
 
+    code = models.CharField(max_length=50, null=True, blank=True)
+    value = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     year = models.PositiveSmallIntegerField()
-    type_0 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_1 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_2 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_3 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_4 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_5 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_6 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_7 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_8 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_9 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_10 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_11 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_12 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_13 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_14 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_15 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_16 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_17 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_18 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-    type_19 = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-
-    type = models.CharField(max_length=50, editable=False, default='quota')
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
 
@@ -689,132 +669,17 @@ class Quota(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.profile, self.year)
+        return '[#{0}] [{1}] {2} : {3}'.format(
+            self.id,
+            self.profile,
+            self.code if not self.code else self.code.upper(),
+            self.year,
+        )
 
 
 class LeaveConfig(models.Model):
 
-    leave_count = models.PositiveSmallIntegerField(default=0)
-
-    leave_0_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_0_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_0_type = models.CharField(max_length=20, default='day')
-    leave_0_color = models.CharField(max_length=20, default='red')
-    leave_0_visible = models.BooleanField(default=False)
-
-    leave_1_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_1_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_1_type = models.CharField(max_length=20, default='day')
-    leave_1_color = models.CharField(max_length=20, default='red')
-    leave_1_visible = models.BooleanField(default=False)
-
-    leave_2_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_2_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_2_type = models.CharField(max_length=20, default='day')
-    leave_2_color = models.CharField(max_length=20, default='red')
-    leave_2_visible = models.BooleanField(default=False)
-
-    leave_3_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_3_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_3_type = models.CharField(max_length=20, default='day')
-    leave_3_color = models.CharField(max_length=20, default='red')
-    leave_3_visible = models.BooleanField(default=False)
-
-    leave_4_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_4_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_4_type = models.CharField(max_length=20, default='day')
-    leave_4_color = models.CharField(max_length=20, default='red')
-    leave_4_visible = models.BooleanField(default=False)
-
-    leave_5_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_5_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_5_type = models.CharField(max_length=20, default='day')
-    leave_5_color = models.CharField(max_length=20, default='red')
-    leave_5_visible = models.BooleanField(default=False)
-
-    leave_6_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_6_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_6_type = models.CharField(max_length=20, default='day')
-    leave_6_color = models.CharField(max_length=20, default='red')
-    leave_6_visible = models.BooleanField(default=False)
-
-    leave_7_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_7_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_7_type = models.CharField(max_length=20, default='day')
-    leave_7_color = models.CharField(max_length=20, default='red')
-    leave_7_visible = models.BooleanField(default=False)
-
-    leave_8_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_8_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_8_type = models.CharField(max_length=20, default='day')
-    leave_8_color = models.CharField(max_length=20, default='red')
-    leave_8_visible = models.BooleanField(default=False)
-
-    leave_9_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_9_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_9_type = models.CharField(max_length=20, default='day')
-    leave_9_color = models.CharField(max_length=20, default='red')
-    leave_9_visible = models.BooleanField(default=False)
-
-    leave_10_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_10_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_10_type = models.CharField(max_length=20, default='day')
-    leave_10_color = models.CharField(max_length=20, default='red')
-    leave_10_visible = models.BooleanField(default=False)
-
-    leave_11_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_11_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_11_type = models.CharField(max_length=20, default='day')
-    leave_11_color = models.CharField(max_length=20, default='red')
-    leave_11_visible = models.BooleanField(default=False)
-
-    leave_12_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_12_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_12_type = models.CharField(max_length=20, default='day')
-    leave_12_color = models.CharField(max_length=20, default='red')
-    leave_12_visible = models.BooleanField(default=False)
-
-    leave_13_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_13_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_13_type = models.CharField(max_length=20, default='day')
-    leave_13_color = models.CharField(max_length=20, default='red')
-    leave_13_visible = models.BooleanField(default=False)
-
-    leave_14_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_14_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_14_type = models.CharField(max_length=20, default='day')
-    leave_14_color = models.CharField(max_length=20, default='red')
-    leave_14_visible = models.BooleanField(default=False)
-
-    leave_15_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_15_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_15_type = models.CharField(max_length=20, default='day')
-    leave_15_color = models.CharField(max_length=20, default='red')
-    leave_15_visible = models.BooleanField(default=False)
-
-    leave_16_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_16_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_16_type = models.CharField(max_length=20, default='day')
-    leave_16_color = models.CharField(max_length=20, default='red')
-    leave_16_visible = models.BooleanField(default=False)
-
-    leave_17_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_17_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_17_type = models.CharField(max_length=20, default='day')
-    leave_17_color = models.CharField(max_length=20, default='red')
-    leave_17_visible = models.BooleanField(default=False)
-
-    leave_18_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_18_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_18_type = models.CharField(max_length=20, default='day')
-    leave_18_color = models.CharField(max_length=20, default='red')
-    leave_18_visible = models.BooleanField(default=False)
-
-    leave_19_name = models.CharField(max_length=10, blank=True, null=True)
-    leave_19_desc = models.CharField(max_length=50, blank=True, null=True)
-    leave_19_type = models.CharField(max_length=20, default='day')
-    leave_19_color = models.CharField(max_length=20, default='red')
-    leave_19_visible = models.BooleanField(default=False)
+    # Kind of an empty model. Might add more config options later.
 
     app = models.ForeignKey('App', on_delete=models.CASCADE)
 
@@ -827,9 +692,9 @@ class LeaveConfig(models.Model):
 
 class LeaveType(models.Model):
 
-    name = models.CharField(max_length=10, blank=True, null=True)
+    code = models.CharField(max_length=10, blank=True, null=True)
     desc = models.CharField(max_length=50, blank=True, null=True)
-    type = models.CharField(max_length=20, default='day')
+    kind = models.CharField(max_length=20, default='normal_leave')
     color = models.CharField(max_length=20, default='red')
     position = models.PositiveSmallIntegerField()
     visible = models.BooleanField(default=False)
@@ -841,7 +706,7 @@ class LeaveType(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.config, self.name)
+        return '[#{0}] {1} : {2}'.format(self.id, self.config, self.code)
 
 
 class RadiumConfig(models.Model):
