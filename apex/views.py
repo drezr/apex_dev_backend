@@ -628,6 +628,16 @@ class LeaveView(APIView, LeaveHelpers):
 
 
         elif data['action'] == 'delete_leave_type':
+            leave_type = LeaveType.objects.get(pk=data['value']['id'])
+            leave_type.delete()
+
+            for profile in hierarchy['team'].profiles.all():
+                quota = Quota.objects.get(
+                    code=data['value']['code'],
+                    profile=profile,
+                )
+
+                quota.delete()
 
             return Response(status=status.HTTP_200_OK)
 
