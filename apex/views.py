@@ -563,39 +563,8 @@ class LeaveView(APIView, LeaveHelpers):
 
             return Response(status=status.HTTP_200_OK)
 
-        elif data['action'] == 'update_config':
-            config = LeaveConfig.objects.get(app=hierarchy['app'])
-            leave_type = LeaveType.objects.get(pk=data['value']['id'])
 
-            for key, val in data['value'].items():
-                if key in ['code', 'desc', 'kind', 'color', 'visible']:
-                    if key == 'code' and leave_type.code != val:
-                        for profile in hierarchy['team'].profiles.all():
-                            quotas = Quota.objects.filter(
-                                code=leave_type.code,
-                                profile=profile,
-                            )
-
-                            for quota in quotas:
-                                quota.code = val
-                                quota.save()
-
-                    setattr(leave_type, key, val)
-
-            leave_type.save()
-
-            return Response(status=status.HTTP_200_OK)
-
-        elif data['action'] == 'update_leave_types_position':
-            for lt in data['value']:
-                leave_type = LeaveType.objects.get(pk=lt['id'])
-                leave_type.position = lt['position']
-                leave_type.save()
-
-            return Response(status=status.HTTP_200_OK)
-
-
-        elif data['action'] == 'add_leave_type':
+        elif data['action'] == 'create_leave_type':
             config = LeaveConfig.objects.get(app=hierarchy['app'])
 
             leave_types = config.leave_type_set.all()
@@ -625,6 +594,39 @@ class LeaveView(APIView, LeaveHelpers):
             }
 
             return Response(result)
+
+
+        elif data['action'] == 'update_leave_type':
+            config = LeaveConfig.objects.get(app=hierarchy['app'])
+            leave_type = LeaveType.objects.get(pk=data['value']['id'])
+
+            for key, val in data['value'].items():
+                if key in ['code', 'desc', 'kind', 'color', 'visible']:
+                    if key == 'code' and leave_type.code != val:
+                        for profile in hierarchy['team'].profiles.all():
+                            quotas = Quota.objects.filter(
+                                code=leave_type.code,
+                                profile=profile,
+                            )
+
+                            for quota in quotas:
+                                quota.code = val
+                                quota.save()
+
+                    setattr(leave_type, key, val)
+
+            leave_type.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_leave_types_position':
+            for lt in data['value']:
+                leave_type = LeaveType.objects.get(pk=lt['id'])
+                leave_type.position = lt['position']
+                leave_type.save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
         elif data['action'] == 'delete_leave_type':
