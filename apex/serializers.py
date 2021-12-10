@@ -225,6 +225,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     tasks = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -236,11 +237,15 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_tasks(self, project):
         return get_children(project, self.context, 'project', 'task')
 
+    def get_type(self, project):
+        return 'project'
+
 
 class TemplateSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Template
@@ -252,6 +257,9 @@ class TemplateSerializer(serializers.ModelSerializer):
     def get_link(self, template):
         return get_link(template, self.context, 'template')
 
+    def get_type(self, template):
+        return 'template'
+
 
 class FolderSerializer(serializers.ModelSerializer):
 
@@ -261,6 +269,7 @@ class FolderSerializer(serializers.ModelSerializer):
     notes = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Folder
@@ -284,6 +293,9 @@ class FolderSerializer(serializers.ModelSerializer):
     def get_link(self, folder):
         return get_link(folder, self.context, 'folder')
 
+    def get_type(self, folder):
+        return 'folder'
+
 
 class TaskSerializer(serializers.ModelSerializer):
 
@@ -293,6 +305,7 @@ class TaskSerializer(serializers.ModelSerializer):
     inputs = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     teammates = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
@@ -312,6 +325,9 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def get_link(self, task):
         return get_link(task, self.context, 'task')
+
+    def get_type(self, task):
+        return 'task'
 
     # -------- WIP --------
     def get_children(self, task):
@@ -337,6 +353,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class SubtaskSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Subtask
@@ -345,12 +362,16 @@ class SubtaskSerializer(serializers.ModelSerializer):
     def get_link(self, subtask):
         return get_link(subtask, self.context, 'subtask')
 
+    def get_type(self, subtask):
+        return 'subtask'
+
 
 class NoteSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     teammates = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Note
@@ -372,10 +393,14 @@ class NoteSerializer(serializers.ModelSerializer):
             elif self.context['teammates'] == 'id':
                 return [link.cell.profile.id for link in cell_note_links]
 
+    def get_type(self, note):
+        return 'note'
+
 
 class InputSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Input
@@ -384,10 +409,14 @@ class InputSerializer(serializers.ModelSerializer):
     def get_link(self, input):
         return get_link(input, self.context, 'input')
 
+    def get_type(self, input):
+        return 'input'
+
 
 class LinkSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Link
@@ -396,11 +425,15 @@ class LinkSerializer(serializers.ModelSerializer):
     def get_link(self, link):
         return get_link(link, self.context, 'link')
 
+    def get_type(self, link):
+        return 'link'
+
 
 class FileSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     teammates = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = File
@@ -419,12 +452,16 @@ class FileSerializer(serializers.ModelSerializer):
             elif self.context['teammates'] == 'id':
                 return [link.cell.profile.id for link in cell_file_links]
 
+    def get_type(self, file):
+        return 'file'
+
 
 class CallSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Call
@@ -439,12 +476,16 @@ class CallSerializer(serializers.ModelSerializer):
     def get_links(self, call):
         return get_children(call, self.context, 'call', 'link')
 
+    def get_type(self, call):
+        return 'call'
+
 
 class DaySerializer(serializers.ModelSerializer):
 
     tasks = serializers.SerializerMethodField()
     notes = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Day
@@ -459,6 +500,9 @@ class DaySerializer(serializers.ModelSerializer):
     def get_files(self, day):
         return get_children(day, self.context, 'day', 'file')
 
+    def get_type(self, day):
+        return 'day'
+
 
 class CellSerializer(serializers.ModelSerializer):
 
@@ -466,6 +510,7 @@ class CellSerializer(serializers.ModelSerializer):
     notes = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     calls = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Cell
@@ -483,6 +528,9 @@ class CellSerializer(serializers.ModelSerializer):
     def get_calls(self, cell):
         return get_children(cell, self.context, 'cell', 'call')
 
+    def get_type(self, cell):
+        return 'cell'
+
 
 class WorkSerializer(serializers.ModelSerializer):
 
@@ -493,6 +541,7 @@ class WorkSerializer(serializers.ModelSerializer):
     files = serializers.SerializerMethodField()
     shifts = serializers.SerializerMethodField()
     apps = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Work
@@ -520,24 +569,38 @@ class WorkSerializer(serializers.ModelSerializer):
         if 'apps' in self.context:
             return [app.id for app in work.apps.all()]
 
+    def get_type(self, work):
+        return 'work'
+
 
 class LimitSerializer(serializers.ModelSerializer):
+
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Limit
         fields = '__all__'
 
+    def get_type(self, limit):
+        return 'limit'
+
 
 class S460Serializer(serializers.ModelSerializer):
+
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = S460
         fields = '__all__'
 
+    def get_type(self, s460):
+        return 's460'
+
 
 class ShiftSerializer(serializers.ModelSerializer):
 
     parts = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Shift
@@ -545,6 +608,9 @@ class ShiftSerializer(serializers.ModelSerializer):
 
     def get_parts(self, shift):
         return get_children(shift, self.context, 'shift', 'part')
+
+    def get_type(self, shift):
+        return 'shift'
 
 
 class PartSerializer(serializers.ModelSerializer):
@@ -555,6 +621,7 @@ class PartSerializer(serializers.ModelSerializer):
     shift = serializers.SerializerMethodField()
     project = serializers.SerializerMethodField()
     teammates = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Part
@@ -569,7 +636,8 @@ class PartSerializer(serializers.ModelSerializer):
         return get_child(part, ctx, 'team')
 
     def get_work(self, part):
-        return get_child(part, {'files': 'detail'}, 'work')
+        return WorkSerializer(
+            part.shift.work, context={'files': 'detail'}).data
 
     def get_shift(self, part):
         return get_child(part, None, 'shift')
@@ -603,6 +671,9 @@ class PartSerializer(serializers.ModelSerializer):
                             teammates.append(link.profile.id)
 
             return teammates
+
+    def get_type(self, part):
+        return 'part'
 
 
 class QuotaSerializer(serializers.ModelSerializer):

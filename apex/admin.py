@@ -45,7 +45,7 @@ class ShiftAdmin(admin.ModelAdmin):
 
 
 class PartAdmin(admin.ModelAdmin):
-    raw_id_fields = ('shift', 'project', 'team', 'work', )
+    raw_id_fields = ('shift', 'project', 'team', )
 
 
 class NoteAdmin(admin.ModelAdmin):

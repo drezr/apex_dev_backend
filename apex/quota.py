@@ -67,30 +67,36 @@ def compute_quota(cells, quotas, config, holidays, detailed):
     computed_quotas = dict()
     detailed_quotas = dict()
 
-
     for quota in quotas:
+        quota['code'] = quota['code'].lower()
+
         base_quotas[quota['code']] = float(quota['value'])
         computed_quotas[quota['code']] = float(quota['value'])
         detailed_quotas[quota['code']] = list()
 
 
     for leave_type in config['leave_types']:
-        codes.append(leave_type['code'])
+        if leave_type['visible']:
+            leave_type['code'] = leave_type['code'].lower()
 
-        leave_types.append({
-            'code': leave_type['code'],
-            'kind': leave_type['kind'],
-        })
+            codes.append(leave_type['code'])
 
-        if leave_type['code'] not in computed_quotas:
-            computed_quotas[leave_type['code']] = 0
-            detailed_quotas[leave_type['code']] = list()
+            leave_types.append({
+                'code': leave_type['code'],
+                'kind': leave_type['kind'],
+            })
 
-        if leave_type['kind'] == 'credit_day':
-            credit_variable_kinds['credit'].append(leave_type['code'])
+            if leave_type['code'] not in computed_quotas:
+                computed_quotas[leave_type['code']] = 0
+                detailed_quotas[leave_type['code']] = list()
 
-        elif leave_type['kind'] == 'variable_leave':
-            credit_variable_kinds['variable'].append(leave_type['code'])
+            if leave_type['kind'] == 'credit_day':
+                credit_variable_kinds['credit'].append(
+                    leave_type['code'])
+
+            elif leave_type['kind'] == 'variable_leave':
+                credit_variable_kinds['variable'].append(
+                    leave_type['code'])
 
 
     for leave_kind in leave_kinds:

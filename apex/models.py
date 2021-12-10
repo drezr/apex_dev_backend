@@ -10,7 +10,6 @@ class Profile(models.Model):
     ident = models.CharField(max_length=100, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
     field = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='profile')
 
     user = models.OneToOneField(
         User,
@@ -29,7 +28,6 @@ class Profile(models.Model):
 class Circle(models.Model):
 
     name = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='circle')
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -41,7 +39,6 @@ class Circle(models.Model):
 class Team(models.Model):
 
     name = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='team')
 
     circle = models.ForeignKey('Circle', on_delete=models.CASCADE)
     profiles = models.ManyToManyField(
@@ -64,7 +61,6 @@ class App(models.Model):
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE, blank=True, null=True)
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
-    type = models.CharField(max_length=50, editable=False, default='app')
 
     selected_template = models.ForeignKey('Template', on_delete=models.CASCADE, blank=True, null=True)
     
@@ -119,7 +115,6 @@ class Day(models.Model):
 
     date = models.DateField()
     has_content = models.BooleanField(default=False)
-    type = models.CharField(max_length=50, editable=False, default='day')
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
     tasks = models.ManyToManyField(
@@ -155,7 +150,6 @@ class Cell(models.Model):
     color = models.CharField(max_length=20, blank=True, null=True)
     has_content = models.BooleanField(default=False)
     has_call = models.BooleanField(default=False)
-    type = models.CharField(max_length=50, editable=False, default='cell')
 
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
     tasks = models.ManyToManyField(
@@ -265,7 +259,6 @@ class Work(models.Model):
 
     color = models.CharField(max_length=20, blank=True, null=True)
     date = models.DateField()
-    type = models.CharField(max_length=50, editable=False, default='work')
 
     apps = models.ManyToManyField(
         'App',
@@ -300,7 +293,6 @@ class Limit(models.Model):
     to_lane = models.CharField(max_length=100, blank=True, null=True)
     to_pk = models.CharField(max_length=100, blank=True, null=True)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='limit')
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
@@ -318,7 +310,6 @@ class S460(models.Model):
     start = models.CharField(max_length=100, blank=True, null=True)
     end = models.CharField(max_length=100, blank=True, null=True)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='s460')
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
@@ -334,7 +325,6 @@ class Shift(models.Model):
     date = models.DateField(null=True, blank=True)
     shift = models.CharField(max_length=100, blank=True, null=True)
     position = models.PositiveSmallIntegerField(null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='shift')
 
     work = models.ForeignKey('Work', on_delete=models.CASCADE)
 
@@ -350,11 +340,9 @@ class Part(models.Model):
     date = models.DateField()
     needs = models.CharField(max_length=255, blank=True, null=True)
     locked = models.BooleanField(default=False)
-    type = models.CharField(max_length=50, editable=False, default='part')
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE)
     shift = models.ForeignKey('Shift', on_delete=models.CASCADE)
-    work = models.ForeignKey('Work', on_delete=models.CASCADE)
     project = models.ForeignKey(
         'Project', null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -378,7 +366,6 @@ class Project(models.Model):
     private = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
     date = models.DateField()
-    type = models.CharField(max_length=50, editable=False, default='project')
 
     apps = models.ManyToManyField(
         'App',
@@ -401,7 +388,6 @@ class Project(models.Model):
 class Template(models.Model):
 
     name = models.TextField(null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='template')
 
     apps = models.ManyToManyField(
         'App',
@@ -425,7 +411,6 @@ class Folder(models.Model):
 
     name = models.TextField(null=True, blank=True)
     color = models.CharField(max_length=40, blank=True, null=True)
-    type = models.CharField(max_length=50, editable=False, default='folder')
 
     tasks = models.ManyToManyField(
         'Task',
@@ -470,7 +455,6 @@ class Task(models.Model):
 
     name = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=100, blank=True, null=True)
-    type = models.CharField(max_length=50, editable=False, default='task')
 
     subtasks = models.ManyToManyField(
         'Subtask',
@@ -509,7 +493,6 @@ class Subtask(models.Model):
 
     name = models.TextField(null=True, blank=True)
     status = models.CharField(max_length=100, blank=True, null=True)
-    type = models.CharField(max_length=50, editable=False, default='subtask')
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -522,7 +505,6 @@ class Note(models.Model):
 
     value = models.TextField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
-    type = models.CharField(max_length=50, editable=False, default='note')
 
     profile = models.ForeignKey(
         'Profile', on_delete=models.SET_NULL, null=True)
@@ -542,7 +524,6 @@ class File(models.Model):
     uid = models.CharField(max_length=100, blank=True, null=True)
     width = models.PositiveSmallIntegerField(null=True, blank=True)
     height = models.PositiveSmallIntegerField(null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='file')
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -557,7 +538,6 @@ class Input(models.Model):
     key = models.TextField(null=True, blank=True)
     value = models.TextField(null=True, blank=True)
     heading = models.BooleanField(default=False)
-    type = models.CharField(max_length=50, editable=False, default='input')
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -570,7 +550,6 @@ class Link(models.Model):
 
     name = models.TextField(null=True, blank=True)
     url = models.TextField(null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='link')
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -586,7 +565,6 @@ class Call(models.Model):
     start = models.TextField(null=True, blank=True)
     end = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    type = models.CharField(max_length=50, editable=False, default='call')
 
     files = models.ManyToManyField(
         'File',
@@ -610,7 +588,6 @@ class Call(models.Model):
 class Holiday(models.Model):
 
     date = models.DateField()
-    type = models.CharField(max_length=50, editable=False, default='holiday')
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -625,7 +602,6 @@ class Log(models.Model):
     old_value = models.TextField(null=True, blank=True)
     new_value = models.TextField(null=True, blank=True)
     date = models.DateTimeField(default=timezone.now)
-    type = models.CharField(max_length=50, editable=False, default='log')
 
     profile = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE)
     work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
@@ -643,7 +619,6 @@ class Message(models.Model):
     priority = models.CharField(max_length=20, blank=True, null=True)
     message = models.TextField(null=True, blank=True)
     date = models.DateField(auto_now_add=True)
-    type = models.CharField(max_length=50, editable=False, default='message')
 
     author = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE, related_name='author')
     profile = models.ForeignKey('Profile', null=True, blank=True, on_delete=models.CASCADE)

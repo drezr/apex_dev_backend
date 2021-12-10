@@ -521,12 +521,11 @@ class LeaveView(APIView, LeaveHelpers):
 
         for profile_id in profiles_id:
             for leave_type in config.leave_type_set.all():
-                if leave_type.visible:
-                    Quota.objects.get_or_create(
-                        code=leave_type.code,
-                        year=year,
-                        profile_id=profile_id,
-                    )
+                Quota.objects.get_or_create(
+                    code=leave_type.code,
+                    year=year,
+                    profile_id=profile_id,
+                )
 
         quotas = Quota.objects.filter(
             profile__in=profiles_id, year=year)
@@ -570,6 +569,11 @@ class LeaveView(APIView, LeaveHelpers):
             leave_types = config.leave_type_set.all()
 
             new_leave_type = LeaveType.objects.create(
+                code=data['value']['code'],
+                color=data['value']['color'],
+                desc=data['value']['desc'],
+                kind=data['value']['kind'],
+                visible=data['value']['visible'],
                 config=config,
                 position=len(leave_types),
             )
@@ -634,12 +638,13 @@ class LeaveView(APIView, LeaveHelpers):
             leave_type.delete()
 
             for profile in hierarchy['team'].profiles.all():
-                quota = Quota.objects.get(
+                quotas = Quota.objects.filter(
                     code=data['value']['code'],
                     profile=profile,
                 )
 
-                quota.delete()
+                for quota in quotas:
+                    quota.delete()
 
             return Response(status=status.HTTP_200_OK)
 
