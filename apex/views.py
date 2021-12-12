@@ -1,3 +1,5 @@
+import uuid
+
 from django.http import JsonResponse
 
 from rest_framework import status
@@ -179,7 +181,7 @@ class MyApexView(APIView):
         return Response(result)
 
 
-class TeamView(APIView):
+class TeamView(APIView, TeamHelpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -193,6 +195,79 @@ class TeamView(APIView):
         }
 
         return Response(result)
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+        elif data['action'] == 'create_user':
+            p = data['value']
+            new_password = uuid.uuid4().hex[:8]
+
+            user = User(username=p['username'], password=new_password)
+            user.save()
+
+            profile = Profile.objects.create(
+                user=user,
+                name=p['name'],
+                phone=p['phone'],
+                ident=p['ident'],
+                grade=p['grade'],
+                field=p['field'],
+            )
+
+            position = len(hierarchy['team'].profiles.all())
+
+            team_profile_link = TeamProfileLink.objects.create(
+                profile=profile,
+                team=hierarchy['team'],
+                is_manager=p['link']['is_manager'],
+                planner_is_editor=p['link']['planner_is_editor'],
+                planner_is_user=p['link']['planner_is_user'],
+                draft_is_editor=p['link']['draft_is_editor'],
+                draft_is_user=p['link']['draft_is_user'],
+                draft_can_see_private=p['link']['draft_can_see_private'],
+                radium_is_editor=p['link']['radium_is_editor'],
+                watcher_is_user=p['link']['watcher_is_user'],
+                watcher_is_editor=p['link']['watcher_is_editor'],
+                watcher_is_visible=p['link']['watcher_is_visible'],
+                watcher_is_printable=p['link']['watcher_is_printable'],
+                watcher_can_see_cells=p['link']['watcher_can_see_cells'],
+                watcher_can_see_quotas=p['link']['watcher_can_see_quotas'],
+                watcher_color=p['link']['watcher_color'],
+                position=position,
+            )
+
+            profile_serialized = ProfileSerializer(profile).data
+            profile_serialized['link'] = TeamProfileLinkSerializer(
+                team_profile_link).data
+
+            if p['send_password']:
+                pass
+
+
+            return Response({'profile': profile_serialized})
+
+
+        elif data['action'] == 'delete_user':
+            if self.request.user.is_staff:
+                profile = Profile.objects.get(pk=data['profile_id'])
+                
+                profile.user.delete()
+                profile.delete()
+
+                return Response(status=status.HTTP_200_OK)
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectsView(APIView):

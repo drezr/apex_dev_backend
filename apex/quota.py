@@ -76,27 +76,26 @@ def compute_quota(cells, quotas, config, holidays, detailed):
 
 
     for leave_type in config['leave_types']:
-        if leave_type['visible']:
-            leave_type['code'] = leave_type['code'].lower()
+        leave_type['code'] = leave_type['code'].lower()
 
-            codes.append(leave_type['code'])
+        codes.append(leave_type['code'])
 
-            leave_types.append({
-                'code': leave_type['code'],
-                'kind': leave_type['kind'],
-            })
+        leave_types.append({
+            'code': leave_type['code'],
+            'kind': leave_type['kind'],
+        })
 
-            if leave_type['code'] not in computed_quotas:
-                computed_quotas[leave_type['code']] = 0
-                detailed_quotas[leave_type['code']] = list()
+        if leave_type['code'] not in computed_quotas:
+            computed_quotas[leave_type['code']] = 0
+            detailed_quotas[leave_type['code']] = list()
 
-            if leave_type['kind'] == 'credit_day':
-                credit_variable_kinds['credit'].append(
-                    leave_type['code'])
+        if leave_type['kind'] == 'credit_day':
+            credit_variable_kinds['credit'].append(
+                leave_type['code'])
 
-            elif leave_type['kind'] == 'variable_leave':
-                credit_variable_kinds['variable'].append(
-                    leave_type['code'])
+        elif leave_type['kind'] == 'variable_leave':
+            credit_variable_kinds['variable'].append(
+                leave_type['code'])
 
 
     for leave_kind in leave_kinds:
@@ -110,7 +109,6 @@ def compute_quota(cells, quotas, config, holidays, detailed):
         cell_date = get_cell_date(cell)
         day_name = cell_date.strftime('%A').lower()[0:3]
         cell_has_hour = None
-
 
         for leave_type in sorted_leave_types:
             kind = leave_type['kind']

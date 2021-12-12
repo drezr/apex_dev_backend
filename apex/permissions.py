@@ -80,6 +80,23 @@ class CommonHelpers:
         return data, hierarchy, permission
 
 
+class TeamHelpers(CommonHelpers):
+
+    def get_hierarchy(self, data):
+        team = Team.objects.get(pk=data['team_id'])
+
+        return {'team': team}
+
+
+    def get_permission(self, request, data, team):
+        access = TeamProfileLink.objects.filter(
+            team=team,
+            profile=request.user.profile,
+        ).first()
+
+        return access.is_manager if access else False
+
+
 class BoardHelpers(CommonHelpers):
 
     def get_hierarchy(self, data):
