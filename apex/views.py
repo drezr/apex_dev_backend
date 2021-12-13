@@ -610,13 +610,13 @@ class BoardView(APIView, Helpers, BoardHelpers):
         if not permission:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        cell, c = Cell.objects.get_or_create(
-            profile=hierarchy['profile'],
-            date=hierarchy['parent'].date,
-        )
-
 
         if data['action'] == 'update_element_teammates':
+            cell, c = Cell.objects.get_or_create(
+                profile=hierarchy['profile'],
+                date=hierarchy['parent'].date,
+            )
+
             link_kwargs['cell'] = cell
             link_kwargs[data['element_type']] = hierarchy['element']
             link, l = hierarchy['link_model'].objects.get_or_create(
@@ -644,6 +644,11 @@ class BoardView(APIView, Helpers, BoardHelpers):
 
 
         elif data['action'] == 'update_part_teammates':
+            cell, c = Cell.objects.get_or_create(
+                profile=hierarchy['profile'],
+                date=hierarchy['parent'].date,
+            )
+
             link, l = PartProfileLink.objects.get_or_create(
                 profile=hierarchy['profile'],
                 part=hierarchy['parent'],
@@ -655,6 +660,88 @@ class BoardView(APIView, Helpers, BoardHelpers):
             cell.has_content = self.cell_has_child(
                 hierarchy['profile'], cell)
             cell.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'add_folder':
+            app_folders = hierarchy['app'].folders.all()
+            position = len(app_folders)
+
+            folder = Folder.objects.create(
+                name=position + 1, color='blue')
+
+            app_folder_link = AppFolderLink.objects.create(
+                app=hierarchy['app'],
+                folder=folder,
+                position=position,
+            )
+
+            folder_serialized = FolderSerializer(folder, context={
+                'tasks': 'detail',
+                'subtasks': 'detail',
+                'inputs': 'detail',
+                'notes': 'detail',
+                'files': 'detail',
+                'teammates': 'detail',
+            }).data
+            
+            folder_serialized['link'] = AppFolderLinkSerializer(
+                app_folder_link).data
+
+            return Response({'folder': folder_serialized})
+
+
+        elif data['action'] == 'update_folders_position':
+            for folder in data['value']:
+                link = AppFolderLink.objects.get(
+                    app=hierarchy['app'],
+                    folder_id=folder['id'],
+                )
+
+                link.position = folder['link']['position']
+                link.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_folder':
+            folder = Folder.objects.get(pk=data['value']['id'])
+
+            folder.name = data['value']['name']
+            folder.color = data['value']['color']
+
+            folder.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'delete_foler':
+            folder = Folder.objects.get(pk=data['element_id'])
+
+            for child_type in ['task', 'note', 'file']:
+                child_set = getattr(folder, child_type + 's')
+
+                if child_type == 'file':
+                    # DO FILE STUFF
+                    pass
+
+                for child in child_set.all():
+                    if child_type == 'task':
+                        for grandchild_type in ['subtask', 'note', 'file', 'input']:
+                            grandchild_set = getattr(
+                                child, grandchild_type + 's')
+
+                            for grandchild in grandchild_set.all():
+                                if grandchild_type == 'file':
+                                    # DO FILE STUFF
+                                    pass
+
+                                grandchild.delete()
+
+                    child.delete()
+
+            folder.delete()
 
             return Response(status=status.HTTP_200_OK)
 
