@@ -1,6 +1,7 @@
 import uuid
 
 from django.http import JsonResponse
+from django.db.models import Q
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -204,42 +205,54 @@ class TeamView(APIView, TeamHelpers):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
-        elif data['action'] == 'create_user':
+        profile_attrs = [
+            'name',
+            'phone',
+            'ident',
+            'grade',
+            'field',
+        ]
+
+        link_attrs = [
+            'is_manager',
+            'planner_is_editor',
+            'planner_is_user',
+            'draft_is_editor',
+            'draft_is_user',
+            'draft_can_see_private',
+            'radium_is_editor',
+            'watcher_is_user',
+            'watcher_is_editor',
+            'watcher_is_visible',
+            'watcher_is_printable',
+            'watcher_can_see_cells',
+            'watcher_can_see_quotas',
+            'watcher_color',
+        ]
+
+
+        if data['action'] == 'create_user':
             p = data['value']
             new_password = uuid.uuid4().hex[:8]
 
-            user = User(username=p['username'], password=new_password)
+            user = User(
+                username=p['username'].lower(),
+                password=new_password,
+            )
             user.save()
 
-            profile = Profile.objects.create(
-                user=user,
-                name=p['name'],
-                phone=p['phone'],
-                ident=p['ident'],
-                grade=p['grade'],
-                field=p['field'],
-            )
+            p_args = {pa: p[pa] for pa in profile_attrs}
+            l_args = {la: p['link'][la] for la in link_attrs}
+
+            profile = Profile.objects.create(user=user, **p_args)
 
             position = len(hierarchy['team'].profiles.all())
 
             team_profile_link = TeamProfileLink.objects.create(
                 profile=profile,
                 team=hierarchy['team'],
-                is_manager=p['link']['is_manager'],
-                planner_is_editor=p['link']['planner_is_editor'],
-                planner_is_user=p['link']['planner_is_user'],
-                draft_is_editor=p['link']['draft_is_editor'],
-                draft_is_user=p['link']['draft_is_user'],
-                draft_can_see_private=p['link']['draft_can_see_private'],
-                radium_is_editor=p['link']['radium_is_editor'],
-                watcher_is_user=p['link']['watcher_is_user'],
-                watcher_is_editor=p['link']['watcher_is_editor'],
-                watcher_is_visible=p['link']['watcher_is_visible'],
-                watcher_is_printable=p['link']['watcher_is_printable'],
-                watcher_can_see_cells=p['link']['watcher_can_see_cells'],
-                watcher_can_see_quotas=p['link']['watcher_can_see_quotas'],
-                watcher_color=p['link']['watcher_color'],
                 position=position,
+                **l_args,
             )
 
             profile_serialized = ProfileSerializer(profile).data
@@ -265,6 +278,117 @@ class TeamView(APIView, TeamHelpers):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+        elif data['action'] == 'add_links':
+            profiles = list()
+            tplinks = TeamProfileLink.objects.filter(
+                team=hierarchy['team'])
+            position = len(tplinks)
+
+            for profile_id in data['value']:
+                profile = Profile.objects.get(pk=profile_id)
+                tplink = TeamProfileLink.objects.create(
+                    profile=profile,
+                    team=hierarchy['team'],
+                    position=position,
+                    watcher_color='blue',
+                )
+
+                profile_serialized = ProfileSerializer(profile).data
+                profile_serialized['link'] = TeamProfileLinkSerializer(
+                    tplink).data
+
+                profiles.append(profile_serialized)
+
+                position += 1
+
+
+
+            return Response({'profiles': profiles})
+
+
+        elif data['action'] == 'delete_link':
+            tplink = TeamProfileLink.objects.get(
+                profile_id=data['profile_id'],
+                team=hierarchy['team'],
+            )
+            
+            tplink.delete()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_user':
+            p = data['value']
+            profile = Profile.objects.get(pk=data['value']['id'])
+            tplink = TeamProfileLink.objects.get(
+                profile=profile, team=hierarchy['team'])
+
+            for attr in profile_attrs:
+                setattr(profile, attr, p[attr])
+
+            for attr in link_attrs:
+                setattr(tplink, attr, p['link'][attr])
+
+            profile.save()
+            tplink.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'update_position':
+            for p in data['value']:
+                tplink = TeamProfileLink.objects.get(
+                    profile_id=p['id'],
+                    team=hierarchy['team'],
+                )
+
+                tplink.position = p['link']['position']
+                tplink.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'check_email_exist':
+            user = User.objects.filter(username=data['value'])
+
+            return Response({'result': len(user) > 0})
+
+
+        elif data['action'] == 'check_profiles_exist':
+            words = data['value'].split(' ')
+
+            word1 = ''
+            word2 = ''
+
+            if len(words) >= 1:
+                word1 = words[0].lower()
+
+            if len(words) >= 2:
+                word2 = words[1]
+
+            profiles = Profile.objects.filter(
+                Q(name__iexact='{0} {1}'.format(word1, word2)) |
+                Q(name__iexact='{0} {1}'.format(word2, word1))
+            )
+
+            profile_list = list()
+
+            for profile in profiles:
+                p = ProfileSerializer(profile).data
+                tplinks = TeamProfileLink.objects.filter(profile=profile)
+
+                p['teams'] = list()
+
+                for tplink in tplinks:
+                    p['teams'].append(tplink.team.name)
+
+                profile_list.append(p)
+
+
+            return Response({
+                'profiles': profile_list,
+            })
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
