@@ -62,24 +62,12 @@ class App(models.Model):
     team = models.ForeignKey('Team', on_delete=models.CASCADE, blank=True, null=True)
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
 
-    selected_template = models.ForeignKey('Template', on_delete=models.CASCADE, blank=True, null=True)
+    template = models.ForeignKey('Task', related_name='template', on_delete=models.CASCADE, blank=True, null=True)
     
     tasks = models.ManyToManyField(
         'Task',
         blank=True,
         through='AppTaskLink',
-    )
-    
-    files = models.ManyToManyField(
-        'File',
-        blank=True,
-        through='AppFileLink',
-    )
-    
-    notes = models.ManyToManyField(
-        'Note',
-        blank=True,
-        through='AppNoteLink',
     )
     
     contacts = models.ManyToManyField(
@@ -385,28 +373,6 @@ class Project(models.Model):
         return '[#{0}] {1}'.format(self.id, self.name)
 
 
-class Template(models.Model):
-
-    name = models.TextField(null=True, blank=True)
-
-    apps = models.ManyToManyField(
-        'App',
-        blank=True,
-        through='AppTemplateLink',
-    )
-    inputs = models.ManyToManyField(
-        'Input',
-        blank=True,
-        through='TemplateInputLink',
-    )
-
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
-
-    def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
-
-
 class Folder(models.Model):
 
     name = models.TextField(null=True, blank=True)
@@ -417,12 +383,6 @@ class Folder(models.Model):
         blank=True,
         through='FolderTaskLink',
     )
-
-    subtasks = models.ManyToManyField(
-        'Subtask',
-        blank=True,
-        through='FolderSubtaskLink',
-    )
     notes = models.ManyToManyField(
         'Note',
         blank=True,
@@ -432,11 +392,6 @@ class Folder(models.Model):
         'File',
         blank=True,
         through='FolderFileLink',
-    )
-    inputs = models.ManyToManyField(
-        'Input',
-        blank=True,
-        through='FolderInputLink',
     )
     links = models.ManyToManyField(
         'Link',
@@ -798,36 +753,6 @@ class AppTaskLink(models.Model):
         return '{0} : {1}'.format(self.app, self.task)
 
 
-class AppFileLink(models.Model):
-
-    app = models.ForeignKey('App', on_delete=models.CASCADE)
-    file = models.ForeignKey('File', on_delete=models.CASCADE)
-
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
-    is_original = models.BooleanField(default=True)
-
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
-
-    def __str__(self):
-        return '{0} : {1}'.format(self.app, self.file)
-
-
-class AppNoteLink(models.Model):
-
-    app = models.ForeignKey('App', on_delete=models.CASCADE)
-    note = models.ForeignKey('Note', on_delete=models.CASCADE)
-
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
-    is_original = models.BooleanField(default=True)
-
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
-
-    def __str__(self):
-        return '{0} : {1}'.format(self.app, self.note)
-
-
 class AppContactLink(models.Model):
 
     app = models.ForeignKey('App', on_delete=models.CASCADE)
@@ -854,6 +779,21 @@ class AppFolderLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.folder)
+
+
+class AppTemplateLink(models.Model):
+
+    app = models.ForeignKey('App', on_delete=models.CASCADE)
+    template = models.ForeignKey('Task', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.app, self.template)
 
 
 class DayTaskLink(models.Model):
@@ -1034,36 +974,6 @@ class ProjectTaskLink(models.Model):
         return '{0} : {1}'.format(self.project, self.task)
 
 
-class AppTemplateLink(models.Model):
-
-    app = models.ForeignKey('App', on_delete=models.CASCADE)
-    template = models.ForeignKey('Template', on_delete=models.CASCADE)
-
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
-    is_original = models.BooleanField(default=True)
-
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
-
-    def __str__(self):
-        return '{0} : {1}'.format(self.app, self.template)
-
-
-class TemplateInputLink(models.Model):
-
-    template = models.ForeignKey('Template', on_delete=models.CASCADE)
-    input = models.ForeignKey('Input', on_delete=models.CASCADE)
-
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
-    is_original = models.BooleanField(default=True)
-
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
-
-    def __str__(self):
-        return '{0} : {1}'.format(self.template, self.input)
-
-
 class TaskSubtaskLink(models.Model):
 
     task = models.ForeignKey('Task', on_delete=models.CASCADE)
@@ -1154,21 +1064,6 @@ class FolderTaskLink(models.Model):
         return '{0} : {1}'.format(self.folder, self.task)
 
 
-class FolderSubtaskLink(models.Model):
-
-    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
-    subtask = models.ForeignKey('Subtask', on_delete=models.CASCADE)
-
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
-    is_original = models.BooleanField(default=True)
-
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
-
-    def __str__(self):
-        return '{0} : {1}'.format(self.folder, self.subtask)
-
-
 class FolderNoteLink(models.Model):
 
     folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
@@ -1197,21 +1092,6 @@ class FolderFileLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.file)
-
-
-class FolderInputLink(models.Model):
-
-    folder = models.ForeignKey('Folder', on_delete=models.CASCADE)
-    input = models.ForeignKey('Input', on_delete=models.CASCADE)
-
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
-    is_original = models.BooleanField(default=True)
-
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
-
-    def __str__(self):
-        return '{0} : {1}'.format(self.folder, self.input)
 
 
 class FolderLinkLink(models.Model):

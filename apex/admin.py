@@ -13,7 +13,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 class AppAdmin(admin.ModelAdmin):
-    raw_id_fields = ('team', 'profile', 'selected_template', )
+    raw_id_fields = ('team', 'profile', 'template', )
 
 
 class RadiumConfigAdmin(admin.ModelAdmin):
@@ -86,7 +86,6 @@ admin.site.register(S460, S460Admin)
 admin.site.register(Shift, ShiftAdmin)
 admin.site.register(Part, PartAdmin)
 admin.site.register(Project)
-admin.site.register(Template)
 admin.site.register(Folder)
 admin.site.register(Task)
 admin.site.register(Subtask)
@@ -117,14 +116,6 @@ class AppProjectLinkAdmin(admin.ModelAdmin):
 
 class AppTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', 'task', )
-
-
-class AppFileLinkAdmin(admin.ModelAdmin):
-    raw_id_fields = ('app', 'file', )
-
-
-class AppNoteLinkAdmin(admin.ModelAdmin):
-    raw_id_fields = ('app', 'note', )
 
 
 class AppContactLinkAdmin(admin.ModelAdmin):
@@ -187,10 +178,6 @@ class AppTemplateLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', 'template', )
 
 
-class TemplateInputLinkAdmin(admin.ModelAdmin):
-    raw_id_fields = ('template', 'input', )
-
-
 class TaskSubtaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'subtask', )
 
@@ -215,20 +202,12 @@ class FolderTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('folder', 'task', )
 
 
-class FolderSubtaskLinkAdmin(admin.ModelAdmin):
-    raw_id_fields = ('folder', 'subtask', )
-
-
 class FolderNoteLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('folder', 'note', )
 
 
 class FolderFileLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('folder', 'file', )
-
-
-class FolderInputLinkAdmin(admin.ModelAdmin):
-    raw_id_fields = ('folder', 'input', )
 
 
 class FolderLinkLinkAdmin(admin.ModelAdmin):
@@ -239,8 +218,6 @@ admin.site.register(TeamProfileLink, TeamProfileLinkAdmin)
 admin.site.register(AppWorkLink, AppWorkLinkAdmin)
 admin.site.register(AppProjectLink, AppProjectLinkAdmin)
 admin.site.register(AppTaskLink, AppTaskLinkAdmin)
-admin.site.register(AppFileLink, AppFileLinkAdmin)
-admin.site.register(AppNoteLink, AppNoteLinkAdmin)
 admin.site.register(AppContactLink, AppContactLinkAdmin)
 admin.site.register(AppFolderLink, AppFolderLinkAdmin)
 admin.site.register(DayTaskLink, DayTaskLinkAdmin)
@@ -256,15 +233,12 @@ admin.site.register(CallLinkLink, CallLinkLinkAdmin)
 admin.site.register(PartProfileLink, PartProfileLinkAdmin)
 admin.site.register(ProjectTaskLink, ProjectTaskLinkAdmin)
 admin.site.register(AppTemplateLink, AppTemplateLinkAdmin)
-admin.site.register(TemplateInputLink, TemplateInputLinkAdmin)
 admin.site.register(TaskSubtaskLink, TaskSubtaskLinkAdmin)
 admin.site.register(TaskNoteLink, TaskNoteLinkAdmin)
 admin.site.register(TaskFileLink, TaskFileLinkAdmin)
 admin.site.register(TaskInputLink, TaskInputLinkAdmin)
 admin.site.register(TaskLinkLink, TaskLinkLinkAdmin)
 admin.site.register(FolderTaskLink, FolderTaskLinkAdmin)
-admin.site.register(FolderSubtaskLink, FolderSubtaskLinkAdmin)
 admin.site.register(FolderNoteLink, FolderNoteLinkAdmin)
 admin.site.register(FolderFileLink, FolderFileLinkAdmin)
-admin.site.register(FolderInputLink, FolderInputLinkAdmin)
 admin.site.register(FolderLinkLink, FolderLinkLinkAdmin)
