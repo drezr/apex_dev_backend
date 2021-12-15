@@ -182,7 +182,7 @@ class MyApexView(APIView):
         return Response(result)
 
 
-class TeamView(APIView, TeamHelpers):
+class TeamView(APIView, GenericHelpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -394,7 +394,7 @@ class TeamView(APIView, TeamHelpers):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProjectsView(APIView):
+class ProjectsView(APIView, GenericHelpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -412,6 +412,55 @@ class ProjectsView(APIView):
         }
 
         return Response(result)
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+        if data['action'] == 'create_project':
+            project = Project.objects.create(
+                name=data['value']['name'],
+                date=data['value']['date'],
+                private=data['value']['private'],
+            )
+
+            position = len(hierarchy['app'].project_set.all())
+
+            app_project_link = AppProjectLink.objects.create(
+                app=hierarchy['app'],
+                project=project,
+                position=position,
+            )
+
+            project_serialized = ProjectSerializer(project).data
+            project_serialized['link'] = AppProjectLinkSerializer(
+                app_project_link).data
+
+            return Response({'project': project_serialized})
+
+
+        elif data['action'] == 'update_project':
+            project = Project.objects.get(pk=data['element_id'])
+
+            for arg in ['name', 'date', 'private', 'archived']:
+                setattr(project, arg, data['value'][arg])
+
+            project.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'delete_project':
+            project = Project.objects.get(pk=data['element_id'])
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class MyApexProjectsView(APIView):

@@ -80,12 +80,19 @@ class CommonHelpers:
         return data, hierarchy, permission
 
 
-class TeamHelpers(CommonHelpers):
+class GenericHelpers(CommonHelpers):
 
     def get_hierarchy(self, data):
-        team = Team.objects.get(pk=data['team_id'])
+        hierarchy = dict()
 
-        return {'team': team}
+        team = Team.objects.get(pk=data['team_id'])
+        hierarchy['team'] = team
+
+        if 'app_id' in data:
+            app = team.app_set.get(pk=data['app_id'])
+            hierarchy['app'] = app
+
+        return hierarchy
 
 
     def get_permission(self, request, data, team):
