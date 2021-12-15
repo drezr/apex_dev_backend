@@ -172,6 +172,7 @@ class AppSerializer(serializers.ModelSerializer):
     #files = serializers.SerializerMethodField()
     #notes = serializers.SerializerMethodField()
     contacts = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = App
@@ -199,6 +200,9 @@ class AppSerializer(serializers.ModelSerializer):
         if 'contacts' in self.context:
             return ProfileSerializer(
                 app.contacts.all(), many=True, context=self.context).data
+
+    def get_type(self, app):
+        return 'app'
 
 
 class RadiumConfigSerializer(serializers.ModelSerializer):

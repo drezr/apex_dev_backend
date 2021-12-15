@@ -454,8 +454,38 @@ class ProjectsView(APIView, GenericHelpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'update_project_position':
+            for pu in data['position_updates']:
+                project = Project.objects.get(pk=pu['project_id'])
+                link = AppProjectLink.objects.get(
+                    app=hierarchy['app'],
+                    project=project,
+                )
+
+                link.position = pu['position']
+                link.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
         elif data['action'] == 'delete_project':
+            app = hierarchy['app']
             project = Project.objects.get(pk=data['element_id'])
+
+            for task in project.tasks.all():
+                for child_type in ['note', 'subtask', 'input', 'file']:
+                    child_set = getattr(task, child_type + 's')
+                    
+                    for child in child_set.all():
+                        if child_type == 'file':
+                            # TODO : file stuff
+                            pass
+
+                        child.delete()
+
+                task.delete()
+
+            project.delete()
 
             return Response(status=status.HTTP_200_OK)
 
@@ -479,7 +509,7 @@ class MyApexProjectsView(APIView):
         return Response('Not Allowed')
 
 
-class TemplatesView(APIView):
+class TemplatesView(APIView, GenericHelpers):
 
     def get(self, request):
         app_id = request.query_params['app_id']
@@ -487,12 +517,28 @@ class TemplatesView(APIView):
         result = {
             'app': AppSerializer(App.objects.get(pk=app_id), context={
                 'link': 'detail',
-                'templates': 'detail',
+                'tasks': 'detail',
                 'inputs': 'detail',
+                'notes': 'detail',
+                'subtasks': 'detail',
             }).data,
         }
 
         return Response(result)
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+        if data['action'] == 'select_template':
+            hierarchy['app'].template_id = data['value']
+            hierarchy['app'].save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
 class ProjectView(APIView):
@@ -1816,6 +1862,70 @@ class ElementView(APIView, ElementHelpers, Helpers):
                     hierarchy['parent'].has_content = True
 
                 hierarchy['parent'].save()
+
+
+            if data['view'] == 'project' and data['element_type'] == 'task':
+                if hierarchy['app'].template:
+                    template = TaskSerializer(
+                        hierarchy['app'].template, context={
+                            'link': 'detail',
+                            'subtasks': 'detail',
+                            'inputs': 'detail',
+                            'notes': 'detail',
+                        }).data
+
+                    for child_type in ['note', 'subtask', 'input']:
+                        children = template[child_type + 's']
+
+                        for child in children:
+                            child_model = globals()[child_type.capitalize()]
+                            link_model = globals()[
+                                'Task' + child_type.capitalize() + 'Link']
+
+                            new_child = None
+                            new_link_args = dict()
+
+                            if child_type == 'note':
+                                new_child = child_model.objects.create(
+                                    value=child['value'],
+                                    profile=request.user.profile,
+                                )
+
+                                new_link_args
+
+                            elif child_type == 'subtask':
+                                new_child = child_model.objects.create(
+                                    name=child['name'],
+                                )
+
+                            elif child_type == 'input':
+                                new_child = child_model.objects.create(
+                                    kind=child['kind'],
+                                    key=child['key'],
+                                    value=child['value'],
+                                    heading=child['heading'],
+                                )
+
+                            new_link_args['task'] = element
+                            new_link_args[child_type] = new_child
+                            new_link_args['position'] = child['link']['position']
+
+                            new_link = link_model.objects.create(
+                                **new_link_args)
+
+                            element_serialized = hierarchy['element_serializer'](
+                                element, context={
+                                    'link': 'detail',
+                                    'subtasks': 'detail',
+                                    'inputs': 'detail',
+                                    'notes': 'detail',
+                                    'files': 'detail',
+                                    'calls': 'detail',
+                                    'links': 'detail',
+                                    'teammates': 'detail',
+                                }).data
+
+                            element_serialized['link'] = hierarchy['link_serializer'](link).data
 
             result = {
                 data['element_type']: element_serialized,

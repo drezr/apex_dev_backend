@@ -60,9 +60,9 @@ class App(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
 
     team = models.ForeignKey('Team', on_delete=models.CASCADE, blank=True, null=True)
-    profile = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
+    profile = models.ForeignKey('Profile', on_delete=models.SET_NULL, blank=True, null=True)
 
-    template = models.ForeignKey('Task', related_name='template', on_delete=models.CASCADE, blank=True, null=True)
+    template = models.ForeignKey('Task', related_name='template', on_delete=models.SET_NULL, blank=True, null=True)
     
     tasks = models.ManyToManyField(
         'Task',

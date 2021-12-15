@@ -312,6 +312,9 @@ class ElementHelpers(CommonHelpers):
                 source = Cell.objects.get(pk=data['source_id'])
                 profile = team.profiles.get(pk=source.profile.id)
 
+            elif data['source_type'] == 'app':
+                source = app
+
             else:
                 source = self.get_element_from_set(
                     app, data['source_type'], data['source_id'])
@@ -329,6 +332,9 @@ class ElementHelpers(CommonHelpers):
                 source = Cell.objects.get(pk=data['parent_id'])
                 profile = team.profiles.get(pk=source.profile.id)
                 parent = source
+
+            elif data['parent_type'] == 'app':
+                parent = app
 
             else:
                 source = self.get_element_from_set(
