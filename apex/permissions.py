@@ -88,7 +88,7 @@ class GenericHelpers(CommonHelpers):
         team = Team.objects.get(pk=data['team_id'])
         hierarchy['team'] = team
 
-        if 'app_id' in data:
+        if data['app_id']:
             app = team.app_set.get(pk=data['app_id'])
             hierarchy['app'] = app
 
