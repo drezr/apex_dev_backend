@@ -351,9 +351,9 @@ class Part(models.Model):
 class Project(models.Model):
 
     name = models.TextField(null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
     private = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
-    date = models.DateField()
 
     apps = models.ManyToManyField(
         'App',
