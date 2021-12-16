@@ -955,8 +955,8 @@ class LeaveView(APIView, LeaveHelpers):
                 desc=data['value']['desc'],
                 kind=data['value']['kind'],
                 visible=data['value']['visible'],
-                config=config,
                 position=len(leave_types),
+                config=config,
             )
 
             new_quotas = list()
@@ -1503,6 +1503,14 @@ class WorksView(APIView, WorksHelpers, Helpers):
                     del column[attr]
 
                 for key, val in column.items():
+                    if 'textsize' in key:
+                        if not val or int(val) < 5:
+                            val = 13
+
+                    if 'width' in key:
+                        if not val:
+                            val = 100
+
                     setattr(config_column, key, val)
 
                 config_column.save()
@@ -1518,7 +1526,6 @@ class WorksView(APIView, WorksHelpers, Helpers):
                     date=element.date,
                     team=team,
                     shift=element,
-                    work=parent,
                 )
 
                 part_serialized = PartSerializer(part, context={

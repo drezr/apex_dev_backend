@@ -622,7 +622,7 @@ class LeaveConfig(models.Model):
 
 class LeaveType(models.Model):
 
-    code = models.CharField(max_length=10, blank=True, null=True)
+    code = models.CharField(max_length=10)
     desc = models.CharField(max_length=50, blank=True, null=True)
     kind = models.CharField(max_length=20, default='normal_leave')
     color = models.CharField(max_length=20, default='red')
