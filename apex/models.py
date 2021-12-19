@@ -171,80 +171,6 @@ class Cell(models.Model):
 
 class Work(models.Model):
 
-    description = models.TextField(null=True, blank=True)
-    description_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    description_is_edited = models.BooleanField(default=False)
-    note = models.TextField(null=True, blank=True)
-    note_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    note_is_edited = models.BooleanField(default=False)
-    ilt = models.TextField(null=True, blank=True)
-    ilt_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    ilt_is_edited = models.BooleanField(default=False)
-    upm = models.TextField(null=True, blank=True)
-    upm_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    upm_is_edited = models.BooleanField(default=False)
-    status = models.TextField(null=True, blank=True)
-    status_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    status_is_edited = models.BooleanField(default=False)
-    zkl = models.TextField(null=True, blank=True)
-    zkl_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    zkl_is_edited = models.BooleanField(default=False)
-    cascat = models.TextField(null=True, blank=True)
-    cascat_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    cascat_is_edited = models.BooleanField(default=False)
-    grue = models.TextField(null=True, blank=True)
-    grue_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    grue_is_edited = models.BooleanField(default=False)
-    osv = models.TextField(null=True, blank=True)
-    osv_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    osv_is_edited = models.BooleanField(default=False)
-    loco = models.TextField(null=True, blank=True)
-    loco_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    loco_is_edited = models.BooleanField(default=False)
-    hgs = models.TextField(null=True, blank=True)
-    hgs_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    hgs_is_edited = models.BooleanField(default=False)
-    soudure = models.TextField(null=True, blank=True)
-    soudure_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    soudure_is_edited = models.BooleanField(default=False)
-    pn = models.TextField(null=True, blank=True)
-    pn_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    pn_is_edited = models.BooleanField(default=False)
-    art = models.TextField(null=True, blank=True)
-    art_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    art_is_edited = models.BooleanField(default=False)
-    s428 = models.TextField(null=True, blank=True)
-    s428_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    s428_is_edited = models.BooleanField(default=False)
-    s461 = models.TextField(null=True, blank=True)
-    s461_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    s461_is_edited = models.BooleanField(default=False)
-    atwtx = models.TextField(null=True, blank=True)
-    atwtx_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    atwtx_is_edited = models.BooleanField(default=False)
-    imputation = models.TextField(null=True, blank=True)
-    imputation_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    imputation_is_edited = models.BooleanField(default=False)
-    extra = models.TextField(null=True, blank=True)
-    extra_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    extra_is_edited = models.BooleanField(default=False)
-    line = models.TextField(null=True, blank=True)
-    line_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    line_is_edited = models.BooleanField(default=False)
-    supervisor = models.TextField(null=True, blank=True)
-    supervisor_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    supervisor_is_edited = models.BooleanField(default=False)
-    colt = models.TextField(null=True, blank=True)
-    colt_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    colt_is_edited = models.BooleanField(default=False)
-
-    shifts_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    ilts_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    bnxs_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    fmhts_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    limits_bg_color = models.CharField(max_length=20, blank=True, null=True)
-    s460s_bg_color = models.CharField(max_length=20, blank=True, null=True)
-
     color = models.CharField(max_length=20, blank=True, null=True)
     date = models.DateField()
 
@@ -264,48 +190,60 @@ class Work(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        desc = '' if not self.description else self.description[:10]
+        desc = ''
+
+        for column in self.columns.all():
+            if column.name == 'description' and column.value:
+                desc = column.value[:15]
+                break
+
         return '[#{0}] {1}'.format(self.id, desc)
 
 
-class Limit(models.Model):
+class WorkColumn(models.Model):
 
-    from_line = models.CharField(max_length=100, blank=True, null=True)
-    from_station = models.CharField(max_length=100, blank=True, null=True)
-    from_signal = models.CharField(max_length=100, blank=True, null=True)
-    from_lane = models.CharField(max_length=100, blank=True, null=True)
-    from_pk = models.CharField(max_length=100, blank=True, null=True)
-    to_line = models.CharField(max_length=100, blank=True, null=True)
-    to_station = models.CharField(max_length=100, blank=True, null=True)
-    to_signal = models.CharField(max_length=100, blank=True, null=True)
-    to_lane = models.CharField(max_length=100, blank=True, null=True)
-    to_pk = models.CharField(max_length=100, blank=True, null=True)
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    name = models.TextField()
+    value = models.TextField(null=True, blank=True)
+    color = models.CharField(max_length=20, blank=True, null=True)
+    is_edited = models.BooleanField(default=False)
+    position = models.PositiveSmallIntegerField()
 
-    work = models.ForeignKey('Work', on_delete=models.CASCADE)
+    work = models.ForeignKey(
+        'Work', related_name='columns', on_delete=models.CASCADE)
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.work.description)
+        return '[#{0}] {1} : {2} ({3})'.format(
+            self.id, self.name, self.value, self.work)
 
 
-class S460(models.Model):
+class WorkColumnExtend(models.Model):
 
-    line = models.CharField(max_length=100, blank=True, null=True)
-    lane = models.CharField(max_length=100, blank=True, null=True)
-    start = models.CharField(max_length=100, blank=True, null=True)
-    end = models.CharField(max_length=100, blank=True, null=True)
-    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    from_line = models.TextField(blank=True, null=True)
+    to_line = models.TextField(blank=True, null=True)
 
-    work = models.ForeignKey('Work', on_delete=models.CASCADE)
+    from_station = models.TextField(blank=True, null=True)
+    to_station = models.TextField(blank=True, null=True)
+
+    from_signal = models.TextField(blank=True, null=True)
+    to_signal = models.TextField(blank=True, null=True)
+
+    from_lane = models.TextField(blank=True, null=True)
+    to_lane = models.TextField(blank=True, null=True)
+
+    from_pk = models.TextField(blank=True, null=True)
+    to_pk = models.TextField(blank=True, null=True)
+
+    work_column = models.ForeignKey(
+        'WorkColumn', related_name='extend', on_delete=models.CASCADE)
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.work.description)
+        return '[#{0}] from ({1})'.format(self.id, self.work_column)
 
 
 class Shift(models.Model):
@@ -659,6 +597,9 @@ class RadiumConfigColumn(models.Model):
     width = models.PositiveSmallIntegerField()
     textsize = models.PositiveSmallIntegerField()
     visible = models.BooleanField(default=True)
+    multiple = models.BooleanField(default=False)
+    clickable = models.BooleanField(default=False)
+    path = models.CharField(max_length=255, blank=True, null=True)
 
     config = models.ForeignKey(
         'RadiumConfig', related_name='column_set', on_delete=models.CASCADE)

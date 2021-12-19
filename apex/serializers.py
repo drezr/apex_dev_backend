@@ -512,8 +512,7 @@ class WorkSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     apps = serializers.SerializerMethodField()
-    s460s = serializers.SerializerMethodField()
-    limits = serializers.SerializerMethodField()
+    columns = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     shifts = serializers.SerializerMethodField()
     apps = serializers.SerializerMethodField()
@@ -529,11 +528,8 @@ class WorkSerializer(serializers.ModelSerializer):
     def get_apps(self, work):
         return get_children(work, self.context, 'work', 'app')
 
-    def get_s460s(self, work):
-        return get_children(work, self.context, 'work', 's460')
-
-    def get_limits(self, work):
-        return get_children(work, self.context, 'work', 'limit')
+    def get_columns(self, work):
+        return WorkColumnSerializer(work.columns.all(), many=True).data
 
     def get_files(self, work):
         return get_children(work, self.context, 'work', 'file')
@@ -549,28 +545,25 @@ class WorkSerializer(serializers.ModelSerializer):
         return 'work'
 
 
-class LimitSerializer(serializers.ModelSerializer):
+class WorkColumnSerializer(serializers.ModelSerializer):
 
-    type = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Limit
-        fields = '__all__'
-
-    def get_type(self, limit):
-        return 'limit'
-
-
-class S460Serializer(serializers.ModelSerializer):
-
-    type = serializers.SerializerMethodField()
+    extend = serializers.SerializerMethodField()
 
     class Meta:
-        model = S460
+        model = WorkColumn
         fields = '__all__'
 
-    def get_type(self, s460):
-        return 's460'
+    def get_extend(self, work_column):
+        extend = work_column.extend.first()
+        
+        return WorkColumnExtendSerializer(extend).data if extend else None
+
+
+class WorkColumnExtendSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WorkColumnExtend
+        fields = '__all__'
 
 
 class ShiftSerializer(serializers.ModelSerializer):

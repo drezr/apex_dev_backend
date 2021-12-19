@@ -24,20 +24,20 @@ class RadiumConfigColumnAdmin(admin.ModelAdmin):
     raw_id_fields = ('config', )
 
 
+class WorkColumnAdmin(admin.ModelAdmin):
+    raw_id_fields = ('work', )
+
+
+class WorkColumnExtendAdmin(admin.ModelAdmin):
+    raw_id_fields = ('work_column', )
+
+
 class DayAdmin(admin.ModelAdmin):
     raw_id_fields = ('team', )
 
 
 class CellAdmin(admin.ModelAdmin):
     raw_id_fields = ('profile', )
-
-
-class LimitAdmin(admin.ModelAdmin):
-    raw_id_fields = ('work', )
-
-
-class S460Admin(admin.ModelAdmin):
-    raw_id_fields = ('work', )
 
 
 class ShiftAdmin(admin.ModelAdmin):
@@ -81,8 +81,8 @@ admin.site.register(RadiumConfigColumn, RadiumConfigColumnAdmin)
 admin.site.register(Day, DayAdmin)
 admin.site.register(Cell, CellAdmin)
 admin.site.register(Work)
-admin.site.register(Limit, LimitAdmin)
-admin.site.register(S460, S460Admin)
+admin.site.register(WorkColumn, WorkColumnAdmin)
+admin.site.register(WorkColumnExtend, WorkColumnExtendAdmin)
 admin.site.register(Shift, ShiftAdmin)
 admin.site.register(Part, PartAdmin)
 admin.site.register(Project)

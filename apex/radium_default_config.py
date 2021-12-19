@@ -5,6 +5,9 @@ radium_default_config = [
         'width': 200,
         'textsize': 15,
         'visible': True,
+        'multiple': True,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'description',
@@ -12,6 +15,9 @@ radium_default_config = [
         'width': 400,
         'textsize': 15,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'note',
@@ -19,6 +25,9 @@ radium_default_config = [
         'width': 150,
         'textsize': 15,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'ilt',
@@ -26,6 +35,9 @@ radium_default_config = [
         'width': 80,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'files',
@@ -33,6 +45,9 @@ radium_default_config = [
         'width': 200,
         'textsize': 13,
         'visible': True,
+        'multiple': True,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'upm',
@@ -40,6 +55,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'colt',
@@ -47,6 +65,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': True,
+        'path': 'https://colt-website.infrabel.be/coupure/',
     },
     {
         'name': 'status',
@@ -54,6 +75,9 @@ radium_default_config = [
         'width': 150,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'limits',
@@ -61,6 +85,9 @@ radium_default_config = [
         'width': 600,
         'textsize': 13,
         'visible': True,
+        'multiple': True,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 's460s',
@@ -68,6 +95,9 @@ radium_default_config = [
         'width': 300,
         'textsize': 13,
         'visible': True,
+        'multiple': True,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'zkl',
@@ -75,6 +105,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'cascat',
@@ -82,6 +115,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'grue',
@@ -89,6 +125,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'osv',
@@ -96,6 +135,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'loco',
@@ -103,6 +145,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'hgs',
@@ -110,6 +155,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'soudure',
@@ -117,6 +165,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'pn',
@@ -124,6 +175,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'art',
@@ -131,6 +185,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 's428',
@@ -138,6 +195,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 's461',
@@ -145,6 +205,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'atwtx',
@@ -152,6 +215,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'imputation',
@@ -159,6 +225,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'extra',
@@ -166,6 +235,9 @@ radium_default_config = [
         'width': 200,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'line',
@@ -173,6 +245,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'supervisor',
@@ -180,6 +255,9 @@ radium_default_config = [
         'width': 150,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_shifts',
@@ -187,6 +265,9 @@ radium_default_config = [
         'width': 200,
         'textsize': 13,
         'visible': True,
+        'multiple': True,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_description',
@@ -194,6 +275,9 @@ radium_default_config = [
         'width': 300,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_note',
@@ -201,6 +285,9 @@ radium_default_config = [
         'width': 200,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_ilt',
@@ -208,6 +295,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_upm',
@@ -215,6 +305,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_colt',
@@ -222,6 +315,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_status',
@@ -229,6 +325,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_limits',
@@ -236,6 +335,9 @@ radium_default_config = [
         'width': 600,
         'textsize': 13,
         'visible': True,
+        'multiple': True,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_s460s',
@@ -243,6 +345,9 @@ radium_default_config = [
         'width': 300,
         'textsize': 13,
         'visible': True,
+        'multiple': True,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_zkl',
@@ -250,6 +355,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_cascat',
@@ -257,6 +365,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_grue',
@@ -264,6 +375,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_osv',
@@ -271,6 +385,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_loco',
@@ -278,6 +395,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_hgs',
@@ -285,6 +405,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_soudure',
@@ -292,6 +415,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_pn',
@@ -299,6 +425,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_art',
@@ -306,6 +435,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_s428',
@@ -313,6 +445,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_s461',
@@ -320,6 +455,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_atwtx',
@@ -327,6 +465,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_imputation',
@@ -334,6 +475,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_extra',
@@ -341,6 +485,9 @@ radium_default_config = [
         'width': 200,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_line',
@@ -348,6 +495,9 @@ radium_default_config = [
         'width': 100,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     },
     {
         'name': 'printable_supervisor',
@@ -355,5 +505,8 @@ radium_default_config = [
         'width': 150,
         'textsize': 13,
         'visible': True,
+        'multiple': False,
+        'clickable': False,
+        'path': None,
     }
 ]

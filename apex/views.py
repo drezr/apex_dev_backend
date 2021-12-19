@@ -1265,6 +1265,9 @@ class WorksView(APIView, WorksHelpers, Helpers):
                     width=column['width'],
                     textsize=column['textsize'],
                     visible=column['visible'],
+                    multiple=column['multiple'],
+                    clickable=column['clickable'],
+                    path=column['path'],
                     config=config,
                 )
         
@@ -1282,8 +1285,6 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 'link': 'detail',
                 'parent_id': app.id,
                 'parent_type': 'app',
-                'limits': 'detail',
-                's460s': 'detail',
                 'files': 'detail',
                 'shifts': 'detail',
                 'apps': 'id',
@@ -1323,8 +1324,6 @@ class WorksView(APIView, WorksHelpers, Helpers):
             )
 
             work_serialized = WorkSerializer(work, context={
-                'limits': 'detail',
-                's460s': 'detail',
                 'files': 'detail',
                 'shifts': 'detail',
                 'apps': 'id',
@@ -1421,9 +1420,9 @@ class WorksView(APIView, WorksHelpers, Helpers):
             _type = data['element_type']
             child_model = globals()[_type.capitalize()]
 
-            date = element.date
+            if data['element_type'] == 'shift':
+                date = element.date
 
-            if element.type == 'shift':
                 for part in element.part_set.all():
                     profiles = [p for p in part.profiles.all()]
                     part_team = part.team
@@ -1453,7 +1452,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
             for key, val in data['value'].items():
                 setattr(element, key, val)
 
-            if element.type == 'shift':
+            if data['element_type'] == 'shift':
                 for part in element.part_set.all():
                     old_date = part.date
                     part.date = element.date
