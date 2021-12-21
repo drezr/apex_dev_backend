@@ -1341,10 +1341,14 @@ class WorksView(APIView, WorksHelpers, Helpers):
             logs = data['value']['logs']
             fields = list()
 
+            print(updates)
+
             for update in updates:
                 if update['field_id']:
                     field = element.fields.get(pk=update['field_id'])
                     field.value = update['new_value']
+                    field.bg_color = update['new_bg_color']
+                    field.text_color = update['new_text_color']
 
                     if 'extend' in update and update['extend']:
                         extend = field.extend.get(pk=update['extend']['id'])
@@ -1380,6 +1384,9 @@ class WorksView(APIView, WorksHelpers, Helpers):
                     profile=request.user.profile,
                 )
 
+            if element.color != data['value']['color']:
+                element.color = data['value']['color']
+                element.save()
 
             return Response({'fields': fields})
 
@@ -1509,12 +1516,16 @@ class WorksView(APIView, WorksHelpers, Helpers):
             updates = data['position_updates']
 
             for update in updates:
-                child_model = globals()[
-                    update['element_type'].capitalize()]
-                child = child_model.objects.get(
-                    pk=update['element_id'])
-                child.position = update['element_position']
+                child = None
 
+                if 'element_type' in update:
+                    if update['element_type'] == 'shift':
+                        child = element.shift_set.get(pk=update['element_id'])
+
+                else:
+                    child = element.fields.get(pk=update['element_id'])
+
+                child.position = update['element_position']
                 child.save()
 
             return Response(status=status.HTTP_200_OK)

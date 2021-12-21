@@ -163,7 +163,7 @@ class WorksHelpers(CommonHelpers):
             if data['element_type'] == 'work':
                 element = app.work_set.get(pk=data['element_id'])
 
-            elif data['element_type'] in ['shift', 'limit', 's460', 'file']:
+            elif data['element_type'] in ['shift', 'file']:
                 child_set = getattr(parent, data['element_type'] + '_set')
                 element = child_set.get(pk=data['element_id'])
 
