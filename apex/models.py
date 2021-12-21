@@ -497,7 +497,7 @@ class Log(models.Model):
     new_value = models.TextField(null=True, blank=True)
     date = models.DateTimeField(default=timezone.now)
 
-    profile = models.ForeignKey('Profile', null=True, on_delete=models.CASCADE)
+    profile = models.ForeignKey('Profile', null=True, on_delete=models.SET_NULL)
     work = models.ForeignKey('Work', null=True, blank=True, on_delete=models.CASCADE)
     cell = models.ForeignKey('Cell', null=True, blank=True, on_delete=models.CASCADE)
 

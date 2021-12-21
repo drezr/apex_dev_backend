@@ -1337,37 +1337,68 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
 
         elif data['action'] == 'update_work':
-            for key, val in data['value'].items():
-                if 'color' not in key:
-                    Log.objects.create(
-                        field=key,
-                        old_value=getattr(element, key),
-                        new_value=val,
-                        profile=request.user.profile,
-                        work=element
+            updates = data['value']['updates']
+            logs = data['value']['logs']
+            fields = list()
+
+            for update in updates:
+                if update['field_id']:
+                    field = element.fields.get(pk=update['field_id'])
+                    field.value = update['new_value']
+
+                    if 'extend' in update and update['extend']:
+                        extend = field.extend.get(pk=update['extend']['id'])
+
+                        del update['extend']['id']
+                        del update['extend']['created_date']
+                        del update['extend']['updated_date']
+                        del update['extend']['work_field']
+
+                        for key, val in update['extend'].items():
+                            setattr(extend, key, val)
+
+                        extend.save()
+
+                    field.save()
+
+                else:
+                    field = WorkField.objects.create(
+                        name=update['column_name'],
+                        value=update['new_value'],
+                        position=0,
+                        work=element,
                     )
 
-                setattr(element, key, val)
-                element.save()
+                fields.append(WorkFieldSerializer(field).data)
 
-            return Response(status=status.HTTP_200_OK)
+            for log in logs:
+                Log.objects.create(
+                    field=log['column_name'],
+                    new_value=log['new_value'],
+                    old_value=log['old_value'],
+                    work=element,
+                    profile=request.user.profile,
+                )
+
+
+            return Response({'fields': fields})
 
 
         elif data['action'] == 'delete_work':
-            for child_type in ['shift', 'limit', 's460']:
-                child_set = getattr(element, child_type + '_set')
+            for shift in element.shift_set.all():
+                for part in shift.part_set.all():
+                    date = part.date
+                    profiles = [p for p in part.profiles.all()]
+                    part_team = part.team
 
-                for item in child_set.all():
-                    if child_type == 'shift':
-                        for part in item.part_set.all():
-                            date = part.date
-                            profiles = [p for p in part.profiles.all()]
-                            part_team = part.team
+                    part.delete()
 
-                            part.delete()
+                    self.set_day_cells_has_content(part_team, profiles, date)
 
-                            self.set_day_cells_has_content(
-                                part_team, profiles, date)
+
+
+            for field in element.fields.all():
+                field.delete()
 
 
             for file in element.files.all():
@@ -1393,81 +1424,81 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
 
         elif data['action'] == 'create_child':
-            _type = data['element_type']
-            child_model = globals()[_type.capitalize()]
-            child_serializer = globals()[
-                _type.capitalize() + 'Serializer']
-            child_set = getattr(parent, _type + '_set')
+            if data['element_type'] == 'shifts':
+                position = len(parent.shift_set.all())
 
-            position = len(child_set.all())
+                shift = Shift.objects.create(
+                    position=position,
+                    work=parent,
+                )
 
-            child = child_model.objects.create(
-                position=position,
-                work=parent,
-            )
+                shift_serialized = ShiftSerializer(shift, context={
+                    'parts': 'detail',
+                }).data
 
-            child_serialized = child_serializer(child, context={
-                'parts': 'detail',
-            }).data
+                return Response({'child': shift_serialized})
 
-            data = dict()
-            data[_type] = child_serialized
+            else:
+                position = len(parent.fields.filter(name=data['element_type']))
 
-            return Response(data)
+                field = WorkField.objects.create(
+                    name=data['element_type'],
+                    position=position,
+                    work=parent,
+                )
+
+                WorkFieldExtend.objects.create(
+                    work_field=field,
+                )
+
+                field_serialized = WorkFieldSerializer(field).data
+
+                return Response({'child': field_serialized})
 
 
         elif data['action'] == 'delete_child':
-            _type = data['element_type']
-            child_model = globals()[_type.capitalize()]
-
             if data['element_type'] == 'shift':
                 date = element.date
 
                 for part in element.part_set.all():
                     profiles = [p for p in part.profiles.all()]
-                    part_team = part.team
+                    part_team = part.team  
 
                     part.delete()
 
                     self.set_day_cells_has_content(
                         part_team, profiles, date)
 
+                element.delete()
 
-            element.delete()
-
-            child_set = getattr(parent, _type + '_set')
-            children = child_set.all().order_by('position')
-
-            for i, child in enumerate(children):
-                child.position = i
-                child.save()
+            else:
+                field = parent.fields.get(pk=data['element_id'])
+                field.delete()
 
             return Response(status=status.HTTP_200_OK)
 
 
-        elif data['action'] == 'update_child':
-            del data['value']['id']
-            del data['value']['work']
+        elif data['action'] == 'update_shift':
+            element.date = data['value']['date']
+            element.shift = data['value']['shift']
 
-            for key, val in data['value'].items():
-                setattr(element, key, val)
+            element.save()
 
-            if data['element_type'] == 'shift':
-                for part in element.part_set.all():
-                    old_date = part.date
-                    part.date = element.date
-                    part_team = part.team
+            for part in element.part_set.all():
+                old_date = part.date
+                part.date = element.date
+                part_team = part.team
 
-                    part.save()
+                part.save()
 
-                    if old_date != element.date:
-                        profiles = [p for p in part.profiles.all()]
+                if old_date != element.date:
+                    profiles = [p for p in part.profiles.all()]
 
-                        self.set_day_cells_has_content(
-                            part_team, profiles, old_date)
+                    self.set_day_cells_has_content(
+                        part_team, profiles, old_date)
 
-                        self.set_day_cells_has_content(
-                            part_team, profiles, element.date)
+                    self.set_day_cells_has_content(
+                        part_team, profiles, element.date)
 
             element.save()
 
