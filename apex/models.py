@@ -235,6 +235,9 @@ class WorkRow(models.Model):
 
     from_pk = models.TextField(blank=True, null=True)
     to_pk = models.TextField(blank=True, null=True)
+    
+    bg_color = models.CharField(max_length=20, blank=True, null=True)
+    text_color = models.CharField(max_length=20, blank=True, null=True)
 
     position = models.PositiveSmallIntegerField()
 
