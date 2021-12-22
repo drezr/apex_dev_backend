@@ -512,7 +512,7 @@ class WorkSerializer(serializers.ModelSerializer):
 
     link = serializers.SerializerMethodField()
     apps = serializers.SerializerMethodField()
-    work_fields = serializers.SerializerMethodField()
+    work_columns = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     shifts = serializers.SerializerMethodField()
     apps = serializers.SerializerMethodField()
@@ -528,8 +528,8 @@ class WorkSerializer(serializers.ModelSerializer):
     def get_apps(self, work):
         return get_children(work, self.context, 'work', 'app')
 
-    def get_work_fields(self, work):
-        return WorkFieldSerializer(work.fields.all(), many=True).data
+    def get_work_columns(self, work):
+        return WorkColumnSerializer(work.columns.all(), many=True).data
 
     def get_files(self, work):
         return get_children(work, self.context, 'work', 'file')
@@ -545,24 +545,24 @@ class WorkSerializer(serializers.ModelSerializer):
         return 'work'
 
 
-class WorkFieldSerializer(serializers.ModelSerializer):
+class WorkColumnSerializer(serializers.ModelSerializer):
 
-    extend = serializers.SerializerMethodField()
+    rows = serializers.SerializerMethodField()
 
     class Meta:
-        model = WorkField
+        model = WorkColumn
         fields = '__all__'
 
-    def get_extend(self, work_field):
-        extend = work_field.extend.first()
+    def get_rows(self, work_column):
+        rows = work_column.rows.all()
         
-        return WorkFieldExtendSerializer(extend).data if extend else None
+        return WorkRowSerializer(rows, many=True).data
 
 
-class WorkFieldExtendSerializer(serializers.ModelSerializer):
+class WorkRowSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = WorkFieldExtend
+        model = WorkRow
         fields = '__all__'
 
 

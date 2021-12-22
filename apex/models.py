@@ -192,25 +192,24 @@ class Work(models.Model):
     def __str__(self):
         desc = ''
 
-        for field in self.fields.all():
-            if field.name == 'description' and field.value:
-                desc = field.value[:15]
+        for column in self.columns.all():
+            if column.name == 'description' and column.value:
+                desc = column.value[:15]
                 break
 
         return '[#{0}] {1}'.format(self.id, desc)
 
 
-class WorkField(models.Model):
+class WorkColumn(models.Model):
 
-    name = models.TextField()
+    name = models.CharField(max_length=150)
     value = models.TextField(null=True, blank=True)
     bg_color = models.CharField(max_length=20, blank=True, null=True)
     text_color = models.CharField(max_length=20, blank=True, null=True)
     is_edited = models.BooleanField(default=False)
-    position = models.PositiveSmallIntegerField()
 
     work = models.ForeignKey(
-        'Work', related_name='fields', on_delete=models.CASCADE)
+        'Work', related_name='columns', on_delete=models.CASCADE)
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -220,7 +219,7 @@ class WorkField(models.Model):
             self.id, self.name, self.value, self.work)
 
 
-class WorkFieldExtend(models.Model):
+class WorkRow(models.Model):
 
     from_line = models.TextField(blank=True, null=True)
     to_line = models.TextField(blank=True, null=True)
@@ -237,14 +236,16 @@ class WorkFieldExtend(models.Model):
     from_pk = models.TextField(blank=True, null=True)
     to_pk = models.TextField(blank=True, null=True)
 
-    work_field = models.ForeignKey(
-        'WorkField', related_name='extend', on_delete=models.CASCADE)
+    position = models.PositiveSmallIntegerField()
+
+    work_column = models.ForeignKey(
+        'WorkColumn', related_name='rows', on_delete=models.CASCADE)
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] from ({1})'.format(self.id, self.work_field)
+        return '[#{0}] from ({1})'.format(self.id, self.work_column)
 
 
 class Shift(models.Model):

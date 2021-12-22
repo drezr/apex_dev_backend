@@ -1337,49 +1337,58 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
 
         elif data['action'] == 'update_work':
-            updates = data['value']['updates']
+            column_updates = data['value']['columns']
             logs = data['value']['logs']
-            fields = list()
 
-            print(updates)
+            new_columns = list()
 
-            for update in updates:
-                if update['field_id']:
-                    field = element.fields.get(pk=update['field_id'])
-                    field.value = update['new_value']
-                    field.bg_color = update['new_bg_color']
-                    field.text_color = update['new_text_color']
+            for column_update in column_updates:
+                if 'id' in column_update and column_update['id']:
+                    column = element.columns.get(pk=column_update['id'])
 
-                    if 'extend' in update and update['extend']:
-                        extend = field.extend.get(pk=update['extend']['id'])
+                    column.value = column_update['value']
+                    column.bg_color = column_update['bg_color']
+                    column.text_color = column_update['text_color']
 
-                        del update['extend']['id']
-                        del update['extend']['created_date']
-                        del update['extend']['updated_date']
-                        del update['extend']['work_field']
+                    for row_update in column_update['rows']:
+                        row = column.rows.get(pk=row_update['id'])
 
-                        for key, val in update['extend'].items():
-                            setattr(extend, key, val)
+                        del row_update['id']
+                        del row_update['created_date']
+                        del row_update['updated_date']
+                        del row_update['work_column']
 
-                        extend.save()
+                        for key, val in row_update.items():
+                            setattr(row, key, val)
 
-                    field.save()
+                        row.save()
+
+                    column.save()
 
                 else:
-                    field = WorkField.objects.create(
-                        name=update['column_name'],
-                        value=update['new_value'],
-                        position=0,
+                    value = None if not 'value' in column_update \
+                        else column_update['value']
+                    bg_color = None if not 'bg_color' in column_update \
+                        else column_update['bg_color']
+                    text_color = None if not 'text_color' in column_update \
+                        else column_update['text_color']
+
+                    column = WorkColumn.objects.create(
+                        name=column_update['name'],
+                        value=value,
+                        bg_color=bg_color,
+                        text_color=text_color,
                         work=element,
                     )
 
-                fields.append(WorkFieldSerializer(field).data)
+                new_columns.append(WorkColumnSerializer(column).data)
 
             for log in logs:
+                old_value = '' if not 'old_value' in log else log['old_value']
                 Log.objects.create(
                     field=log['column_name'],
                     new_value=log['new_value'],
-                    old_value=log['old_value'],
+                    old_value=old_value,
                     work=element,
                     profile=request.user.profile,
                 )
@@ -1388,7 +1397,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 element.color = data['value']['color']
                 element.save()
 
-            return Response({'fields': fields})
+            return Response({'columns': new_columns})
 
 
         elif data['action'] == 'delete_work':
@@ -1404,8 +1413,8 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
 
 
-            for field in element.fields.all():
-                field.delete()
+            for column in element.columns.all():
+                column.delete()
 
 
             for file in element.files.all():
@@ -1431,6 +1440,12 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
 
         elif data['action'] == 'create_child':
+            column, c = WorkColumn.objects.get_or_create(
+                work=parent,
+                name=data['element_type'],
+            )
+            column_serialized = WorkColumnSerializer(column).data
+
             if data['element_type'] == 'shifts':
                 position = len(parent.shift_set.all())
 
@@ -1443,24 +1458,25 @@ class WorksView(APIView, WorksHelpers, Helpers):
                     'parts': 'detail',
                 }).data
 
-                return Response({'child': shift_serialized})
+                return Response({
+                    'column': column_serialized,
+                    'child': shift_serialized,
+                })
 
             else:
-                position = len(parent.fields.filter(name=data['element_type']))
+                position = len(column.rows.all())
 
-                field = WorkField.objects.create(
-                    name=data['element_type'],
+                row = WorkRow.objects.create(
                     position=position,
-                    work=parent,
+                    work_column=column,
                 )
 
-                WorkFieldExtend.objects.create(
-                    work_field=field,
-                )
+                row_serialized = WorkRowSerializer(row).data
 
-                field_serialized = WorkFieldSerializer(field).data
-
-                return Response({'child': field_serialized})
+                return Response({
+                    'column': column_serialized,
+                    'child': row_serialized,
+                })
 
 
         elif data['action'] == 'delete_child':
@@ -1479,8 +1495,9 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 element.delete()
 
             else:
-                field = parent.fields.get(pk=data['element_id'])
-                field.delete()
+                column = parent.columns.get(name=data['value']['column_name'])
+                row = column.rows.get(pk=data['element_id'])
+                row.delete()
 
             return Response(status=status.HTTP_200_OK)
 
@@ -1523,7 +1540,8 @@ class WorksView(APIView, WorksHelpers, Helpers):
                         child = element.shift_set.get(pk=update['element_id'])
 
                 else:
-                    child = element.fields.get(pk=update['element_id'])
+                    column = element.columns.first()
+                    child = column.rows.get(pk=update['element_id'])
 
                 child.position = update['element_position']
                 child.save()
