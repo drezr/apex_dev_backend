@@ -1535,12 +1535,11 @@ class WorksView(APIView, WorksHelpers, Helpers):
             for update in updates:
                 child = None
 
-                if 'element_type' in update:
-                    if update['element_type'] == 'shift':
-                        child = element.shift_set.get(pk=update['element_id'])
+                if update['column_name'] == 'shifts':
+                    child = element.shift_set.get(pk=update['element_id'])
 
                 else:
-                    column = element.columns.first()
+                    column = element.columns.get(name=update['column_name'])
                     child = column.rows.get(pk=update['element_id'])
 
                 child.position = update['element_position']
