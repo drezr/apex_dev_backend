@@ -1606,6 +1606,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
         elif data['action'] == 'update_part':
             element.needs = data['value']['needs']
             element.locked = data['value']['locked']
+            element.description = data['value']['description']
 
             element.save()
 
