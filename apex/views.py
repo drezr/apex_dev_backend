@@ -1,7 +1,9 @@
+import shutil
 import uuid
 
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.files.storage import default_storage
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -1882,9 +1884,17 @@ class ElementView(APIView, ElementHelpers, Helpers):
                 count += len(parts)
 
             elif data['parent_type'] == 'cell':
-                pass
+                parts = Part.objects.filter(
+                    team=hierarchy['team'], date=hierarchy['parent'].date)
 
-                #TODO PartProfileLink + Cell check
+                for part in parts:
+                    links = PartProfileLink.objects.filter(
+                        part=part,
+                        profile=hierarchy[element].profile,
+                        is_participant=True,
+                    )
+
+                    count += len(links)
 
 
         return count
@@ -1910,6 +1920,37 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
             elif data['element_type'] == 'note':
                 create_kwargs = {'profile': request.user.profile}
+
+            elif data['element_type'] == 'file':
+                file = request.data['file']
+                name = request.data['name']
+                ext = request.data['ext']
+                mini = None if 'mini' not in request.data else request.data['mini']
+
+                directory = uuid.uuid4().hex
+                file.filename = '{0}.{1}'.format(name, ext)
+
+                if not ext:
+                    file.filename = '{0}'.format(name)
+
+                path = '{0}/{1}'.format(directory, file.filename)
+
+                default_storage.save(path, file)
+
+                if mini:
+                    mini.filename = 'mini.{1}'.format(name, ext)
+                    path = '{0}/{1}'.format(directory, mini.filename)
+                    default_storage.save(path, mini)
+
+                create_kwargs = {
+                    'kind': request.data['kind'],
+                    'name': request.data['name'],
+                    'extension': request.data['ext'],
+                    'width': request.data['width'],
+                    'height': request.data['height'],
+                    'uid': directory,
+                }
+
 
             element = hierarchy['element_model'].objects.create(
                 **create_kwargs)
@@ -2018,14 +2059,32 @@ class ElementView(APIView, ElementHelpers, Helpers):
         elif data['action'] == 'update':
             element = hierarchy['element']
 
+            if data['element_type'] == 'file':
+                media = default_storage.location
+                old_path = None
+                new_path = None
+
+                if element.extension:
+                    old_path = '{0}/{1}/{2}.{3}'.format(
+                        media, element.uid, element.name, element.extension)
+                    new_path = '{0}/{1}/{2}.{3}'.format(
+                        media, element.uid, data['name'], element.extension)
+
+                else:
+                    old_path = '{0}/{1}/{2}'.format(
+                        media, element.uid, element.name)
+                    new_path = '{0}/{1}/{2}'.format(
+                        media, element.uid, data['name'])
+
+                if old_path != new_path:
+                    shutil.move(old_path, new_path)
+
+
             for field in ['name', 'key', 'value', 'heading', 'status',
                           'kind', 'start', 'end', 'description']:
                 if data[field]:
                     setattr(element, field, data[field])
 
-            if data['element_type'] == 'file':
-                # TO DO: update file stuff
-                pass
 
             element.save()
 
@@ -2090,11 +2149,20 @@ class ElementView(APIView, ElementHelpers, Helpers):
                             child_set = getattr(element, child_type + 's')
 
                             for child in child_set.all():
+                                if child_type == 'file':
+                                    path = '{0}/{1}/'.format(
+                                        default_storage.location, child.uid)
+                                    shutil.rmtree(path)
+
+
                                 child.delete()
 
-                                if child_type == 'file':
-                                    # TO DO: delete file stuff
-                                    pass
+
+                if data['element_type'] == 'file':
+                    path = '{0}/{1}/'.format(
+                        default_storage.location, element.uid)
+                    shutil.rmtree(path)
+
 
                 element.delete()
 
