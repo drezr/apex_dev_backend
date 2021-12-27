@@ -854,6 +854,7 @@ class CallFileLink(models.Model):
     file = models.ForeignKey('File', on_delete=models.CASCADE)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)

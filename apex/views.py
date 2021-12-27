@@ -1861,7 +1861,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
         count = 0
 
         if option == 'all' or option == 'exclude_calls':
-            if data['parent_type'] != 'task':
+            if data['parent_type'] not in ['task', 'call']:
                 count += len(hierarchy[element].tasks.all())
 
             if data['parent_type'] == 'task':
@@ -1917,6 +1917,9 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
             elif data['element_type'] == 'input':
                 create_kwargs = {'kind': data['kind']}
+
+            elif data['element_type'] == 'link':
+                create_kwargs = {'url': data['url'], 'name': data['name']}
 
             elif data['element_type'] == 'note':
                 create_kwargs = {'profile': request.user.profile}
@@ -2081,7 +2084,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
 
             for field in ['name', 'key', 'value', 'heading', 'status',
-                          'kind', 'start', 'end', 'description']:
+                          'kind', 'start', 'end', 'description', 'url']:
                 if data[field]:
                     setattr(element, field, data[field])
 
@@ -2100,7 +2103,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
             possible_children = {
                 'task': ['note', 'file', 'input', 'subtask'],
-                'call': ['file'],
+                'call': ['file', 'link'],
             }
 
             if data['parent_type'] in ['day', 'cell']:

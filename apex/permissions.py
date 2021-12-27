@@ -57,6 +57,7 @@ class CommonHelpers:
             'name': self.has_data(request, 'name'),
             'key': self.has_data(request, 'key'),
             'value': self.has_data(request, 'value'),
+            'url': self.has_data(request, 'url'),
             'heading': self.has_data(request, 'heading'),
             'start': self.has_data(request, 'start'),
             'end': self.has_data(request, 'end'),
@@ -430,7 +431,7 @@ class ElementHelpers(CommonHelpers):
             return is_editor
 
         if data['action'] == 'update':
-            possible_fields = ['name', 'key', 'value', 'heading']
+            possible_fields = ['name', 'key', 'value', 'heading', 'url']
 
             for field in possible_fields:
                 if data[field] != None:
