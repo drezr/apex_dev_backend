@@ -65,6 +65,8 @@ class CommonHelpers:
             'presence': self.has_data(request, 'presence'),
             'absence': self.has_data(request, 'absence'),
             'color': self.has_data(request, 'color'),
+            'presence_color': self.has_data(request, 'presence_color'),
+            'absence_color': self.has_data(request, 'absence_color'),
             'date': self.has_data(request, 'date'),
             'year': self.has_data(request, 'year'),
             'position_updates': self.has_data(request, 'position_updates'),

@@ -136,6 +136,8 @@ class Cell(models.Model):
     absence = models.CharField(max_length=20, blank=True, null=True)
     short = models.CharField(max_length=100, blank=True, null=True)
     color = models.CharField(max_length=20, blank=True, null=True)
+    presence_color = models.CharField(max_length=20, blank=True, null=True)
+    absence_color = models.CharField(max_length=20, blank=True, null=True)
     has_content = models.BooleanField(default=False)
     has_call = models.BooleanField(default=False)
 
