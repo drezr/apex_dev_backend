@@ -289,7 +289,7 @@ class Part(models.Model):
 
     def __str__(self):
         return '[#{0}] {1} [{2}] [{3}]'.format(
-            self.id, self.team.name, self.date, self.work.description)
+            self.id, self.team.name, self.date, self.shift.work)
 
 
 class Project(models.Model):

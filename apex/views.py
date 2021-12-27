@@ -1686,6 +1686,21 @@ class WorksView(APIView, WorksHelpers, Helpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'part_override_short':
+            links = PartProfileLink.objects.filter(
+                part=element, is_participant=True)
+
+            for link in links:
+                cell, c = Cell.objects.get_or_create(
+                    profile=link.profile, date=element.date)
+
+                cell.short = data['value']
+                cell.save()
+
+
+            return Response(status=status.HTTP_200_OK)
+
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
