@@ -1498,6 +1498,14 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
                 element.delete()
 
+
+            if data['element_type'] == 'file':
+                path = '{0}/{1}/'.format(default_storage.location, element.uid)
+                shutil.rmtree(path)
+
+                element.delete()
+
+
             else:
                 column = parent.columns.get(name=data['value']['column_name'])
                 row = column.rows.get(pk=data['element_id'])
@@ -1701,8 +1709,55 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 cell.short = data['value']
                 cell.save()
 
-
             return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'add_file':
+            file = request.data['file']
+            name = request.data['name']
+            ext = request.data['ext']
+            mini = None if 'mini' not in request.data else request.data['mini']
+
+            directory = uuid.uuid4().hex
+            file.filename = '{0}.{1}'.format(name, ext)
+
+            if not ext:
+                file.filename = '{0}'.format(name)
+
+            path = '{0}/{1}'.format(directory, file.filename)
+
+            default_storage.save(path, file)
+
+            if mini:
+                mini.filename = 'mini.{1}'.format(name, ext)
+                path = '{0}/{1}'.format(directory, mini.filename)
+                default_storage.save(path, mini)
+
+            create_kwargs = {
+                'kind': request.data['kind'],
+                'name': request.data['name'],
+                'extension': request.data['ext'],
+                'uid': directory,
+            }
+
+            if 'width' in request.data:
+                create_kwargs['width'] = request.data['width']
+                create_kwargs['height'] = request.data['height']
+
+            new_file = File.objects.create(**create_kwargs)
+            file_serialized = FileSerializer(new_file).data
+
+            work_file_link = WorkFileLink.objects.create(
+                work=hierarchy['parent'],
+                file=new_file,
+                position=len(hierarchy['parent'].files.filter(
+                    kind=request.data['kind'])),
+            )
+
+            file_serialized['link'] = WorkFileLinkSerializer(
+                work_file_link).data
+
+            return Response({'file': file_serialized})
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -1951,10 +2006,12 @@ class ElementView(APIView, ElementHelpers, Helpers):
                     'kind': request.data['kind'],
                     'name': request.data['name'],
                     'extension': request.data['ext'],
-                    'width': request.data['width'],
-                    'height': request.data['height'],
                     'uid': directory,
                 }
+
+                if 'width' in request.data:
+                    create_kwargs['width'] = request.data['width']
+                    create_kwargs['height'] = request.data['height']
 
 
             element = hierarchy['element_model'].objects.create(

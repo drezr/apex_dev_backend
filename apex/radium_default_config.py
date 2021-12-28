@@ -42,7 +42,7 @@ radium_default_config = [
     {
         'name': 'files',
         'position': 4,
-        'width': 200,
+        'width': 260,
         'textsize': 13,
         'visible': True,
         'multiple': True,
