@@ -1422,8 +1422,10 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
 
             for file in element.files.all():
+                path = '{0}/{1}/'.format(default_storage.location, file.uid)
+                shutil.rmtree(path)
+                
                 file.delete()
-                # TODO file related suff
 
             element.delete()
 
