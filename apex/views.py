@@ -4,6 +4,7 @@ import uuid
 from django.http import JsonResponse
 from django.db.models import Q
 from django.core.files.storage import default_storage
+from django.contrib.auth.hashers import check_password
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -144,6 +145,40 @@ class HomeView(APIView):
 
 
         return Response(result)
+
+
+    def post(self, request):
+        if request.data['action'] == 'change_password':
+            user_id = request.data['user_id']
+
+            if user_id == request.user.id:
+                current_password = request.data['current_password']
+                new_password = request.data['new_password']
+                new_password2 = request.data['new_password2']
+
+                checked = check_password(
+                    current_password, request.user.password)
+                is_same = new_password == new_password2
+
+                if checked:
+                    if is_same:
+                        if len(new_password) >= 8:
+                            request.user.set_password(new_password)
+                            request.user.save()
+
+                            return Response({'result': 'success'})
+
+                        else:
+                            return Response({'result': 'length'})
+
+                    else:
+                        return Response({'result': 'not_same'})
+
+                else:
+                    return Response({'result': 'wrong'})
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileView(APIView):
@@ -541,6 +576,9 @@ class TemplatesView(APIView, GenericHelpers):
             hierarchy['app'].save()
 
             return Response(status=status.HTTP_200_OK)
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectView(APIView):
