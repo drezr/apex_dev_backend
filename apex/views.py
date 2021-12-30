@@ -175,7 +175,7 @@ class HomeView(APIView):
                         return Response({'result': 'not_same'})
 
                 else:
-                    return Response({'result': 'wrong'})
+                    return Response({'result': 'bad'})
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
