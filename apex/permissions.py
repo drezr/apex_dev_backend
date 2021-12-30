@@ -115,7 +115,11 @@ class BoardHelpers(CommonHelpers):
         _data = {'team': team, 'app': app}
 
         if data['action'] == 'update_element_teammates':
-            _data['profile'] = team.profiles.get(pk=data['profile_id'])
+            _data['profile'] = team.profiles.filter(pk=data['profile_id']).first()
+
+            if not _data['profile']:
+                _data['profile'] = Profile.objects.get(pk=data['profile_id'])
+
             _data['parent'] = team.day_set.get(pk=data['parent_id'])
 
             element_set = getattr(_data['parent'], data['element_type'] + 's')
