@@ -132,7 +132,8 @@ class HomeView(APIView):
 
             for team in user_teams:
                 if len(circle.team_set.filter(pk=team.id)):
-                    user_circles.append(circle)
+                    if circle not in user_circles:
+                        user_circles.append(circle)
 
 
         result = {
@@ -1539,7 +1540,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 element.delete()
 
 
-            if data['element_type'] == 'file':
+            elif data['element_type'] == 'file':
                 path = '{0}/{1}/'.format(default_storage.location, element.uid)
                 shutil.rmtree(path)
 
@@ -1634,7 +1635,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
             for team_id in data['value']:
                 part = Part.objects.create(
                     date=element.date,
-                    team=team,
+                    team_id=team_id,
                     shift=element,
                 )
 
@@ -1647,7 +1648,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 parts.append(part_serialized)
 
                 day, c = Day.objects.get_or_create(
-                    team=team, date=element.date)
+                    team_id=team_id, date=element.date)
 
                 day.has_content = True
                 day.save()
@@ -1863,7 +1864,8 @@ class AppsView(APIView):
 
             for team in user_teams:
                 if len(circle.team_set.filter(pk=team.id)):
-                    user_circles.append(circle)
+                    if circle not in user_circles:
+                        user_circles.append(circle)
 
 
         result = {
