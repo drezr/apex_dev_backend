@@ -5,7 +5,7 @@
         "kind": "presence",
         "color": "green",
         "position": 0,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "PN",
@@ -13,7 +13,7 @@
         "kind": "presence",
         "color": "indigo",
         "position": 1,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "CN",
@@ -21,7 +21,7 @@
         "kind": "normal_leave",
         "color": "red",
         "position": 2,
-        "visible": true,
+        "visible": True,
     },
     {
         "code": "JC",
@@ -29,7 +29,7 @@
         "kind": "credit_day",
         "color": "pink",
         "position": 3,
-        "visible": true,
+        "visible": True,
     },
     {
         "code": "CV",
@@ -37,7 +37,7 @@
         "kind": "variable_leave",
         "color": "yellow",
         "position": 4,
-        "visible": true,
+        "visible": True,
     },
     {
         "code": "CH",
@@ -45,7 +45,7 @@
         "kind": "saturday",
         "color": "light-blue",
         "position": 5,
-        "visible": true,
+        "visible": True,
     },
     {
         "code": "RH",
@@ -53,7 +53,7 @@
         "kind": "sunday",
         "color": "orange",
         "position": 6,
-        "visible": true,
+        "visible": True,
     },
     {
         "code": "RR",
@@ -61,7 +61,7 @@
         "kind": "holiday",
         "color": "deep-orange",
         "position": 7,
-        "visible": true,
+        "visible": True,
     },
     {
         "code": "HS",
@@ -69,7 +69,7 @@
         "kind": "hour",
         "color": "teal",
         "position": 8,
-        "visible": true,
+        "visible": True,
     },
     {
         "code": "MM",
@@ -77,7 +77,7 @@
         "kind": "counter_sick",
         "color": "red",
         "position": 9,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "CC",
@@ -85,7 +85,7 @@
         "kind": "counter_special",
         "color": "red",
         "position": 10,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "AI",
@@ -93,7 +93,7 @@
         "kind": "counter_unjustified",
         "color": "red",
         "position": 11,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "AG",
@@ -101,7 +101,7 @@
         "kind": "counter_strike",
         "color": "red",
         "position": 12,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "BT",
@@ -109,7 +109,7 @@
         "kind": "counter_wounded",
         "color": "red",
         "position": 13,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "OZ",
@@ -117,14 +117,14 @@
         "kind": "recovery",
         "color": "red",
         "position": 14,
-        "visible": false,
+        "visible": False,
     },
     {
         "code": "AP",
-        "desc": "",
+        "desc": "Temps partiel",
         "kind": "ignore",
         "color": "blue-grey",
         "position": 15,
-        "visible": false,
+        "visible": False,
     }
 ]

@@ -4,6 +4,104 @@ from .models import *
 from .serializers import *
 
 
+class Helpers:
+
+    def day_has_child(self, team, day):
+        has_child = False
+
+        for child_type in ['task', 'note', 'file']:
+            child_set = getattr(day, child_type + 's')
+
+            if len(child_set.all()) > 0:
+                has_child = True
+                break
+
+        if not has_child:
+            parts = Part.objects.filter(team=team, date=day.date)
+
+            if len(parts) > 0:
+                has_child = True
+
+        return has_child
+
+
+    def cell_has_child(self, profile, cell):
+        has_child = False
+
+        parts = Part.objects.filter(
+            profiles__in=[profile.id],
+            date=cell.date,
+        )
+
+        for part in parts:
+            for _profile in part.profiles.all():
+                if _profile == profile:
+                    _link = PartProfileLink.objects.get(
+                        part=part,
+                        profile=profile,
+                    )
+
+                    if _link.is_participant:
+                        has_child = True
+                        break
+
+        for child_type in ['task', 'note', 'file']:
+            child_set = getattr(cell, child_type + 's')
+
+            if len(child_set.all()) > 0:
+                has_child = True
+                break
+
+        return has_child
+
+
+    def cell_child_count(self, profile, cell):
+        count = 0
+
+        parts = Part.objects.filter(
+            profiles__in=[profile.id],
+            date=cell.date,
+        )
+
+        for part in parts:
+            for _profile in part.profiles.all():
+                if _profile == profile:
+                    _link = PartProfileLink.objects.get(
+                        part=part,
+                        profile=profile,
+                    )
+
+                    if _link.is_participant:
+                        count +=1
+
+        for child_type in ['task', 'note', 'file']:
+            child_set = getattr(cell, child_type + 's')
+            child_set_count = len(child_set.all())
+
+            if child_set_count > 0:
+                count += child_set_count
+
+        return count
+
+
+    def set_day_cells_has_content(self, team, profiles, date):
+        day, d = Day.objects.get_or_create(team=team, date=date)
+        has_child = self.day_has_child(team, day)
+
+        day.has_content = has_child
+        day.save()
+
+        for profile in profiles:
+            cell, c = Cell.objects.get_or_create(
+                profile=profile, date=date)
+
+            has_child = self.cell_has_child(
+                cell.profile, cell)
+
+            cell.has_content = has_child
+            cell.save()
+
+
 class IsSuperUser(permissions.BasePermission):
 
     def has_permission(self, request, view):
