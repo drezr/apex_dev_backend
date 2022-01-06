@@ -1,3 +1,7 @@
+import shutil
+
+from django.core.files.storage import default_storage
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -198,26 +202,39 @@ class BoardView(APIView, Helpers, BoardHelpers):
             for child_type in ['task', 'note', 'file']:
                 child_set = getattr(folder, child_type + 's')
 
-                if child_type == 'file':
-                    # DO FILE STUFF
-                    pass
-
                 for child in child_set.all():
-                    if child_type == 'task':
+                    if child_type == 'file':
+                        path = '{0}/{1}/'.format(
+                            default_storage.location, child.uid)
+                        shutil.rmtree(path)
+
+                    elif child_type == 'task':
                         for grandchild_type in ['subtask', 'note', 'file', 'input']:
                             grandchild_set = getattr(
                                 child, grandchild_type + 's')
 
                             for grandchild in grandchild_set.all():
                                 if grandchild_type == 'file':
-                                    # DO FILE STUFF
-                                    pass
+                                    path = '{0}/{1}/'.format(
+                                        default_storage.location, grandchild.uid)
+                                    shutil.rmtree(path)
 
                                 grandchild.delete()
 
                     child.delete()
 
             folder.delete()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'override_short':
+            for profile_id in data['profile_id']:    
+                cell, c = Cell.objects.get_or_create(
+                    profile_id=profile_id, date=data['date'])
+
+                cell.short = data['value']
+                cell.save()
 
             return Response(status=status.HTTP_200_OK)
 
