@@ -1,3 +1,7 @@
+import shutil
+
+from django.core.files.storage import default_storage
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -91,8 +95,9 @@ class ProjectsView(APIView, GenericHelpers):
                     
                     for child in child_set.all():
                         if child_type == 'file':
-                            # TODO : file stuff
-                            pass
+                            path = '{0}/{1}/'.format(
+                                default_storage.location, child.uid)
+                            shutil.rmtree(path)
 
                         child.delete()
 
