@@ -68,6 +68,7 @@ class CellView(APIView, CellHelpers):
             hierarchy['cell'].color = data['color']
             hierarchy['cell'].presence_color = data['presence_color']
             hierarchy['cell'].absence_color = data['absence_color']
+            hierarchy['cell'].short = data['short']
 
             hierarchy['cell'].save()
 
