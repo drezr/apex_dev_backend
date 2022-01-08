@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_URLCONF = 'backend.urls'
 WSGI_APPLICATION = 'backend.wsgi.application'
@@ -102,9 +103,8 @@ except ModuleNotFoundError:
     '''
     Define those variables in this file for developement only
     Make sure to use an external setting file for production
+    Variables below should be set in local_settings.py for production
     '''
-
-    # Variables below should be set in local_settings.py for production
 
     SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
     ALLOWED_HOSTS=['*']
