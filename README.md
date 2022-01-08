@@ -50,8 +50,8 @@ mkdir /project/directory/media
 ```
 sudo nano /project/directory/apex_dev_backend/backend/settings.py
 ```
-Change the MEDIA_ROOT variable to the media directory previously created (/project/directory/media)
-Instructions for production are inside the settings.py file
+Change the MEDIA_ROOT variable to the media directory previously created (/project/directory/media).
+Instructions for production are inside the settings.py file.
 
 
 ```
