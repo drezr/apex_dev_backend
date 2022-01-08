@@ -118,3 +118,11 @@ except ModuleNotFoundError:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'YOUR EMAIL HOST'
+    EMAIL_PORT = 'YOUR EMAIL PORT'
+    EMAIL_HOST_USER = 'YOUR.EMAIL@HOST.USER'
+    EMAIL_HOST_PASSWORD = 'YOUR EMAIL PASSWORD'
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
