@@ -44,6 +44,16 @@ pip install -r requirements.txt
 ```
 
 ```
+mkdir /project/directory/media
+```
+
+```
+sudo nano /project/directory/apex_dev_backend/backend/settings.py
+```
+Change the MEDIA_ROOT varialbe to the media directory previously created (/project/directory/media)
+
+
+```
 python manage.py makemigrations
 ```
 

@@ -88,7 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
 SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
 ALLOWED_HOSTS=['*']
 DEBUG = False
-MEDIA_ROOT = '/mnt/c/apexdev/media/'
+MEDIA_ROOT = '/your/media/path/'
 
 DATABASES = {
     'default': {
