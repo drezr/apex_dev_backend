@@ -49,13 +49,13 @@ mkdir /project/directory/media
 
 ```
 sudo nano /project/directory/apex_dev_backend/backend/settings.py
-```
-Change the MEDIA_ROOT variable to the media directory previously created (/project/directory/media).
 
+Change the MEDIA_ROOT variable to the media directory previously created (/project/directory/media).
 Change the EMAIL_* variables to your email service provider (not mandatory for developpement usage).
 
-
 Instructions for production are inside the settings.py file.
+```
+
 
 
 ```
