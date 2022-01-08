@@ -82,24 +82,38 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+try:
+    '''
+    Use an external local_settings.py for production
+    It will be used id the file exists
+    '''
 
-# Variables below should be overrided in local_settings.py for production
+    # Define the relative directory where your local_settings.py is
+    LOCAL_SETTINGS_PATH = '../'
 
-SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
-ALLOWED_HOSTS=['*']
-DEBUG = False
-MEDIA_ROOT = '/your/media/path/'
+    import sys
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    sys.path.append(os.path.abspath(LOCAL_SETTINGS_PATH))
+
+    from local_settings import *
+
+
+except ModuleNotFoundError:
+    '''
+    Define those variables in this file for developement only
+    Make sure to use an external setting file for production
+    '''
+
+    # Variables below should be set in local_settings.py for production
+
+    SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
+    ALLOWED_HOSTS=['*']
+    DEBUG = False
+    MEDIA_ROOT = '/your/media/path/'
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
-
-
-import sys
-
-sys.path.append(os.path.abspath('../'))
-
-from local_settings import *
