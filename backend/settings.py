@@ -85,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 try:
     '''
     Use an external local_settings.py for production
-    It will be used id the file exists
+    It will be used only if the file exists
     '''
 
     # Define the relative directory where your local_settings.py is
