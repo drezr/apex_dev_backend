@@ -85,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Variables below should be overrided in local_settings.py
 
-SECRET_KEY = 'xxxxxxxxxxxxxxxxxxx'
+SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
 ALLOWED_HOSTS=['*']
 DEBUG = False
 MEDIA_ROOT = '/mnt/c/apexdev/media/'
