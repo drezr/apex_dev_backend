@@ -171,6 +171,7 @@ class AppSerializer(serializers.ModelSerializer):
     #files = serializers.SerializerMethodField()
     #notes = serializers.SerializerMethodField()
     contacts = serializers.SerializerMethodField()
+    message_count = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
 
     class Meta:
@@ -199,6 +200,10 @@ class AppSerializer(serializers.ModelSerializer):
         if 'contacts' in self.context:
             return ProfileSerializer(
                 app.contacts.all(), many=True, context=self.context).data
+
+    def get_message_count(self, app):
+        if 'message_count' in self.context:
+            return Message.objects.filter(app=app).count()
 
     def get_type(self, app):
         return 'app'

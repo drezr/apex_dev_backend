@@ -21,6 +21,7 @@ class TeamView(APIView, GenericHelpers):
                 'link': 'detail',
                 'profiles': 'detail',
                 'apps': 'detail',
+                'message_count': True,
             }).data,
         }
 
