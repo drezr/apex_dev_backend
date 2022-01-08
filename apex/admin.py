@@ -69,7 +69,7 @@ class LogAdmin(admin.ModelAdmin):
 
 
 class MessageAdmin(admin.ModelAdmin):
-    raw_id_fields = ('profile', 'app', )
+    raw_id_fields = ('profile', 'app', 'author', 'work', )
 
 
 admin.site.register(Profile, ProfileAdmin)

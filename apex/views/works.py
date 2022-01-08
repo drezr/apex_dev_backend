@@ -50,6 +50,7 @@ class WorksView(APIView, WorksHelpers, Helpers):
             }).data,
             'app': AppSerializer(app).data,
             'config': RadiumConfigSerializer(config).data,
+            'message_count': Message.objects.filter(app=app).count(),
             'works': WorkSerializer(works, many=True, context={
                 'link': 'detail',
                 'parent_id': app.id,
@@ -170,29 +171,37 @@ class WorksView(APIView, WorksHelpers, Helpers):
 
 
         elif data['action'] == 'delete_work':
-            for shift in element.shift_set.all():
-                for part in shift.part_set.all():
-                    date = part.date
-                    profiles = [p for p in part.profiles.all()]
-                    part_team = part.team
+            link = AppWorkLink.objects.get(app=app, work=element)
 
-                    part.delete()
+            if link.is_original:
+                for shift in element.shift_set.all():
+                    for part in shift.part_set.all():
+                        date = part.date
+                        profiles = [p for p in part.profiles.all()]
+                        part_team = part.team
 
-                    self.set_day_cells_has_content(part_team, profiles, date)
+                        part.delete()
 
-
-
-            for column in element.columns.all():
-                column.delete()
+                        self.set_day_cells_has_content(part_team, profiles, date)
 
 
-            for file in element.files.all():
-                path = '{0}/{1}/'.format(default_storage.location, file.uid)
-                shutil.rmtree(path)
-                
-                file.delete()
 
-            element.delete()
+                for column in element.columns.all():
+                    column.delete()
+
+
+                for file in element.files.all():
+                    path = '{0}/{1}/'.format(default_storage.location, file.uid)
+                    shutil.rmtree(path)
+                    
+                    file.delete()
+
+                element.delete()
+
+
+            else:
+                link.delete()
+
 
             return Response(status=status.HTTP_200_OK)
 
@@ -525,6 +534,43 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 work_file_link).data
 
             return Response({'file': file_serialized})
+
+
+        elif data['action'] == 'link_radiums':
+            for app_id in data['value']:
+                app = App.objects.get(pk=app_id)
+                position = len(app.work_set.filter(date=element.date))
+
+                app_work_link, c = AppWorkLink.objects.get_or_create(
+                    app=app,
+                    work=element,
+                    position=position,
+                    is_original=False,
+                )
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'send_message':
+            for app_id in request.data['app_ids']:
+                app = App.objects.get(pk=app_id)
+
+                message = Message.objects.create(
+                    priority=request.data['priority'],
+                    message=data['value'],
+                    author=request.user.profile,
+                    app=app,
+                    work=element,
+                )
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'acquit_message':
+            message = Message.objects.get(pk=data['element_id'])
+            message.delete()
+
+            return Response(status=status.HTTP_200_OK)
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
