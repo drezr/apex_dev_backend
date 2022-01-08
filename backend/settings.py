@@ -83,7 +83,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-# Variables below should be overrided in local_settings.py
+# Variables below should be overrided in local_settings.py for production
 
 SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
 ALLOWED_HOSTS=['*']
