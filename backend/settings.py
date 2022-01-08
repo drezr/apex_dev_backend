@@ -104,6 +104,7 @@ except ModuleNotFoundError:
     Define those variables in this file for developement only
     Make sure to use an external setting file for production
     Variables below should be set in local_settings.py for production
+    Copy/paste them in local_settings.py to override them
     '''
 
     SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
