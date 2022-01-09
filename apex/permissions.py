@@ -267,7 +267,8 @@ class WorksHelpers(CommonHelpers):
 
         if data['element_type'] and data['element_id']:
             if data['element_type'] == 'work':
-                element = app.work_set.get(pk=data['element_id'])
+                if data['action'] != 'copy_work':
+                    element = app.work_set.get(pk=data['element_id'])
 
             elif data['element_type'] == 'shift':
                 child_set = getattr(parent, data['element_type'] + '_set')
