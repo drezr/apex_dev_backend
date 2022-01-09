@@ -595,4 +595,70 @@ class WorksView(APIView, WorksHelpers, Helpers):
             })
 
 
+        elif data['action'] == 'copy_work':
+            work_data = request.data['work']
+            new_date = data['date']
+
+            work = Work.objects.create(
+                color=work_data['color'],
+                date=data['date'],
+            )
+
+            works_in_month = app.work_set.filter(
+                date=data['date'])
+            position = len(works_in_month)
+
+            link = AppWorkLink.objects.create(
+                app=app,
+                work=work,
+                position=position,
+                is_original=True,
+            )
+
+            keys_delete = ['id', 'created_date', 'updated_date',
+                           'work', 'work_columns', 'work_column',
+                           'is_edited', 'rows', ]
+
+            for key, column in work_data['columns'].items():
+                if 'id' in column:
+                    rows = column['rows']
+
+                    for key_delete in keys_delete:
+                        if key_delete in column:
+                            del column[key_delete]
+
+                    work_column = WorkColumn.objects.create(
+                        work=work, **column)
+
+                    for row in rows:
+                        for key_delete in keys_delete:
+                            if key_delete in row:
+                                del row[key_delete]
+
+                        WorkRow.objects.create(work_column=work_column, **row)
+
+
+            # TBD if its usefull to copy shifts aswell
+            for shift in work_data['shifts']:
+                Shift.objects.create(
+                    date=shift['date'], 
+                    shift=shift['shift'],
+                    position=shift['position'],
+                    work=work,
+                )
+
+
+            work_serialized = WorkSerializer(work, context={
+                'files': 'detail',
+                'shifts': 'detail',
+                'apps': 'id',
+            }).data
+
+            work_serialized['link'] = AppWorkLinkSerializer(link).data
+
+            return Response({
+                'work': work_serialized,
+            })
+
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
