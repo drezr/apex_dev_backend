@@ -574,4 +574,25 @@ class WorksView(APIView, WorksHelpers, Helpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'move_work':
+            link = AppWorkLink.objects.get(app=app, work=element)
+            link.position = app.work_set.filter(date=data['date']).count()
+            link.save()
+
+            element.date = data['date']
+            element.save()
+
+            work_serialized = WorkSerializer(element, context={
+                'files': 'detail',
+                'shifts': 'detail',
+                'apps': 'id',
+            }).data
+
+            work_serialized['link'] = AppWorkLinkSerializer(link).data
+
+            return Response({
+                'work': work_serialized,
+            })
+
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
