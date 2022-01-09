@@ -8,7 +8,8 @@ from apex.views import *
 urlpatterns = [
     path('admin', admin.site.urls),
     path('api-token-auth', obtain_auth_token),
-
+    path('reset_password', ResetPasswordView.as_view()),
+    
     path('profile', ProfileView.as_view()),
     path('all_profiles', AllProfilesView.as_view()),
     path('home', HomeView.as_view()),
@@ -27,7 +28,7 @@ urlpatterns = [
     path('quota', QuotaView.as_view()),
     path('quotalight', QuotaLightView.as_view()),
     path('works', WorksView.as_view()),
-    
+
     path('shifts', ShiftsView.as_view()),
     path('day', DayView.as_view()),
     path('cell', CellView.as_view()),

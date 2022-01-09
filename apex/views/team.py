@@ -1,6 +1,7 @@
 import uuid
 
 from django.db.models import Q
+from django.core.mail import send_mail
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,6 +10,8 @@ from rest_framework.response import Response
 from ..models import *
 from ..serializers import *
 from ..permissions import *
+
+from ..misc.email_content import *
 
 
 class TeamView(APIView, GenericHelpers):
@@ -64,9 +67,10 @@ class TeamView(APIView, GenericHelpers):
         if data['action'] == 'create_user':
             p = data['value']
             new_password = uuid.uuid4().hex[:8]
+            username = p['username'].lower()
 
             user = User(
-                username=p['username'].lower(),
+                username=username,
                 password=new_password,
             )
             user.save()
@@ -90,7 +94,19 @@ class TeamView(APIView, GenericHelpers):
                 team_profile_link).data
 
             if p['send_password']:
-                pass
+                title = email_send_password_title[p['lang']]
+                content = email_send_password_content[p['lang']] \
+                            .replace('###name###', p['name']) \
+                            .replace('###login###', username) \
+                            .replace('###new_password###', new_password)
+
+                send_mail(
+                    title,
+                    content,
+                    'service@apex.wf',
+                    [username],
+                    fail_silently=False
+                )
 
 
             return Response({'profile': profile_serialized})

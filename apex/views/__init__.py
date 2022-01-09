@@ -19,6 +19,7 @@ from .project import ProjectView
 from .projects import ProjectsView
 from .quota import QuotaView
 from .quota_light import QuotaLightView
+from .reset_password import ResetPasswordView
 from .shifts import ShiftsView
 from .team import TeamView
 from .templates import TemplatesView
