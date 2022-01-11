@@ -493,6 +493,15 @@ class ElementHelpers(CommonHelpers):
                     app, data['new_parent_type'], data['new_parent_id'])
 
 
+        if data['action'] == 'copy':
+            if data['new_parent_type'] == 'day':
+                date = data['new_parent_date']
+                new_parent, c = Day.objects.get_or_create(team=team, date=date)
+
+            else:
+                new_parent = self.get_element_from_set(
+                    app, data['new_parent_type'], data['new_parent_id'])
+
         return {
             'team': team,
             'app': app,
@@ -537,7 +546,7 @@ class ElementHelpers(CommonHelpers):
 
         # Check access
 
-        if data['action'] in ['create', 'delete', 'position', 'move']:
+        if data['action'] in ['create', 'delete', 'position', 'move', 'copy']:
             return is_editor
 
         if data['action'] == 'update':

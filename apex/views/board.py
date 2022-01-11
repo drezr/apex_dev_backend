@@ -106,7 +106,7 @@ class BoardView(APIView, Helpers, BoardHelpers):
                 child_count = self.cell_child_count(
                     hierarchy['profile'], cell)
 
-                link.position = child_count - 1
+                link.position = child_count
                 link.is_original = False
                 link.save()
 

@@ -33,7 +33,7 @@ class Circle(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
+        return '[Circle #{0}] {1}'.format(self.id, self.name)
 
 
 class Team(models.Model):
@@ -51,7 +51,7 @@ class Team(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
+        return '[Team #{0}] {1}'.format(self.id, self.name)
 
 
 class App(models.Model):
@@ -96,7 +96,7 @@ class App(models.Model):
         elif self.profile:
             name = 'Profile : ' + self.profile.name
 
-        return '[#{0}] {1} ({2})'.format(self.id, self.app, name)
+        return '[App #{0}] {1} ({2})'.format(self.id, self.app, name)
 
 
 class Day(models.Model):
@@ -125,7 +125,7 @@ class Day(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} ({2})'.format(
+        return '[Day #{0}] {1} ({2})'.format(
             self.id, self.date, self.team.name)
 
 
@@ -167,7 +167,7 @@ class Cell(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} ({2})'.format(
+        return '[Cell #{0}] {1} ({2})'.format(
             self.id, self.date, self.profile.name)
 
 
@@ -199,7 +199,7 @@ class Work(models.Model):
                 desc = column.value[:15]
                 break
 
-        return '[#{0}] {1}'.format(self.id, desc)
+        return '[Work #{0}] {1}'.format(self.id, desc)
 
 
 class WorkColumn(models.Model):
@@ -217,7 +217,7 @@ class WorkColumn(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} : {2} ({3})'.format(
+        return '[WorkColumn #{0}] {1} : {2} ({3})'.format(
             self.id, self.name, self.value, self.work)
 
 
@@ -250,7 +250,7 @@ class WorkRow(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] from ({1})'.format(self.id, self.work_column)
+        return '[WorkRow #{0}] from ({1})'.format(self.id, self.work_column)
 
 
 class Shift(models.Model):
@@ -265,7 +265,7 @@ class Shift(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} | {2}'.format(self.id, self.date, self.shift)
+        return '[Shift #{0}] {1} | {2}'.format(self.id, self.date, self.shift)
 
 
 class Part(models.Model):
@@ -290,7 +290,7 @@ class Part(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} [{2}] [{3}]'.format(
+        return '[Part #{0}] {1} [{2}] [{3}]'.format(
             self.id, self.team.name, self.date, self.shift.work)
 
 
@@ -316,7 +316,7 @@ class Project(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
+        return '[Project #{0}] {1}'.format(self.id, self.name)
 
 
 class Folder(models.Model):
@@ -349,7 +349,7 @@ class Folder(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
+        return '[Folder #{0}] {1}'.format(self.id, self.name)
 
 
 class Task(models.Model):
@@ -387,7 +387,7 @@ class Task(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
+        return '[Task #{0}] {1}'.format(self.id, self.name)
 
 
 class Subtask(models.Model):
@@ -399,7 +399,7 @@ class Subtask(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
+        return '[Subtask #{0}] {1}'.format(self.id, self.name)
 
 
 class Note(models.Model):
@@ -414,7 +414,7 @@ class Note(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.value)
+        return '[Note #{0}] {1}'.format(self.id, self.value)
 
 
 class File(models.Model):
@@ -430,7 +430,7 @@ class File(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}.{2}'.format(self.id, self.name, self.extension)
+        return '[File #{0}] {1}.{2}'.format(self.id, self.name, self.extension)
 
 
 class Input(models.Model):
@@ -444,7 +444,7 @@ class Input(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.key, self.value)
+        return '[Input #{0}] {1} : {2}'.format(self.id, self.key, self.value)
 
 
 class Link(models.Model):
@@ -456,7 +456,7 @@ class Link(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.name, self.url)
+        return '[Link #{0}] {1} : {2}'.format(self.id, self.name, self.url)
 
 
 class Call(models.Model):
@@ -483,7 +483,7 @@ class Call(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.name)
+        return '[Call #{0}] {1}'.format(self.id, self.name)
 
 
 class Holiday(models.Model):
@@ -494,7 +494,7 @@ class Holiday(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.date)
+        return '[Holiday #{0}] {1}'.format(self.id, self.date)
 
 
 class Log(models.Model):
@@ -512,7 +512,7 @@ class Log(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.field, self.profile.name)
+        return '[Log #{0}] {1} : {2}'.format(self.id, self.field, self.profile.name)
 
 
 class Message(models.Model):
@@ -530,7 +530,7 @@ class Message(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.message)
+        return '[Message #{0}] {1}'.format(self.id, self.message)
 
 
 class Quota(models.Model):
@@ -545,7 +545,7 @@ class Quota(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] [{1}] {2} : {3}'.format(
+        return '[Quota #{0}] [{1}] {2} : {3}'.format(
             self.id,
             self.profile,
             self.code if not self.code else self.code.upper(),
@@ -563,7 +563,7 @@ class LeaveConfig(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.app)
+        return '[LeaveConfig #{0}] {1}'.format(self.id, self.app)
 
 
 class LeaveType(models.Model):
@@ -582,7 +582,8 @@ class LeaveType(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.config, self.code)
+        return '[LeaveType #{0}] {1} : {2}'.format(
+            self.id, self.config, self.code)
 
 
 class RadiumConfig(models.Model):
@@ -595,7 +596,7 @@ class RadiumConfig(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1}'.format(self.id, self.app)
+        return '[RadiumConfig #{0}] {1}'.format(self.id, self.app)
 
 
 class RadiumConfigColumn(models.Model):
@@ -616,7 +617,8 @@ class RadiumConfigColumn(models.Model):
     updated_date = models.DateField(auto_now=True)
 
     def __str__(self):
-        return '[#{0}] {1} : {2}'.format(self.id, self.config, self.name)
+        return '[RadiumConfigColumn #{0}] {1} : {2}'.format(
+            self.id, self.config, self.name)
 
 
 #######################################################

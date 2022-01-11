@@ -416,8 +416,8 @@ class ElementView(APIView, ElementHelpers, Helpers):
                                 'teammates': 'detail',
                             }).data
 
-                        day_serialized['link'] = \
-                            hierarchy['new_link_serializer'](new_link).data
+                        # day_serialized['link'] = \
+                        #     hierarchy['new_link_serializer'](new_link).data
 
 
                         for cell_link in cell_links:
@@ -468,5 +468,123 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
 
                 return Response(status=status.HTTP_200_OK)
+
+
+        elif data['action'] == 'copy':
+            original = hierarchy['element_model'].objects.get(
+                pk=data['element_id'])
+
+            new_element = original
+            new_element.pk = None
+            new_element.save()
+
+            original = hierarchy['element_model'].objects.get(
+                pk=data['element_id'])
+
+
+            if data['element_type'] == 'task':
+                for subtask in original.subtasks.all():
+                    new_subtask = Subtask.objects.create(
+                        name=subtask.name, status=subtask.status)
+                    link = TaskSubtaskLink.objects.get(
+                        task=original, subtask=subtask)
+                    TaskSubtaskLink.objects.create(
+                        task=new_element, subtask=new_subtask, position=link.position)
+
+                for note in original.notes.all():
+                    new_note = Note.objects.create(
+                        value=note.value, profile=note.profile)
+                    link = TaskNoteLink.objects.get(
+                        task=original, note=note)
+                    TaskNoteLink.objects.create(
+                        task=new_element, note=new_note, position=link.position)
+
+                for _input in original.inputs.all():
+                    new_input = Input.objects.create(
+                        kind=_input.kind, key=_input.key,
+                        value=_input.value, heading=_input.heading)
+                    link = TaskInputLink.objects.get(
+                        task=original, input=_input)
+                    TaskInputLink.objects.create(
+                        task=new_element, input=new_input, position=link.position)
+
+
+            position = 0
+
+            position += hierarchy['new_parent'].tasks.all().count()
+            position += hierarchy['new_parent'].notes.all().count()
+            position += hierarchy['new_parent'].files.all().count()
+
+            if data['new_parent_type'] == 'day':
+                parts = Part.objects.filter(
+                team=hierarchy['team'], date=hierarchy['new_parent'].date)
+
+                position += len(parts)
+
+            link_kwargs = dict()
+            link_kwargs[data['new_parent_type']] = hierarchy['new_parent']
+            link_kwargs[data['element_type']] = new_element
+            link_kwargs['position'] = position
+
+            link = hierarchy['new_link_model'].objects.create(**link_kwargs)
+
+            element_serialized = hierarchy['element_serializer'](
+                new_element, context={
+                    'link': 'detail',
+                    'subtasks': 'detail',
+                    'inputs': 'detail',
+                    'notes': 'detail',
+                    'files': 'detail',
+                    'calls': 'detail',
+                    'links': 'detail',
+                    'teammates': 'detail',
+                }).data
+
+            element_serialized['link'] = hierarchy['new_link_serializer'](link).data
+
+            result = {
+                data['element_type']: element_serialized,
+            }
+
+            if data['new_parent_type'] == 'day':
+                hierarchy['new_parent'].has_content = True
+                hierarchy['new_parent'].save()
+
+                result['day'] = DaySerializer(
+                    hierarchy['new_parent'], context={
+                        'link': 'detail',
+                        'tasks': 'detail',
+                        'subtasks': 'detail',
+                        'inputs': 'detail',
+                        'notes': 'detail',
+                        'files': 'detail',
+                        'links': 'detail',
+                        'teammates': 'detail',
+                    }).data
+
+            if data['new_parent_type'] == 'cell':
+                #TO BE CHECKED
+                if data['element_type'] == 'call':
+                    hierarchy['new_parent'].has_call = True
+
+                else:
+                    hierarchy['new_parent'].has_content = True
+
+                hierarchy['new_parent'].save()
+
+                result['cell'] = CellSerializer(
+                    hierarchy['new_parent'], context={
+                        'link': 'detail',
+                        'tasks': 'detail',
+                        'subtasks': 'detail',
+                        'inputs': 'detail',
+                        'notes': 'detail',
+                        'files': 'detail',
+                        'links': 'detail',
+                        'teammates': 'detail',
+                    }).data
+
+            return Response(result)
+
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
