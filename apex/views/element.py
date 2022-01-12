@@ -467,6 +467,25 @@ class ElementView(APIView, ElementHelpers, Helpers):
                                 cell.save()
 
 
+                    if data['new_parent_type'] == 'project':
+                        element_serialized = TaskSerializer(
+                            hierarchy['element'], context={
+                                'link': 'detail',
+                                'subtasks': 'detail',
+                                'inputs': 'detail',
+                                'notes': 'detail',
+                                'files': 'detail',
+                                'calls': 'detail',
+                                'links': 'detail',
+                                'teammates': 'detail',
+                            }).data
+
+                        element_serialized['link'] = ProjectTaskLinkSerializer(
+                            new_link).data
+
+                        return Response({'task': element_serialized})
+
+
                 return Response(status=status.HTTP_200_OK)
 
 
@@ -512,8 +531,10 @@ class ElementView(APIView, ElementHelpers, Helpers):
             position = 0
 
             position += hierarchy['new_parent'].tasks.all().count()
-            position += hierarchy['new_parent'].notes.all().count()
-            position += hierarchy['new_parent'].files.all().count()
+
+            if data['new_parent_type'] != 'project':
+                position += hierarchy['new_parent'].notes.all().count()
+                position += hierarchy['new_parent'].files.all().count()
 
             if data['new_parent_type'] == 'day':
                 parts = Part.objects.filter(

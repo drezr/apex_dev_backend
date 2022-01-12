@@ -489,8 +489,9 @@ class ElementHelpers(CommonHelpers):
             else:
                 element = self.get_element_from_set(
                     parent, data['element_type'], data['element_id'])
+
                 new_parent = self.get_element_from_set(
-                    app, data['new_parent_type'], data['new_parent_id'])
+                        app, data['new_parent_type'], data['new_parent_id'])
 
 
         if data['action'] == 'copy':
