@@ -486,6 +486,12 @@ class ElementHelpers(CommonHelpers):
                 date = data['new_parent_date']
                 new_parent, c = Day.objects.get_or_create(team=team, date=date)
 
+            elif data['new_parent_type'] == 'cell':
+                element = self.get_element_from_set(
+                    parent, data['element_type'], data['element_id'])
+                date = data['new_parent_date']
+                new_parent = Cell.objects.get(pk=data['new_parent_id'])
+
             else:
                 element = self.get_element_from_set(
                     parent, data['element_type'], data['element_id'])
@@ -498,6 +504,9 @@ class ElementHelpers(CommonHelpers):
             if data['new_parent_type'] == 'day':
                 date = data['new_parent_date']
                 new_parent, c = Day.objects.get_or_create(team=team, date=date)
+
+            elif data['new_parent_type'] == 'cell':
+                new_parent = Cell.objects.get(pk=data['new_parent_id'])
 
             else:
                 new_parent = self.get_element_from_set(

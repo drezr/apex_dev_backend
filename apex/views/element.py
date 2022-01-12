@@ -486,6 +486,30 @@ class ElementView(APIView, ElementHelpers, Helpers):
                         return Response({'task': element_serialized})
 
 
+                    if data['element_type'] == 'call':
+                        call_count = hierarchy['parent'].calls.all().count()
+
+                        if call_count == 0:
+                            hierarchy['parent'].has_call = False
+                            hierarchy['parent'].save()
+
+                        hierarchy['new_parent'].has_call = True
+                        hierarchy['new_parent'].save()
+
+                        element_serialized = CallSerializer(
+                            hierarchy['element'], context={
+                                'link': 'detail',
+                                'files': 'detail',
+                                'links': 'detail',
+                                'teammates': 'detail',
+                            }).data
+
+                        element_serialized['link'] = CellCallLinkSerializer(
+                            new_link).data
+
+                        return Response({'call': element_serialized})
+
+
                 return Response(status=status.HTTP_200_OK)
 
 
