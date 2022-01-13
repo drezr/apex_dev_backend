@@ -198,6 +198,9 @@ class GenericHelpers(CommonHelpers):
 
 
     def get_permission(self, request, data, team):
+        if request.user.is_staff:
+            return True
+
         access = TeamProfileLink.objects.filter(
             team=team,
             profile=request.user.profile,
@@ -236,6 +239,9 @@ class BoardHelpers(CommonHelpers):
 
 
     def get_permission(self, request, data, team):
+        if request.user.is_staff:
+            return True
+
         access = TeamProfileLink.objects.filter(
             team=team,
             profile=request.user.profile,
@@ -290,6 +296,9 @@ class WorksHelpers(CommonHelpers):
         }
 
     def get_permission(self, request, data, team):
+        if request.user.is_staff:
+            return True
+
         access = TeamProfileLink.objects.filter(
             team=team,
             profile=request.user.profile,
@@ -315,6 +324,9 @@ class LeaveHelpers(CommonHelpers):
         return _data
 
     def get_permission(self, request, data, team):
+        if request.user.is_staff:
+            return True
+
         access = TeamProfileLink.objects.filter(
             team=team,
             profile=request.user.profile,
@@ -337,6 +349,9 @@ class CellHelpers(CommonHelpers):
         }
 
     def get_permission(self, request, data, team):
+        if request.user.is_staff:
+            return True
+
         access = TeamProfileLink.objects.filter(
             team=team,
             profile=request.user.profile,
@@ -535,6 +550,9 @@ class ElementHelpers(CommonHelpers):
 
 
     def get_permission(self, request, data, team):
+        if request.user.is_staff:
+            return True
+
         is_user = False
         is_editor = False
 

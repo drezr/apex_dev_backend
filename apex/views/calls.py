@@ -16,10 +16,21 @@ class CallsView(APIView):
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
-        profiles_id = [profile.id for profile in team.profiles.all()]
+        profiles = [profile for profile in team.profiles.all()]
+        visible_profiles = list()
+
+        access = TeamProfileLink.objects.get(
+            profile=request.user.profile, team=team)
+
+        for profile in profiles:
+            link = TeamProfileLink.objects.get(profile=profile, team=team)
+
+            if link.watcher_is_visible:
+                if access.watcher_can_see_cells or profile == request.user.profile:
+                    visible_profiles.append(profile)
 
         cells = Cell.objects.filter(
-            date__month=month, date__year=year, profile__in=profiles_id)
+            date__month=month, date__year=year, profile__in=visible_profiles)
 
         calls = list()
 

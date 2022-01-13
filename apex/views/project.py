@@ -35,4 +35,14 @@ class ProjectView(APIView):
                 'profiles': 'detail',
             }).data
 
+            if project.private:
+                link = TeamProfileLink.objects.get(
+                    profile=request.user.profile, team=team)
+
+                if not link.draft_can_see_private:
+                    overrided_result = {'project': {'private': True}}
+                    overrided_result['team'] = result['team']
+
+                    return Response(overrided_result)
+
         return Response(result)

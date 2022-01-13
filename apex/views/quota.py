@@ -45,7 +45,10 @@ class QuotaView(APIView):
         )
 
         result = {
-            'team': TeamSerializer(team).data,
+            'team': TeamSerializer(team, context={
+                'link': 'detail',
+                'profiles': 'detail',
+            }).data,
             'app': AppSerializer(app).data,
             'config': LeaveConfigSerializer(config).data,
             'profile': ProfileSerializer(profile).data,
