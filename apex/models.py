@@ -20,6 +20,7 @@ class Profile(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -31,6 +32,7 @@ class Circle(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Circle #{0}] {1}'.format(self.id, self.name)
@@ -49,6 +51,7 @@ class Team(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Team #{0}] {1}'.format(self.id, self.name)
@@ -86,6 +89,7 @@ class App(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         name = None
@@ -123,6 +127,7 @@ class Day(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Day #{0}] {1} ({2})'.format(
@@ -165,6 +170,7 @@ class Cell(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Cell #{0}] {1} ({2})'.format(
@@ -190,6 +196,7 @@ class Work(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         desc = ''
@@ -215,6 +222,7 @@ class WorkColumn(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[WorkColumn #{0}] {1} : {2} ({3})'.format(
@@ -248,6 +256,7 @@ class WorkRow(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[WorkRow #{0}] from ({1})'.format(self.id, self.work_column)
@@ -263,6 +272,7 @@ class Shift(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Shift #{0}] {1} | {2}'.format(self.id, self.date, self.shift)
@@ -288,6 +298,7 @@ class Part(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Part #{0}] {1} [{2}] [{3}]'.format(
@@ -314,6 +325,7 @@ class Project(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Project #{0}] {1}'.format(self.id, self.name)
@@ -347,6 +359,7 @@ class Folder(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Folder #{0}] {1}'.format(self.id, self.name)
@@ -385,6 +398,7 @@ class Task(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Task #{0}] {1}'.format(self.id, self.name)
@@ -397,6 +411,7 @@ class Subtask(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Subtask #{0}] {1}'.format(self.id, self.name)
@@ -412,6 +427,7 @@ class Note(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Note #{0}] {1}'.format(self.id, self.value)
@@ -428,6 +444,7 @@ class File(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[File #{0}] {1}.{2}'.format(self.id, self.name, self.extension)
@@ -442,6 +459,7 @@ class Input(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Input #{0}] {1} : {2}'.format(self.id, self.key, self.value)
@@ -454,6 +472,7 @@ class Link(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Link #{0}] {1} : {2}'.format(self.id, self.name, self.url)
@@ -481,6 +500,7 @@ class Call(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Call #{0}] {1}'.format(self.id, self.name)
@@ -492,6 +512,7 @@ class Holiday(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Holiday #{0}] {1}'.format(self.id, self.date)
@@ -510,6 +531,7 @@ class Log(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Log #{0}] {1} : {2}'.format(self.id, self.field, self.profile.name)
@@ -528,6 +550,7 @@ class Message(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Message #{0}] {1}'.format(self.id, self.message)
@@ -543,6 +566,7 @@ class Quota(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[Quota #{0}] [{1}] {2} : {3}'.format(
@@ -561,6 +585,7 @@ class LeaveConfig(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[LeaveConfig #{0}] {1}'.format(self.id, self.app)
@@ -580,6 +605,7 @@ class LeaveType(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[LeaveType #{0}] {1} : {2}'.format(
@@ -594,6 +620,7 @@ class RadiumConfig(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[RadiumConfig #{0}] {1}'.format(self.id, self.app)
@@ -615,6 +642,7 @@ class RadiumConfigColumn(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return '[RadiumConfigColumn #{0}] {1} : {2}'.format(
