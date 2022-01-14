@@ -2,3 +2,4 @@
 *__pycache__/
 *migrations/
 *.pyc
+db_dump.py
