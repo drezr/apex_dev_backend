@@ -16,23 +16,25 @@ class CalendarView(APIView):
         team = Team.objects.get(pk=team_id)
         app = App.objects.get(pk=app_id)
 
-        try:
-            user_access = TeamProfileLink.objects.get(
-                team_id=team_id,
-                profile=request.user.profile,
-            )
-        except TeamProfileLink.DoesNotExist:
-            user_access = None
 
-        if user_access:
-            if user_access.watcher_can_see_cells:
+        profiles_id = []
+
+        user_access = TeamProfileLink.objects.filter(
+            team_id=team_id,
+            profile=request.user.profile,
+        )
+
+        if user_access.count() > 0:
+            if user_access[0].watcher_can_see_cells:
                 profiles_id = [profile.id for profile in team.profiles.all()]
 
             else:
                 profiles_id = [request.user.profile.id]
 
         else:
-            profiles_id = []
+            if request.user.profile.can_see_calendars:
+                profiles_id = [profile.id for profile in team.profiles.all()]
+
 
         days = Day.objects.filter(
             date__month=month, date__year=year, team=team)

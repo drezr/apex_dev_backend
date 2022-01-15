@@ -180,6 +180,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                             elif child_type == 'subtask':
                                 new_child = child_model.objects.create(
                                     name=child['name'],
+                                    status=child['status'],
                                 )
 
                             elif child_type == 'input':

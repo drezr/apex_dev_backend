@@ -142,6 +142,19 @@ for link in dump['AppTaskLink']:
     FolderTaskLink.objects.create(**link)
 
 
+print('Loading day task links')
+for link in dump['DayTaskLink']:
+    task = Task.objects.get(uid=link['task'])
+    link['task'] = task
+
+    day = Day.objects.get(uid=link['day'])
+    day.has_content = True
+    day.save()
+    link['day'] = day
+
+    DayTaskLink.objects.create(**link)
+
+
 print('Loading cell task links')
 for link in dump['CellTaskLink']:
     task = Task.objects.get(uid=link['task'])

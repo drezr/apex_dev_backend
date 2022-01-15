@@ -10,6 +10,8 @@ class Profile(models.Model):
     ident = models.CharField(max_length=100, null=True, blank=True)
     grade = models.CharField(max_length=100, null=True, blank=True)
     field = models.CharField(max_length=100, null=True, blank=True)
+    
+    can_see_calendars = models.BooleanField(default=False)
 
     user = models.OneToOneField(
         User,

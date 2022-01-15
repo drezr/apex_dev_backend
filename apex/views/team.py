@@ -44,6 +44,7 @@ class TeamView(APIView, GenericHelpers):
             'ident',
             'grade',
             'field',
+            'can_see_calendars'
         ]
 
         link_attrs = [
