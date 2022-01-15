@@ -106,10 +106,9 @@ except ModuleNotFoundError:
     Variables below should be set in local_settings.py for production
     Copy/paste them in local_settings.py to override them
     '''
-
     SECRET_KEY = 'django-insecure-xxxxxxxxxxxxxx'
     ALLOWED_HOSTS=['*']
-    DEBUG = False
+    DEBUG = True
     MEDIA_ROOT = '/your/media/path/'
 
     DATABASES = {
