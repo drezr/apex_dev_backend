@@ -6,7 +6,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from apex.views import *
 
 urlpatterns = [
-    path('admin', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api-token-auth', obtain_auth_token),
     path('reset_password', ResetPasswordView.as_view()),
     
