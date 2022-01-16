@@ -19,14 +19,14 @@ class CallsView(APIView):
         profiles = [profile for profile in team.profiles.all()]
         visible_profiles = list()
 
-        access = TeamProfileLink.objects.get(
-            profile=request.user.profile, team=team)
+        access = TeamProfileLink.objects.filter(
+            profile=request.user.profile, team=team).first()
 
         for profile in profiles:
             link = TeamProfileLink.objects.get(profile=profile, team=team)
 
             if link.watcher_is_visible:
-                if access.watcher_can_see_cells or profile == request.user.profile:
+                if request.user.is_staff or request.user.profile.can_see_calendars or (access and access.watcher_can_see_cells) or profile == request.user.profile:
                     visible_profiles.append(profile)
 
         cells = Cell.objects.filter(
