@@ -6,6 +6,8 @@ from ..models import *
 from ..serializers import *
 from ..permissions import *
 
+from ..default_configs.leave_configs import leave_configs
+
 
 class LeaveView(APIView, LeaveHelpers):
 
@@ -150,5 +152,40 @@ class LeaveView(APIView, LeaveHelpers):
 
             return Response(status=status.HTTP_200_OK)
 
+
+        elif data['action'] == 'add_leave_config':
+            team = hierarchy['team']
+            app = hierarchy['app']
+            year = data['year']
+
+            config = LeaveConfig.objects.get(app=app)
+
+            for leave_type in config.leave_type_set.all():
+                leave_type.delete()
+
+            new_config = leave_configs[data['value']]
+
+            for leave_type in new_config:
+                LeaveType.objects.create(config=config, **leave_type)
+
+            profiles_id = [profile.id for profile in team.profiles.all()]
+
+            for profile_id in profiles_id:
+                for leave_type in config.leave_type_set.all():
+                    Quota.objects.get_or_create(
+                        code=leave_type.code,
+                        year=year,
+                        profile_id=profile_id,
+                    )
+
+            quotas = Quota.objects.filter(
+                profile__in=profiles_id, year=year)
+
+            result = {
+                'quotas': QuotaSerializer(quotas, many=True).data,
+                'config': LeaveConfigSerializer(config).data,
+            }
+
+            return Response(result)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
