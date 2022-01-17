@@ -131,6 +131,9 @@ class Day(models.Model):
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
 
+    class Meta:
+        unique_together = ('date', 'team', )
+
     def __str__(self):
         return '[Day #{0}] {1} ({2})'.format(
             self.id, self.date, self.team.name)
@@ -173,6 +176,9 @@ class Cell(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('date', 'profile', )
 
     def __str__(self):
         return '[Cell #{0}] {1} ({2})'.format(

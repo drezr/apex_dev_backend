@@ -3,6 +3,7 @@ import uuid
 from apex.models import *
 from apex.db_dump import dump
 
+
 print('Loading profiles')
 for profile in dump['Profile']:
     new_user = None
