@@ -3,6 +3,8 @@ import uuid
 from apex.models import *
 from apex.db_dump import dump
 
+from apex.default_configs.leave_configs import leave_configs
+
 
 print('Loading profiles')
 for profile in dump['Profile']:
@@ -81,7 +83,22 @@ for cell in dump['Cell']:
     if profile:
         cell['profile'] = profile
 
-        Cell.objects.create(**cell)
+        extra = cell['extra']
+        del cell['extra']
+
+        new_cell = Cell.objects.create(**cell)
+
+        if extra:
+            note = Note.objects.create(value=extra, profile=profile)
+            new_cell.has_content = True
+            new_cell.save()
+
+            CellNoteLink.objects.create(
+                cell=new_cell,
+                note=note,
+                is_original=True,
+                position=99999,
+            )
 
 
 print('Loading days')
@@ -304,6 +321,12 @@ for item in dump['PartProfileLink']:
 
 
 
+
+
+
+
+
+
 print('Cleaning doubles')
 
 days = Day.objects.all()
@@ -324,3 +347,24 @@ for cell in cells:
     if search.count() > 1:
         print(search)
         search[0].delete()
+
+
+
+
+
+
+
+
+
+
+print('Adding leave configs')
+
+for team in Team.objects.all():
+    app = team.app_set.filter(app='watcher').first()
+
+    config = LeaveConfig.objects.create(app=app)
+
+    new_config = leave_configs['french_default']
+
+    for leave_type in new_config:
+        LeaveType.objects.create(config=config, **leave_type)
