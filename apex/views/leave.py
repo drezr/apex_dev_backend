@@ -188,4 +188,20 @@ class LeaveView(APIView, LeaveHelpers):
 
             return Response(result)
 
+
+        elif data['action'] == 'create_quotas':
+            config, c = LeaveConfig.objects.get_or_create(
+                app=hierarchy['app'])
+
+            for profile in hierarchy['team'].profiles.all():
+                for leave_type in config.leave_type_set.all():
+                    if leave_type.visible:
+                        Quota.objects.get_or_create(
+                            code=leave_type.code,
+                            year=data['year'],
+                            profile=profile,
+                        )
+
+            return Response(status=status.HTTP_200_OK)
+
         return Response(status=status.HTTP_400_BAD_REQUEST)

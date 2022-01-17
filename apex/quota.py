@@ -190,11 +190,11 @@ def compute_quota(cells, quotas, config, holidays, detailed):
                                         detailed_quotas[_leave_type['code']].append(cell)
                                 
 
-                if has_hour:
-                    cell_code = cell_code.replace(has_hour.group(0), '')
+                    if has_hour:
+                        cell_code = cell_code.replace(has_hour.group(0), '')
 
-                else:
-                    cell_code = cell_code.replace(code, '')
+                    else:
+                        cell_code = cell_code.replace(code, '')
 
 
     for key, val in computed_quotas.items():
