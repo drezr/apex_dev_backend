@@ -448,4 +448,4 @@ for i, day in enumerate(days):
         day.save()
 
 
-print('')
+print('\nDone !')
