@@ -806,6 +806,9 @@ class AppTemplateLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('app', 'template', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.template)
 
@@ -820,6 +823,9 @@ class DayTaskLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('day', 'task', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.day, self.task)
@@ -836,6 +842,9 @@ class DayNoteLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('day', 'note', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.day, self.note)
 
@@ -850,6 +859,9 @@ class DayFileLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('day', 'file', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.day, self.file)
@@ -866,6 +878,9 @@ class CellTaskLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('cell', 'task', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.task)
 
@@ -880,6 +895,9 @@ class CellNoteLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('cell', 'note', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.note)
@@ -896,6 +914,9 @@ class CellFileLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('cell', 'file', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.file)
 
@@ -911,6 +932,9 @@ class CellCallLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('cell', 'call', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.cell, self.call)
 
@@ -925,6 +949,9 @@ class CallFileLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('call', 'file', )
     
     def __str__(self):
         return '{0} : {1}'.format(self.call, self.file)
@@ -941,6 +968,9 @@ class CallLinkLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('call', 'link', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.call, self.link)
 
@@ -954,6 +984,9 @@ class WorkFileLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('work', 'file', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.work, self.file)
@@ -970,6 +1003,9 @@ class PartProfileLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('profile', 'part', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.profile.name, self.part)
 
@@ -984,6 +1020,9 @@ class ProjectTaskLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('project', 'task', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.project, self.task)
@@ -1000,6 +1039,9 @@ class TaskSubtaskLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('task', 'subtask', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.subtask)
 
@@ -1014,6 +1056,9 @@ class TaskNoteLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('task', 'note', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.note)
@@ -1030,6 +1075,9 @@ class TaskFileLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('task', 'file', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.file)
 
@@ -1044,6 +1092,9 @@ class TaskInputLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('task', 'input', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.input)
@@ -1060,6 +1111,9 @@ class TaskLinkLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('task', 'link', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.link)
 
@@ -1074,6 +1128,9 @@ class FolderTaskLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('folder', 'task', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.task)
@@ -1090,6 +1147,9 @@ class FolderNoteLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('folder', 'note', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.note)
 
@@ -1105,6 +1165,9 @@ class FolderFileLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('folder', 'file', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.file)
 
@@ -1119,6 +1182,9 @@ class FolderLinkLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('folder', 'link', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.folder, self.link)

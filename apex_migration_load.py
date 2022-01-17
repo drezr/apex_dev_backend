@@ -335,7 +335,6 @@ for day in days:
     search = Day.objects.filter(team=day.team, date=day.date)
 
     if search.count() > 1:
-        print(search)
         search[0].delete()
 
 
@@ -345,7 +344,6 @@ for cell in cells:
     search = Cell.objects.filter(profile=cell.profile, date=cell.date)
 
     if search.count() > 1:
-        print(search)
         search[0].delete()
 
 
@@ -368,3 +366,86 @@ for team in Team.objects.all():
 
     for leave_type in new_config:
         LeaveType.objects.create(config=config, **leave_type)
+
+
+
+
+
+
+
+
+
+
+print('Has content cleanup')
+
+cells = Cell.objects.all()
+cells_count = cells.count()
+
+for i, cell in enumerate(cells):
+    print ('\rCleaning cell ({0}/{1})'.format(i, cells_count), end="")
+
+    has_content = cell.has_content
+
+    count = 0
+    count += cell.tasks.all().count()
+    count += cell.notes.all().count()
+    count += cell.files.all().count()
+
+    part_profile_links = PartProfileLink.objects.filter(
+        profile=cell.profile, is_participant=True)
+
+    for part_profile_link in part_profile_links:
+        if part_profile_link.part.date == cell.date:
+            count += 1
+
+    if count == 0:
+        cell.has_content = False
+
+    else:
+        cell.has_content = True
+
+    if has_content != cell.has_content:
+        cell.save()
+
+
+    if cell.calls.all().count() == 0:
+        if cell.has_call:
+            cell.has_call = False
+            cell.save()
+
+    else:
+        if not cell.has_call:
+            cell.has_call = True
+            cell.save()
+
+
+print('')
+
+
+
+
+days = Day.objects.all()
+days_count = days.count()
+
+for i, day in enumerate(days):
+    print ('\rCleaning day ({0}/{1})'.format(i, days_count), end="")
+
+    has_content = day.has_content
+
+    count = 0
+    count += day.tasks.all().count()
+    count += day.notes.all().count()
+    count += day.files.all().count()
+    count += Part.objects.filter(team=day.team, date=day.date).count()
+
+    if count == 0:
+        day.has_content = False
+
+    else:
+        day.has_content = True
+
+    if has_content != day.has_content:
+        day.save()
+
+
+print('')
