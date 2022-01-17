@@ -131,8 +131,8 @@ class Day(models.Model):
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
 
-    class Meta:
-        unique_together = ('date', 'team', )
+    # class Meta:
+    #     unique_together = ('date', 'team', )
 
     def __str__(self):
         return '[Day #{0}] {1} ({2})'.format(
@@ -177,8 +177,8 @@ class Cell(models.Model):
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
 
-    class Meta:
-        unique_together = ('date', 'profile', )
+    # class Meta:
+    #     unique_together = ('date', 'profile', )
 
     def __str__(self):
         return '[Cell #{0}] {1} ({2})'.format(
@@ -307,6 +307,9 @@ class Part(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
+
+    # class Meta:
+    #     unique_together = ('date', 'team', )
 
     def __str__(self):
         return '[Part #{0}] {1} [{2}] [{3}]'.format(
@@ -576,6 +579,9 @@ class Quota(models.Model):
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
 
+    # class Meta:
+    #     unique_together = ('code', 'profile', 'year', )
+
     def __str__(self):
         return '[Quota #{0}] [{1}] {2} : {3}'.format(
             self.id,
@@ -614,6 +620,9 @@ class LeaveType(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
+
+    # class Meta:
+    #     unique_together = ('code', 'config', )
 
     def __str__(self):
         return '[LeaveType #{0}] {1} : {2}'.format(
@@ -691,6 +700,9 @@ class TeamProfileLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('profile', 'team', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.profile.name, self.team.name)
 
@@ -705,6 +717,9 @@ class AppWorkLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('app', 'work', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.work)
@@ -721,6 +736,9 @@ class AppProjectLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('app', 'project', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.project)
 
@@ -736,6 +754,9 @@ class AppTaskLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('app', 'task', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.task)
 
@@ -750,6 +771,9 @@ class AppContactLink(models.Model):
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
 
+    # class Meta:
+    #     unique_together = ('app', 'contact', )
+
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.contact)
 
@@ -763,6 +787,9 @@ class AppFolderLink(models.Model):
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
+
+    # class Meta:
+    #     unique_together = ('app', 'folder', )
 
     def __str__(self):
         return '{0} : {1}'.format(self.app, self.folder)
