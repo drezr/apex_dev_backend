@@ -304,7 +304,7 @@ for item in dump['Part']:
     item['shift'] = shift
 
     if team and shift:
-        Part.objects.create(**item)
+        Part.objects.get_or_create(**item)
 
 
 print('Loading part profile links')
@@ -348,7 +348,34 @@ for cell in cells:
 
 
 
+parts = Part.objects.all()
+parts_count = parts.count()
 
+for i, part in enumerate(parts):
+    print ('\rCleaning part double ({0}/{1})'.format(i, parts_count), end="")
+
+    same_parts = Part.objects.filter(team=part.team, shift=part.shift)
+
+    if same_parts.count() > 1:
+        part_has_link = None
+
+        for same_part in same_parts:
+            has_link = PartProfileLink.objects.filter(part=same_part).count()
+
+            if has_link:
+                part_has_link = same_part
+
+
+        if part_has_link:
+            for same_part in same_parts:
+                if same_part != part_has_link:
+                    same_part.delete()
+
+
+        else:
+            for same_part in same_parts:
+                if same_part is not same_parts[0]:
+                    same_part.delete()
 
 
 
@@ -376,7 +403,7 @@ for team in Team.objects.all():
 
 
 
-print('Has content cleanup')
+print('Cells and Days has_content cleanup')
 
 cells = Cell.objects.all()
 cells_count = cells.count()
