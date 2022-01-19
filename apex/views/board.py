@@ -239,4 +239,12 @@ class BoardView(APIView, Helpers, BoardHelpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'update_simplified':
+            if request.user.profile.id == data['profile_id']:
+                request.user.profile.pref_planner_simplified = data['value']
+                request.user.profile.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
         return Response(status=status.HTTP_400_BAD_REQUEST)

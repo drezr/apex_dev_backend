@@ -13,6 +13,8 @@ class Profile(models.Model):
     
     can_see_calendars = models.BooleanField(default=False)
 
+    pref_planner_simplified = models.BooleanField(default=False)
+
     user = models.OneToOneField(
         User,
         null=True,
