@@ -3,3 +3,4 @@
 *.pyc
 db_dump.py
 db.sqlite3
+*.sqlite3
