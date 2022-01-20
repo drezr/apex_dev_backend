@@ -70,6 +70,11 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+```
+Sample database username: admin.user@apex.wf
+Sample database password: x
+```
+
 ## License
 
 [MIT License](https://opensource.org/licenses/MIT)
