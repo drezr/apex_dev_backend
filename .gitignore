@@ -1,5 +1,5 @@
-db.sqlite3
 *__pycache__/
 *migrations/
 *.pyc
 db_dump.py
+db.sqlite3
