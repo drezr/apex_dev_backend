@@ -97,7 +97,7 @@ for cell in dump['Cell']:
                 cell=new_cell,
                 note=note,
                 is_original=True,
-                position=99999,
+                position=999,
             )
 
 
