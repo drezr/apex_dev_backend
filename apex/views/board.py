@@ -59,6 +59,7 @@ class BoardView(APIView, Helpers, BoardHelpers):
                 position=0,
             )
 
+        holidays = Holiday.objects.filter(date__month=month, date__year=year)
 
         result = {
             'team': TeamSerializer(team, context={
@@ -76,6 +77,7 @@ class BoardView(APIView, Helpers, BoardHelpers):
                 'teammates': 'detail',
             }).data,
             'days': days,
+            'holidays': HolidaySerializer(holidays, many=True).data,
         }
 
         return Response(result)
