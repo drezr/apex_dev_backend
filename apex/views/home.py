@@ -27,8 +27,8 @@ class HomeView(APIView):
                         user_circles.append(circle)
 
 
-        if request.user.is_staff:
-            user_circles = Circle.objects.all()
+        # if request.user.is_staff:
+        #     user_circles = Circle.objects.all()
 
 
         result = {
