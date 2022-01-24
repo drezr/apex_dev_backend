@@ -25,7 +25,7 @@ class CalendarView(APIView):
         )
 
         if user_access.count() > 0:
-            if user_access[0].watcher_can_see_cells:
+            if user_access[0].watcher_can_see_cells or request.user.profile.can_see_calendars:
                 profiles_id = [profile.id for profile in team.profiles.all()]
 
             else:
