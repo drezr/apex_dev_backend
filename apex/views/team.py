@@ -214,10 +214,7 @@ class TeamView(APIView, GenericHelpers):
             if len(words) >= 2:
                 word2 = words[1]
 
-            profiles = Profile.objects.filter(
-                Q(name__iexact='{0} {1}'.format(word1, word2)) |
-                Q(name__iexact='{0} {1}'.format(word2, word1))
-            )
+            profiles = Profile.objects.filter(name__icontains=data['value'])
 
             profile_list = list()
 
