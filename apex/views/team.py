@@ -203,17 +203,6 @@ class TeamView(APIView, GenericHelpers):
 
 
         elif data['action'] == 'check_profiles_exist':
-            words = data['value'].split(' ')
-
-            word1 = ''
-            word2 = ''
-
-            if len(words) >= 1:
-                word1 = words[0].lower()
-
-            if len(words) >= 2:
-                word2 = words[1]
-
             profiles = Profile.objects.filter(name__icontains=data['value'])
 
             profile_list = list()
