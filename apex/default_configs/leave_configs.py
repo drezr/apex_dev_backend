@@ -2,18 +2,18 @@ leave_configs = {
     'none': [],
     'french_default': [
         {
-            "code": "P",
-            "desc": "Présent de jour",
-            "kind": "presence",
-            "color": "green",
-            "position": 0,
-            "visible": False,
-        },
-        {
             "code": "PN",
             "desc": "Présence de nuit",
             "kind": "presence",
             "color": "indigo",
+            "position": 0,
+            "visible": False,
+        },
+        {
+            "code": "P",
+            "desc": "Présent de jour",
+            "kind": "presence",
+            "color": "green",
             "position": 1,
             "visible": False,
         },
