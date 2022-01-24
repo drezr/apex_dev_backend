@@ -15,6 +15,8 @@ class ResetPasswordView(APIView):
     permission_classes = (AllowAny, )
 
     def post(self, request):
+        title = None
+        content = None
         username = request.data['username'].lower()
         new_password = uuid.uuid4().hex[:8]
 
@@ -24,11 +26,20 @@ class ResetPasswordView(APIView):
             user.set_password(new_password)
             user.save()
 
-            title = email_reset_password_title[request.data['lang']]
-            content = email_reset_password_content[request.data['lang']] \
-                        .replace('###name###', user.profile.name) \
-                        .replace('###login###', username) \
-                        .replace('###new_password###', new_password)
+            if request.data['action'] == 'reset_password':
+                title = email_reset_password_title[request.data['lang']]
+                content = email_reset_password_content[request.data['lang']] \
+                            .replace('###name###', user.profile.name) \
+                            .replace('###login###', username) \
+                            .replace('###new_password###', new_password)
+
+
+            elif request.data['action'] == 'send_password':
+                title = email_send_password_title[request.data['lang']]
+                content = email_send_password_content[request.data['lang']] \
+                            .replace('###name###', user.profile.name) \
+                            .replace('###login###', username) \
+                            .replace('###new_password###', new_password)
 
             send_mail(
                 title,
