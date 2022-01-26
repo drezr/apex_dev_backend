@@ -695,6 +695,7 @@ class TeamProfileLink(models.Model):
     watcher_can_see_cells = models.BooleanField(default=False)
     watcher_can_see_quotas = models.BooleanField(default=False)
     watcher_color = models.CharField(max_length=20, blank=True, null=True)
+    watcher_border_color = models.CharField(max_length=20, blank=True, null=True)
 
     position = models.PositiveSmallIntegerField(null=True, blank=True)
 

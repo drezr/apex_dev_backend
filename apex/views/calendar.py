@@ -1,11 +1,13 @@
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from ..models import *
 from ..serializers import *
+from ..permissions import *
 
 
-class CalendarView(APIView):
+class CalendarView(APIView, GenericHelpers):
 
     def get(self, request):
         team_id = request.query_params['team_id']
@@ -57,3 +59,23 @@ class CalendarView(APIView):
         }
 
         return Response(result)
+
+
+    def post(self, request):
+        data, hierarchy, permission = self.get_data(request)
+
+        if not permission:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        if data['action'] == 'update_profile_border':
+            profile = Profile.objects.get(pk=data['profile_id'])
+            link = TeamProfileLink.objects.get(
+                profile=profile, team=hierarchy['team'])
+
+            link.watcher_border_color = data['color']
+            link.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
