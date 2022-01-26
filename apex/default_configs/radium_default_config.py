@@ -93,7 +93,7 @@ radium_default_config = [
         "name": "s460s",
         "position": 9,
         "width": 300,
-        "textsize": 8,
+        "textsize": 12,
         "visible": True,
         "multiple": True,
         "clickable": False,

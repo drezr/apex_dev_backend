@@ -25,8 +25,7 @@ class HomeView(APIView):
                 if len(circle.team_set.filter(pk=team.id)):
                     if circle not in user_circles:
                         user_circles.append(circle)
-
-
+        
         if request.user.is_staff:
             user_circles = Circle.objects.all()
 
