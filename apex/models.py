@@ -234,6 +234,9 @@ class WorkColumn(models.Model):
     updated_date = models.DateField(auto_now=True)
     uid = models.CharField(max_length=255, null=True, blank=True)
 
+    class Meta:
+        unique_together = ('name', 'work', )
+
     def __str__(self):
         return '[WorkColumn #{0}] {1} : {2} ({3})'.format(
             self.id, self.name, self.value, self.work)

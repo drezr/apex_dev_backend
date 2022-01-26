@@ -1,43 +1,289 @@
 from apex.models import *
 
+radium_default_config = [
+    {
+        "name": "shifts",
+        "position": 0,
+        "width": 200,
+        "textsize": 15,
+        "visible": True,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "description",
+        "position": 1,
+        "width": 400,
+        "textsize": 15,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "note",
+        "position": 2,
+        "width": 150,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "ilt",
+        "position": 3,
+        "width": 80,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "files",
+        "position": 4,
+        "width": 260,
+        "textsize": 13,
+        "visible": True,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "upm",
+        "position": 5,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "colt",
+        "position": 6,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": True,
+        "path": "https://colt-website.infrabel.be/coupure/",
+    },
+    {
+        "name": "status",
+        "position": 7,
+        "width": 150,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "limits",
+        "position": 8,
+        "width": 600,
+        "textsize": 12,
+        "visible": True,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "s460s",
+        "position": 9,
+        "width": 300,
+        "textsize": 12,
+        "visible": True,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "zkl",
+        "position": 10,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "cascat",
+        "position": 11,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "grue",
+        "position": 12,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "osv",
+        "position": 13,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "loco",
+        "position": 14,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "hgs",
+        "position": 15,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "soudure",
+        "position": 16,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "pn",
+        "position": 17,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "art",
+        "position": 18,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "s428",
+        "position": 19,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "s461",
+        "position": 20,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "atwtx",
+        "position": 21,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "imputation",
+        "position": 22,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "extra",
+        "position": 25,
+        "width": 200,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "line",
+        "position": 23,
+        "width": 100,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "supervisor",
+        "position": 24,
+        "width": 150,
+        "textsize": 13,
+        "visible": True,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+]
+
+
+
 works = Work.objects.all()
 
 for work in works:
-    columns = WorkColumn.objects.filter(
-        work=work,
-        name='limits',
-    )
+    for column_config in radium_default_config:
+        columns = WorkColumn.objects.filter(
+            work=work,
+            name=column_config['name'],
+        )
 
-    if columns.count() > 1:
-        kept_column = columns[0]
+        if columns.count() > 1:
+            kept_column = columns[0]
 
-        for i, column in enumerate(columns.all()):
-            if i > 0:
-                for row in column.rows.all():
-                    print('Merging row #' + str(row.id))
-                    row.work_column = kept_column
-                    row.position = i
-                    row.save()
+            for i, column in enumerate(columns.all()):
+                if i > 0:
+                    for row in column.rows.all():
+                        print('Merging row #' + str(row.id))
+                        row.work_column = kept_column
+                        row.position = i
+                        row.save()
 
-                print('Deleting column #' + str(column.id))
-                column.delete()
-
-
-    columns = WorkColumn.objects.filter(
-        work=work,
-        name='s460s',
-    )
-
-    if columns.count() > 1:
-        kept_column = columns[0]
-
-        for i, column in enumerate(columns.all()):
-            if i > 0:
-                for row in column.rows.all():
-                    print('Merging row #' + str(row.id))
-                    row.work_column = kept_column
-                    row.position = i
-                    row.save()
-
-                print('Deleting column #' + str(column.id))
-                column.delete()
+                    print('Deleting column #' + str(column.id))
+                    column.delete()
