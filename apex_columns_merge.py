@@ -278,7 +278,7 @@ for work in works:
             kept_column = columns[0]
 
             for i, column in enumerate(columns.all()):
-                if i > 0:
+                if i > 0 and not column.value:
                     for row in column.rows.all():
                         print('Merging row #' + str(row.id))
                         row.work_column = kept_column
