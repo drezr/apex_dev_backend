@@ -307,8 +307,24 @@ class WorksHelpers(CommonHelpers):
         if data['action'] == 'update_config':
             return access.is_manager if access else False
 
+
+        elif data['action'] == 'update_part_profile_link':
+            if access.is_manager or access.radium_is_editor:
+                return True
+
+            else:
+                profile = Profile.objects.get(pk=data['profile_id'])
+
+                if profile.id == request.user.profile.id:
+                    return True
+
+                else:
+                    return False
+
+            return False
+
         else:
-            return access.radium_is_editor if access else False
+            return False if not access else access.radium_is_editor
 
 
 class LeaveHelpers(CommonHelpers):

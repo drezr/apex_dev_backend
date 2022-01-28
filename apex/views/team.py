@@ -171,12 +171,15 @@ class TeamView(APIView, GenericHelpers):
             tplink = TeamProfileLink.objects.get(
                 profile=profile, team=hierarchy['team'])
 
+            profile.user.username = p['username']
+
             for attr in profile_attrs:
                 setattr(profile, attr, p[attr])
 
             for attr in link_attrs:
                 setattr(tplink, attr, p['link'][attr])
 
+            profile.user.save()
             profile.save()
             tplink.save()
 
