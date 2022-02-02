@@ -308,7 +308,7 @@ class WorksHelpers(CommonHelpers):
             return access.is_manager if access else False
 
 
-        elif data['action'] == 'update_part_profile_link':
+        elif data['action'] in ['update_part_profile_link', 'create_part_profile_link']:
             if access.is_manager or access.radium_is_editor:
                 return True
 
