@@ -132,7 +132,7 @@ def compute_quota(cells, quotas, config, holidays, detailed):
                 if kind not in excluded_leave_kinds:
                     has_hour = re.search('[0-9](' + code + ')', cell_code)
                     hour_count = 8 if not has_hour else has_hour.group(0).replace(code, '')
-                    amount = 0.5 if int(hour_count) <= 4 else 1
+                    amount = (1 / 8) * int(hour_count)
 
                     is_normal = kind == 'normal_leave'
                     is_credit = kind == 'credit_day'
