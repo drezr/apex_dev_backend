@@ -415,14 +415,14 @@ class LinkSerializer(serializers.ModelSerializer):
 
 class CodeSerializer(serializers.ModelSerializer):
 
-    code = serializers.SerializerMethodField()
+    link = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
 
     class Meta:
         model = Code
         fields = '__all__'
 
-    def get_code(self, code):
+    def get_link(self, code):
         return get_link(code, self.context, 'code')
 
     def get_type(self, code):

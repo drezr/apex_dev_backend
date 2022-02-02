@@ -256,9 +256,27 @@ class ElementView(APIView, ElementHelpers, Helpers):
                     shutil.move(old_path, new_path)
 
 
-            for field in ['name', 'key', 'value', 'heading', 'status',
-                          'kind', 'start', 'end', 'description', 'url',
-                          'presence', 'place', 'project', 'work', 'other']:
+            updatable_fields = [
+                'name',
+                'key',
+                'value',
+                'heading',
+                'status',
+                'kind',
+                'start',
+                'end',
+                'description',
+                'url',
+                'presence',
+                'work',
+                'place',
+                'project',
+                'other',
+                'network',
+                'activity',
+            ]
+
+            for field in updatable_fields:
                 if data[field]:
                     setattr(element, field, data[field])
 

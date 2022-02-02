@@ -501,11 +501,17 @@ class Link(models.Model):
 
 class Code(models.Model):
 
-    presence = models.CharField(max_length=30, null=True, blank=True)
+    presence = models.CharField(max_length=30, null=True, blank=True, default='0080')
+    hour = models.PositiveSmallIntegerField(null=True, blank=True)
+    start = models.CharField(max_length=30, null=True, blank=True, default='00:00')
+    end = models.CharField(max_length=30, null=True, blank=True, default='00:00')
     work = models.CharField(max_length=30, null=True, blank=True)
     place = models.CharField(max_length=30, null=True, blank=True)
     project = models.CharField(max_length=30, null=True, blank=True)
     other = models.CharField(max_length=30, null=True, blank=True)
+    network = models.CharField(max_length=30, null=True, blank=True)
+    superior = models.CharField(max_length=30, null=True, blank=True)
+    activity = models.CharField(max_length=30, null=True, blank=True)
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
