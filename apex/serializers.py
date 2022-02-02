@@ -284,6 +284,7 @@ class TaskSerializer(serializers.ModelSerializer):
     notes = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
+    codes = serializers.SerializerMethodField()
     teammates = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
 
@@ -302,6 +303,9 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def get_files(self, task):
         return get_children(task, self.context, 'task', 'file')
+
+    def get_codes(self, task):
+        return get_children(task, self.context, 'task', 'code')
 
     def get_link(self, task):
         return get_link(task, self.context, 'task')
@@ -407,6 +411,22 @@ class LinkSerializer(serializers.ModelSerializer):
 
     def get_type(self, link):
         return 'link'
+
+
+class CodeSerializer(serializers.ModelSerializer):
+
+    code = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Code
+        fields = '__all__'
+
+    def get_code(self, code):
+        return get_link(code, self.context, 'code')
+
+    def get_type(self, code):
+        return 'code'
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -888,6 +908,13 @@ class TaskLinkLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskLinkLink
+        fields = '__all__'
+
+
+class TaskCodeLinkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TaskCodeLink
         fields = '__all__'
 
 

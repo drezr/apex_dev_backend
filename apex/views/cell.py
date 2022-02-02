@@ -24,6 +24,7 @@ class CellView(APIView, CellHelpers):
             'files': 'detail',
             'calls': 'detail',
             'links': 'detail',
+            'codes': 'detail',
             'teammates': 'detail',
         }).data
 

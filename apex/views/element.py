@@ -23,6 +23,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
             if data['parent_type'] == 'task':
                 count += len(hierarchy[element].inputs.all())
+                count += len(hierarchy[element].codes.all())
 
             if data['parent_type'] in ['task', 'folder', 'day', 'cell']:
                 count += len(hierarchy[element].notes.all())
@@ -125,6 +126,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                     'files': 'detail',
                     'calls': 'detail',
                     'links': 'detail',
+                    'codes': 'detail',
                     'teammates': 'detail',
                 }).data
 
@@ -156,9 +158,10 @@ class ElementView(APIView, ElementHelpers, Helpers):
                             'subtasks': 'detail',
                             'inputs': 'detail',
                             'notes': 'detail',
+                            'codes': 'detail',
                         }).data
 
-                    for child_type in ['note', 'subtask', 'input']:
+                    for child_type in ['note', 'subtask', 'input', 'code']:
                         children = template[child_type + 's']
 
                         for child in children:
@@ -191,6 +194,15 @@ class ElementView(APIView, ElementHelpers, Helpers):
                                     heading=child['heading'],
                                 )
 
+                            elif child_type == 'code':
+                                new_child = child_model.objects.create(
+                                    presence=child['presence'],
+                                    place=child['place'],
+                                    work=child['work'],
+                                    project=child['project'],
+                                    other=child['other'],
+                                )
+
                             new_link_args['task'] = element
                             new_link_args[child_type] = new_child
                             new_link_args['position'] = child['link']['position']
@@ -207,6 +219,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                                     'files': 'detail',
                                     'calls': 'detail',
                                     'links': 'detail',
+                                    'codes': 'detail',
                                     'teammates': 'detail',
                                 }).data
 
@@ -244,7 +257,8 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
 
             for field in ['name', 'key', 'value', 'heading', 'status',
-                          'kind', 'start', 'end', 'description', 'url']:
+                          'kind', 'start', 'end', 'description', 'url',
+                          'presence', 'place', 'project', 'work', 'other']:
                 if data[field]:
                     setattr(element, field, data[field])
 
@@ -262,7 +276,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
             element = hierarchy['element']
 
             possible_children = {
-                'task': ['note', 'file', 'input', 'subtask'],
+                'task': ['note', 'file', 'input', 'subtask', 'code'],
                 'call': ['file', 'link'],
             }
 
@@ -414,6 +428,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                                 'notes': 'detail',
                                 'files': 'detail',
                                 'links': 'detail',
+                                'codes': 'detail',
                                 'teammates': 'detail',
                             }).data
 
@@ -478,6 +493,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                                 'files': 'detail',
                                 'calls': 'detail',
                                 'links': 'detail',
+                                'codes': 'detail',
                                 'teammates': 'detail',
                             }).data
 
@@ -552,6 +568,19 @@ class ElementView(APIView, ElementHelpers, Helpers):
                     TaskInputLink.objects.create(
                         task=new_element, input=new_input, position=link.position)
 
+                for code in original.codes.all():
+                    new_code = Code.objects.create(
+                        presence=code.presence,
+                        place=code.place,
+                        work=code.work,
+                        project=code.project,
+                        other=code.other,
+                    )
+                    link = TaskCodeLink.objects.get(
+                        task=original, code=code)
+                    TaskCodeLink.objects.create(
+                        task=new_element, code=new_code, position=link.position)
+
 
             position = 0
 
@@ -583,6 +612,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                     'files': 'detail',
                     'calls': 'detail',
                     'links': 'detail',
+                    'codes': 'detail',
                     'teammates': 'detail',
                 }).data
 
@@ -605,6 +635,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                         'notes': 'detail',
                         'files': 'detail',
                         'links': 'detail',
+                        'codes': 'detail',
                         'teammates': 'detail',
                     }).data
 
@@ -627,6 +658,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                         'notes': 'detail',
                         'files': 'detail',
                         'links': 'detail',
+                        'codes': 'detail',
                         'teammates': 'detail',
                     }).data
 

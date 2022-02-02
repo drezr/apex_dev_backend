@@ -22,6 +22,7 @@ class DayView(APIView):
             'notes': 'detail',
             'files': 'detail',
             'links': 'detail',
+            'codes': 'detail',
             'teammates': 'detail',
         }).data
 

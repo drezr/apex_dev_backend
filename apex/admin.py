@@ -93,6 +93,7 @@ admin.site.register(Note, NoteAdmin)
 admin.site.register(File)
 admin.site.register(Input)
 admin.site.register(Link)
+admin.site.register(Code)
 admin.site.register(Call)
 admin.site.register(Quota, QuotaAdmin)
 admin.site.register(LeaveConfig, LeaveConfigAdmin)
@@ -198,6 +199,10 @@ class TaskLinkLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('task', 'link', )
 
 
+class TaskCodeLinkAdmin(admin.ModelAdmin):
+    raw_id_fields = ('task', 'code', )
+
+
 class FolderTaskLinkAdmin(admin.ModelAdmin):
     raw_id_fields = ('folder', 'task', )
 
@@ -238,6 +243,7 @@ admin.site.register(TaskNoteLink, TaskNoteLinkAdmin)
 admin.site.register(TaskFileLink, TaskFileLinkAdmin)
 admin.site.register(TaskInputLink, TaskInputLinkAdmin)
 admin.site.register(TaskLinkLink, TaskLinkLinkAdmin)
+admin.site.register(TaskCodeLink, TaskCodeLinkAdmin)
 admin.site.register(FolderTaskLink, FolderTaskLinkAdmin)
 admin.site.register(FolderNoteLink, FolderNoteLinkAdmin)
 admin.site.register(FolderFileLink, FolderFileLinkAdmin)

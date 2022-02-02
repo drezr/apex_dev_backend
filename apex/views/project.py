@@ -23,6 +23,7 @@ class ProjectView(APIView):
                 'notes': 'detail',
                 'files': 'detail',
                 'inputs': 'detail',
+                'codes': 'detail',
             }).data,
         }
 

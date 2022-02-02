@@ -168,6 +168,10 @@ class CommonHelpers:
             'short': self.has_data(request, 'short'),
             'date': self.has_data(request, 'date'),
             'year': self.has_data(request, 'year'),
+            'place': self.has_data(request, 'place'),
+            'work': self.has_data(request, 'work'),
+            'project': self.has_data(request, 'project'),
+            'other': self.has_data(request, 'other'),
             'position_updates': self.has_data(request, 'position_updates'),
         }
 

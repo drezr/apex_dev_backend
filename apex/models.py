@@ -411,6 +411,11 @@ class Task(models.Model):
         blank=True,
         through='TaskLinkLink',
     )
+    codes = models.ManyToManyField(
+        'Code',
+        blank=True,
+        through='TaskCodeLink',
+    )
 
     created_date = models.DateField(auto_now_add=True)
     updated_date = models.DateField(auto_now=True)
@@ -492,6 +497,22 @@ class Link(models.Model):
 
     def __str__(self):
         return '[Link #{0}] {1} : {2}'.format(self.id, self.name, self.url)
+
+
+class Code(models.Model):
+
+    presence = models.CharField(max_length=30, null=True, blank=True)
+    work = models.CharField(max_length=30, null=True, blank=True)
+    place = models.CharField(max_length=30, null=True, blank=True)
+    project = models.CharField(max_length=30, null=True, blank=True)
+    other = models.CharField(max_length=30, null=True, blank=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+    uid = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return '[Code #{0}]'.format(self.id)
 
 
 class Call(models.Model):
@@ -1118,6 +1139,24 @@ class TaskLinkLink(models.Model):
 
     def __str__(self):
         return '{0} : {1}'.format(self.task, self.link)
+
+
+class TaskCodeLink(models.Model):
+
+    task = models.ForeignKey('Task', on_delete=models.CASCADE)
+    code = models.ForeignKey('Code', on_delete=models.CASCADE)
+
+    position = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_original = models.BooleanField(default=True)
+
+    created_date = models.DateField(auto_now_add=True)
+    updated_date = models.DateField(auto_now=True)
+
+    class Meta:
+        unique_together = ('task', 'code', )
+
+    def __str__(self):
+        return '{0} : {1}'.format(self.task, self.code)
 
 
 class FolderTaskLink(models.Model):

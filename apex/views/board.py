@@ -32,6 +32,7 @@ class BoardView(APIView, Helpers, BoardHelpers):
             'inputs': 'detail',
             'notes': 'detail',
             'files': 'detail',
+            'codes': 'detail',
             'teammates': 'detail',
         }).data
 
@@ -74,6 +75,7 @@ class BoardView(APIView, Helpers, BoardHelpers):
                 'inputs': 'detail',
                 'notes': 'detail',
                 'files': 'detail',
+                'codes': 'detail',
                 'teammates': 'detail',
             }).data,
             'days': days,
@@ -165,6 +167,7 @@ class BoardView(APIView, Helpers, BoardHelpers):
                 'inputs': 'detail',
                 'notes': 'detail',
                 'files': 'detail',
+                'codes': 'detail',
                 'teammates': 'detail',
             }).data
             
@@ -211,7 +214,8 @@ class BoardView(APIView, Helpers, BoardHelpers):
                         shutil.rmtree(path)
 
                     elif child_type == 'task':
-                        for grandchild_type in ['subtask', 'note', 'file', 'input']:
+                        for grandchild_type in ['subtask', 'note',
+                            'file', 'input', 'code']:
                             grandchild_set = getattr(
                                 child, grandchild_type + 's')
 
