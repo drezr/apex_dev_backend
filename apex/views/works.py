@@ -121,6 +121,9 @@ class WorksView(APIView, WorksHelpers, Helpers):
                     column.bg_color = column_update['bg_color']
                     column.text_color = column_update['text_color']
 
+                    if not data['value']['is_new']:
+                        column.is_edited = True
+
                     for row_update in column_update['rows']:
                         row = column.rows.get(pk=row_update['id'])
 
@@ -659,6 +662,14 @@ class WorksView(APIView, WorksHelpers, Helpers):
             return Response({
                 'work': work_serialized,
             })
+
+
+        elif data['action'] == 'clear_is_edited':
+            column = WorkColumn.objects.get(pk=data['value'])
+            column.is_edited = False
+            column.save()
+
+            return Response(status=status.HTTP_200_OK)
 
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
