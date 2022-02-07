@@ -21,6 +21,8 @@ def get_cell_date(cell):
 
 def compute_quota(cells, quotas, config, holidays, detailed):
 
+    holidays = [holiday['date'] for holiday in holidays]
+
     leave_kinds = [
         'ignore',
         'counter',
