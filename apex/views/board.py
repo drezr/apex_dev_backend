@@ -10,6 +10,8 @@ from ..models import *
 from ..serializers import *
 from ..permissions import *
 
+from ..cats import *
+
 
 class BoardView(APIView, Helpers, BoardHelpers):
 

@@ -510,7 +510,6 @@ class Code(models.Model):
     project = models.CharField(max_length=30, null=True, blank=True)
     other = models.CharField(max_length=30, null=True, blank=True)
     network = models.CharField(max_length=30, null=True, blank=True)
-    superior = models.CharField(max_length=30, null=True, blank=True)
     activity = models.CharField(max_length=30, null=True, blank=True)
 
     created_date = models.DateField(auto_now_add=True)
