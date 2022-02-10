@@ -199,8 +199,10 @@ def compute_quota(cells, quotas, config, holidays, detailed):
                         cell_code = cell_code.replace(code, '')
 
 
-    for key, val in computed_quotas.items():
+    for key, val in base_quotas.items():
         base_quotas[key] = int(val) if isinstance(val, float) and val.is_integer() else round(val, 2)
+
+    for key, val in computed_quotas.items():
         computed_quotas[key] = int(val) if isinstance(val, float) and val.is_integer() else round(val, 2)
 
 
