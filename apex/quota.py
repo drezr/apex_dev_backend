@@ -1,3 +1,4 @@
+import copy
 import datetime
 import math
 import re
@@ -120,6 +121,7 @@ def compute_quota(cells, quotas, config, holidays, detailed):
                 has_hs = re.findall('[-|+][0-9]{1,}[\.*]{0,}[0-9]{0,}', cell_code)
 
                 for hs in has_hs:
+                    cell = copy.deepcopy(cell)
                     cell['count'] = hs
                     computed_quotas[code] += float(hs)
 
