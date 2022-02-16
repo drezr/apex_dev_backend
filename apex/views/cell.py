@@ -1,3 +1,5 @@
+import copy
+
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -64,6 +66,9 @@ class CellView(APIView, CellHelpers):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         if data['action'] == 'update':
+            old_presence = copy.deepcopy(hierarchy['cell'].presence)
+            old_absence = copy.deepcopy(hierarchy['cell'].absence)
+
             hierarchy['cell'].presence = data['presence']
             hierarchy['cell'].absence = data['absence']
             hierarchy['cell'].color = data['color']
@@ -72,6 +77,22 @@ class CellView(APIView, CellHelpers):
             hierarchy['cell'].short = data['short']
 
             hierarchy['cell'].save()
+
+
+            if old_presence != data['presence'] or old_absence != data['absence']:
+                def gs(presence, absence):
+                    def fs(string):
+                        return '-' if not string else string.upper()
+
+                    return '{0} &#%$ {1}'.format(fs(presence), fs(absence))
+
+                Log.objects.create(
+                    field=hierarchy['cell'].profile.name + '\'s cell',
+                    new_value=gs(data['presence'], data['absence']),
+                    old_value=gs(old_presence, old_absence),
+                    cell=hierarchy['cell'],
+                    profile=request.user.profile,
+                )
 
             return Response(status=status.HTTP_200_OK)
 
