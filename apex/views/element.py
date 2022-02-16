@@ -614,6 +614,35 @@ class ElementView(APIView, ElementHelpers, Helpers):
 
                 position += len(parts)
 
+            if data['parent_type'] == 'day' and data['view'] == 'board':
+                cell_links = None
+                
+                if data['element_type'] == 'task':
+                    cell_links = CellTaskLink.objects.filter(
+                        task=original)
+                
+                elif data['element_type'] == 'note':
+                    cell_links = CellNoteLink.objects.filter(
+                        note=original)
+
+                for cell_link in cell_links:
+                    cell, c = Cell.objects.get_or_create(
+                        date=hierarchy['new_parent'].date,
+                        profile=cell_link.cell.profile,
+                    )
+
+                    cell.has_content = True
+                    cell.save()
+
+                    if data['element_type'] == 'task':
+                        CellTaskLink.objects.create(
+                            cell=cell, task=new_element)
+                    
+                    elif data['element_type'] == 'note':
+                        CellNoteLink.objects.create(
+                            cell=cell, note=new_element)
+
+
             link_kwargs = dict()
             link_kwargs[data['new_parent_type']] = hierarchy['new_parent']
             link_kwargs[data['element_type']] = new_element
@@ -656,6 +685,7 @@ class ElementView(APIView, ElementHelpers, Helpers):
                         'codes': 'detail',
                         'teammates': 'detail',
                     }).data
+
 
             if data['new_parent_type'] == 'cell':
                 #TO BE CHECKED
