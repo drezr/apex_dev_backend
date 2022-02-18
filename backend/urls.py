@@ -29,6 +29,8 @@ urlpatterns = [
     path('quotalight', QuotaLightView.as_view()),
     path('works', WorksView.as_view()),
 
+    path('worksmobile', WorksMobileView.as_view()),
+
     path('shifts', ShiftsView.as_view()),
     path('day', DayView.as_view()),
     path('cell', CellView.as_view()),
