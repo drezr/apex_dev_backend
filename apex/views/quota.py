@@ -10,14 +10,34 @@ from ..quota import compute_quota
 class QuotaView(APIView):
 
     def get(self, request):
-        team_id = request.query_params['team_id']
-        app_id = request.query_params['app_id']
         profile_id = request.query_params['profile_id']
         year = request.query_params['year']
 
-        team = Team.objects.get(pk=team_id)
-        app = App.objects.get(pk=app_id)
         profile = Profile.objects.get(pk=profile_id)
+
+        team_id = None
+        app_id = None
+
+        team = None
+        app = None
+
+        if 'view' in request.query_params and request.query_params['view'] == 'quotamobile':
+            profile_team = TeamProfileLink.objects.filter(
+                profile=profile).first()
+
+            team = profile_team.team
+            team_id = team.id
+
+            app = team.app_set.filter(app='watcher').first()
+            app_id = app.id
+
+        else:
+            team_id = request.query_params['team_id']
+            app_id = request.query_params['app_id']
+
+            team = Team.objects.get(pk=team_id)
+            app = App.objects.get(pk=app_id)
+
 
         config, c = LeaveConfig.objects.get_or_create(app_id=app_id)
 
