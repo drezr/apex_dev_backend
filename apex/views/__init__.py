@@ -25,3 +25,4 @@ from .team import TeamView
 from .templates import TemplatesView
 from .works import WorksView
 from .worksmobile import WorksMobileView
+from .calendarmobile import CalendarMobileView

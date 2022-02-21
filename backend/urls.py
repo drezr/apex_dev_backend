@@ -30,6 +30,7 @@ urlpatterns = [
     path('works', WorksView.as_view()),
 
     path('worksmobile', WorksMobileView.as_view()),
+    path('calendarmobile', CalendarMobileView.as_view()),
 
     path('shifts', ShiftsView.as_view()),
     path('day', DayView.as_view()),
