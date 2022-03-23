@@ -559,7 +559,6 @@ class ElementView(APIView, ElementHelpers, Helpers):
             original = hierarchy['element_model'].objects.get(
                 pk=data['element_id'])
 
-
             if data['element_type'] == 'task':
                 for subtask in original.subtasks.all():
                     new_subtask = Subtask.objects.create(
@@ -625,22 +624,23 @@ class ElementView(APIView, ElementHelpers, Helpers):
                     cell_links = CellNoteLink.objects.filter(
                         note=original)
 
-                for cell_link in cell_links:
-                    cell, c = Cell.objects.get_or_create(
-                        date=hierarchy['new_parent'].date,
-                        profile=cell_link.cell.profile,
-                    )
+                if data['new_parent_type'] != 'folder':
+                    for cell_link in cell_links:
+                        cell, c = Cell.objects.get_or_create(
+                            date=hierarchy['new_parent'].date,
+                            profile=cell_link.cell.profile,
+                        )
 
-                    cell.has_content = True
-                    cell.save()
+                        cell.has_content = True
+                        cell.save()
 
-                    if data['element_type'] == 'task':
-                        CellTaskLink.objects.create(
-                            cell=cell, task=new_element)
-                    
-                    elif data['element_type'] == 'note':
-                        CellNoteLink.objects.create(
-                            cell=cell, note=new_element)
+                        if data['element_type'] == 'task':
+                            CellTaskLink.objects.create(
+                                cell=cell, task=new_element)
+                        
+                        elif data['element_type'] == 'note':
+                            CellNoteLink.objects.create(
+                                cell=cell, note=new_element)
 
 
             link_kwargs = dict()
