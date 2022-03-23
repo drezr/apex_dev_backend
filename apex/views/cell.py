@@ -68,6 +68,7 @@ class CellView(APIView, CellHelpers):
         if data['action'] == 'update':
             old_presence = copy.deepcopy(hierarchy['cell'].presence)
             old_absence = copy.deepcopy(hierarchy['cell'].absence)
+            old_short = copy.deepcopy(hierarchy['cell'].short)
 
             hierarchy['cell'].presence = data['presence']
             hierarchy['cell'].absence = data['absence']
@@ -79,17 +80,20 @@ class CellView(APIView, CellHelpers):
             hierarchy['cell'].save()
 
 
-            if old_presence != data['presence'] or old_absence != data['absence']:
-                def gs(presence, absence):
+            if old_presence != data['presence'] or \
+                old_absence != data['absence'] or \
+                old_short != data['short']:
+                def gs(presence, absence, short):
                     def fs(string):
                         return '-' if not string else string.upper()
 
-                    return '{0} &#%$ {1}'.format(fs(presence), fs(absence))
+                    return '{0} &#%$ {1} &#%$ {2}'.format(
+                        fs(presence), fs(absence), fs(short))
 
                 Log.objects.create(
                     field=hierarchy['cell'].profile.name + '\'s cell',
-                    new_value=gs(data['presence'], data['absence']),
-                    old_value=gs(old_presence, old_absence),
+                    new_value=gs(data['presence'], data['absence'], data['short']),
+                    old_value=gs(old_presence, old_absence, old_short),
                     cell=hierarchy['cell'],
                     profile=request.user.profile,
                 )
