@@ -43,7 +43,7 @@ class BoardView(APIView, Helpers, BoardHelpers):
 
             parts = Part.objects.filter(team=team.id, date=day['date'])
 
-            day['parts'] = PartSerializer(parts, many=True, context={
+            day['parts'] = PartSimpleSerializer(parts, many=True, context={
                 'link': 'detail',
                 'profiles': 'detail',
                 'teammates': 'detail',

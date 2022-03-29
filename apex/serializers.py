@@ -669,6 +669,43 @@ class PartSerializer(serializers.ModelSerializer):
         return 'part'
 
 
+class PartSimpleSerializer(serializers.ModelSerializer):
+
+    work = serializers.SerializerMethodField()
+    teammates = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Part
+        fields = '__all__'
+
+    def get_work(self, part):
+        return WorkSerializer(part.shift.work).data
+
+
+    def get_teammates(self, part):
+        teammates = list()
+
+        if 'teammates' in self.context:
+            work_parts = part.shift.part_set.all()
+
+            for work_part in work_parts:
+                links = PartProfileLink.objects.filter(part=work_part)
+
+                for link in links:
+                    if link.is_participant:
+                        if self.context['teammates'] == 'detail':
+                            teammates.append(link.profile.name)
+
+                        elif self.context['teammates'] == 'id':
+                            teammates.append(link.profile.id)
+
+            return teammates
+
+    def get_type(self, part):
+        return 'part'
+
+
 class QuotaSerializer(serializers.ModelSerializer):
 
     class Meta:
