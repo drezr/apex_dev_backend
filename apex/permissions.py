@@ -312,7 +312,7 @@ class WorksHelpers(CommonHelpers):
         ).first()
 
         if data['action'] == 'update_config':
-            return access.is_manager if access else False
+            return access.is_editor if access else False
 
 
         elif data['action'] in ['update_part_profile_link', 'create_part_profile_link']:
