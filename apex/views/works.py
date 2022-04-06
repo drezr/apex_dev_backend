@@ -117,12 +117,13 @@ class WorksView(APIView, WorksHelpers, Helpers):
                 if 'id' in column_update and column_update['id']:
                     column = element.columns.get(pk=column_update['id'])
 
+                    if not data['value']['is_new']:
+                        if column.value != column_update['value']:
+                            column.is_edited = True
+
                     column.value = column_update['value']
                     column.bg_color = column_update['bg_color']
                     column.text_color = column_update['text_color']
-
-                    if not data['value']['is_new']:
-                        column.is_edited = True
 
                     for row_update in column_update['rows']:
                         row = column.rows.get(pk=row_update['id'])
