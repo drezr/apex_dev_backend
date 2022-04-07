@@ -674,6 +674,7 @@ class PartSimpleSerializer(serializers.ModelSerializer):
     work = serializers.SerializerMethodField()
     teammates = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
+    shift = serializers.SerializerMethodField()
 
     class Meta:
         model = Part
@@ -682,6 +683,8 @@ class PartSimpleSerializer(serializers.ModelSerializer):
     def get_work(self, part):
         return WorkSerializer(part.shift.work).data
 
+    def get_shift(self, part):
+        return get_child(part, None, 'shift')
 
     def get_teammates(self, part):
         teammates = list()

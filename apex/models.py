@@ -258,6 +258,17 @@ class WorkRow(models.Model):
 
     from_pk = models.TextField(blank=True, null=True)
     to_pk = models.TextField(blank=True, null=True)
+
+    from_date = models.TextField(blank=True, null=True)
+    to_date = models.TextField(blank=True, null=True)
+
+    from_hour = models.TextField(blank=True, null=True)
+    to_hour = models.TextField(blank=True, null=True)
+
+    zone = models.TextField(blank=True, null=True)
+    subzone = models.TextField(blank=True, null=True)
+
+    kind = models.TextField(blank=True, null=True)
     
     bg_color = models.CharField(max_length=20, blank=True, null=True)
     text_color = models.CharField(max_length=20, blank=True, null=True)
