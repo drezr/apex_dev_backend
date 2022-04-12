@@ -269,6 +269,7 @@ class WorkRow(models.Model):
     subzone = models.TextField(blank=True, null=True)
 
     kind = models.TextField(blank=True, null=True)
+    value = models.TextField(blank=True, null=True)
     
     bg_color = models.CharField(max_length=20, blank=True, null=True)
     text_color = models.CharField(max_length=20, blank=True, null=True)

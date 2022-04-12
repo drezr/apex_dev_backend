@@ -156,6 +156,9 @@ class WorksView(APIView, WorksHelpers, Helpers):
                         work=element,
                     )
 
+                    if not data['value']['is_new']:
+                        column.is_edited = True
+
                 new_columns.append(WorkColumnSerializer(column).data)
 
             for log in logs:
