@@ -187,6 +187,9 @@ def compute_quota(cells, quotas, config, holidays, detailed):
                         if _kind:
                             for _leave_type in sorted_leave_types:
                                 if _leave_type['kind'] == _kind:
+                                    if has_hour:
+                                        amount = 0.5 if amount <= 0.5 else 1
+
                                     computed_quotas[_leave_type['code']] += amount
                                     
                                     if detailed:
