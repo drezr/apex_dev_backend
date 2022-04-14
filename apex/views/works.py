@@ -136,6 +136,9 @@ class WorksView(APIView, WorksHelpers, Helpers):
                         for key, val in row_update.items():
                             setattr(row, key, val)
 
+                        if not data['value']['is_new']:
+                            column.is_edited = True
+
                         row.save()
 
                     column.save()
