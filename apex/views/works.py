@@ -379,27 +379,81 @@ class WorksView(APIView, WorksHelpers, Helpers):
             parts = list()
 
             for team_id in data['value']:
-                part = Part.objects.create(
+                part, is_new = Part.objects.get_or_create(
                     date=element.date,
                     team_id=team_id,
                     shift=element,
                 )
 
-                part_serialized = PartSerializer(part, context={
-                    'parts': 'detail',
-                    'profiles': 'detail',
-                    'project': 'detail',
-                }).data
+                if is_new:
+                    part_serialized = PartSerializer(part, context={
+                        'parts': 'detail',
+                        'profiles': 'detail',
+                        'project': 'detail',
+                    }).data
 
-                parts.append(part_serialized)
+                    parts.append(part_serialized)
+
+                    day, c = Day.objects.get_or_create(
+                        team_id=team_id, date=element.date)
+
+                    day.has_content = True
+                    day.save()
+
+            return Response({'parts': parts})
+
+
+        elif data['action'] == 'copy_part':
+            part_serialized = None
+
+            old_part = data['value']
+
+            part, is_new = Part.objects.get_or_create(
+                date=element.date,
+                team_id=old_part['team']['id'],
+                shift=element,
+            )
+
+            if is_new:
+                part.needs = old_part['needs']
+                part.locked = old_part['locked']
+                part.save()
 
                 day, c = Day.objects.get_or_create(
-                    team_id=team_id, date=element.date)
+                    team=part.team, date=element.date)
 
                 day.has_content = True
                 day.save()
 
-            return Response({'parts': parts})
+                for profile in old_part['profiles']:
+                    cell, c = Cell.objects.get_or_create(
+                        profile_id=profile['id'],
+                        date=element.date,
+                    )
+
+                    _profile = Profile.objects.get(pk=profile['id'])
+
+                    link, c = PartProfileLink.objects.get_or_create(
+                        part=part,
+                        profile=_profile,
+                    )
+
+                    link.is_participant = profile['link']['is_participant']
+                    link.save()
+
+                    if link.is_participant:
+                        cell.has_content = True
+                        cell.save()
+
+                part_serialized = PartSerializer(part, context={
+                    'parts': 'detail',
+                    'profiles': 'detail',
+                    'link': 'detail',
+                    'project': 'detail',
+                }).data
+
+
+            return Response({'part': part_serialized})
 
 
         elif data['action'] == 'update_part':
