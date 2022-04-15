@@ -733,4 +733,21 @@ class WorksView(APIView, WorksHelpers, Helpers):
             return Response(status=status.HTTP_200_OK)
 
 
+        elif data['action'] == 'clear_all_is_edited':
+            works = Work.objects.filter(
+                date__month=request.data['month'],
+                date__year=request.data['year'],
+                apps__in=[app.id]
+            )
+
+            for work in works:
+                columns = WorkColumn.objects.filter(work=work)
+
+                for column in columns:
+                    column.is_edited = False
+                    column.save()
+
+            return Response(status=status.HTTP_200_OK)
+
+
         return Response(status=status.HTTP_400_BAD_REQUEST)
