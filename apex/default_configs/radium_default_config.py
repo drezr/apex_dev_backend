@@ -545,6 +545,26 @@ radium_default_config = [
         "clickable": False,
         "path": None,
     },
+    {
+        "name": "bnx_m",
+        "position": 54,
+        "width": 150,
+        "textsize": 13,
+        "visible": False,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "prodigis_m",
+        "position": 55,
+        "width": 150,
+        "textsize": 13,
+        "visible": False,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
 
 
 
@@ -1090,6 +1110,25 @@ radium_default_config = [
         "clickable": False,
         "path": None,
     },
-
+    {
+        "name": "printable_bnx_m",
+        "position": 54,
+        "width": 150,
+        "textsize": 13,
+        "visible": False,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "printable_prodigis_m",
+        "position": 55,
+        "width": 150,
+        "textsize": 13,
+        "visible": False,
+        "multiple": True,
+        "clickable": False,
+        "path": None,
+    },
 
 ]
