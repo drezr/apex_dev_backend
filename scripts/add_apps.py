@@ -1,6 +1,6 @@
 from apex.models import *
 
-team_ids = [116, 117, 118, 119, 120, 121, 122, 123]
+team_ids = [128, 129, 130, 131, 132, 133, 134, 135]
 
 for team_id in team_ids:
 	for app_name in ['draft', 'planner', 'radium', 'watcher']:
