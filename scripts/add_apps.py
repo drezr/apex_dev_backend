@@ -13,6 +13,7 @@ team_ids = [
 	147,
 	148,
 	149,
+]
 
 for team_id in team_ids:
 	for app_name in ['draft', 'planner', 'radium', 'watcher']:
