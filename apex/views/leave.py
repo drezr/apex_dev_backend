@@ -72,7 +72,7 @@ class LeaveView(APIView, LeaveHelpers):
 
             leave_types = config.leave_type_set.all()
 
-            new_leave_type = LeaveType.objects.create(
+            new_leave_type, l = LeaveType.objects.get_or_create(
                 code=data['value']['code'],
                 color=data['value']['color'],
                 desc=data['value']['desc'],
@@ -85,7 +85,7 @@ class LeaveView(APIView, LeaveHelpers):
             new_quotas = list()
 
             for profile in hierarchy['team'].profiles.all():
-                new_quota = Quota.objects.create(
+                new_quota, q = Quota.objects.get_or_create(
                     code=new_leave_type.code,
                     year=data['year'],
                     profile=profile,
@@ -166,7 +166,8 @@ class LeaveView(APIView, LeaveHelpers):
             new_config = leave_configs[data['value']]
 
             for leave_type in new_config:
-                LeaveType.objects.create(config=config, **leave_type)
+                LeaveType.objects.get_or_create(
+                    config=config, **leave_type)
 
             profiles_id = [profile.id for profile in team.profiles.all()]
 
