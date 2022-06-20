@@ -760,7 +760,7 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_work(self, message):
-        return get_child(message, {}, 'work')
+        return get_child(message, {'shifts': 'detail'}, 'work')
 
     def get_author(self, message):
         return message.author.name
