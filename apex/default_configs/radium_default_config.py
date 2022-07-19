@@ -685,6 +685,16 @@ radium_default_config = [
         "clickable": False,
         "path": None,
     },
+    {
+        "name": "cmb_pvb",
+        "position": 67,
+        "width": 150,
+        "textsize": 13,
+        "visible": False,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
 
 
 
@@ -1363,7 +1373,17 @@ radium_default_config = [
     },
     {
         "name": "printable_materials_supply",
-        "position": 66,
+        "position": 67,
+        "width": 150,
+        "textsize": 13,
+        "visible": False,
+        "multiple": False,
+        "clickable": False,
+        "path": None,
+    },
+    {
+        "name": "printable_cmb_pvb",
+        "position": 68,
         "width": 150,
         "textsize": 13,
         "visible": False,
